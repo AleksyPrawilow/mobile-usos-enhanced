@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    kotlin("plugin.serialization") version "2.0.21"
 }
 
 val secretsFile = rootProject.file("secrets.properties")
@@ -50,6 +51,8 @@ android {
         val secretPart3 = secrets.getProperty(keySecretPart3) ?: ""
         val secretPart4 = secrets.getProperty(keySecretPart4) ?: ""
         val secretPart5 = secrets.getProperty(keySecretPart5) ?: ""
+        val testAccessToken = secrets.getProperty("testAccessToken") ?: ""
+        val testAccessSecret = secrets.getProperty("testAccessSecret") ?: ""
 
         // inject into BuildConfig (note the escaped quotes)
         buildConfigField("String", keyPart1, "\"${part1.escapeForBuildConfig()}\"")
@@ -62,6 +65,8 @@ android {
         buildConfigField("String", keySecretPart3, "\"${secretPart3.escapeForBuildConfig()}\"")
         buildConfigField("String", keySecretPart4, "\"${secretPart4.escapeForBuildConfig()}\"")
         buildConfigField("String", keySecretPart5, "\"${secretPart5.escapeForBuildConfig()}\"")
+        buildConfigField("String", "testAccessToken", "\"${testAccessToken.escapeForBuildConfig()}\"")
+        buildConfigField("String", "testAccessSecret", "\"${testAccessSecret.escapeForBuildConfig()}\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -88,7 +93,12 @@ android {
 }
 
 dependencies {
-    implementation("io.github.cdimascio:dotenv-kotlin:6.5.1")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2")
+    implementation("androidx.compose.ui:ui:latest_version")
+    implementation("androidx.compose.animation:animation:latest_version")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.9.2")
+    implementation("com.github.scribejava:scribejava-apis:8.3.3")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
