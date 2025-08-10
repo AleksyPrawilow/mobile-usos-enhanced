@@ -13,3 +13,5 @@
 .externalNativeBuild
 .cxx
 local.properties
+/secrets.properties
+/app/build/generated/source/buildConfig/
