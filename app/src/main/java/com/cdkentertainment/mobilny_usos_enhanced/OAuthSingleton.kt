@@ -1,6 +1,5 @@
 package com.cdkentertainment.mobilny_usos_enhanced
 
-import android.R.attr.data
 import com.github.scribejava.core.builder.ServiceBuilder
 import com.github.scribejava.core.exceptions.OAuthException
 import com.github.scribejava.core.model.OAuth1AccessToken
@@ -8,36 +7,8 @@ import com.github.scribejava.core.model.OAuthRequest
 import com.github.scribejava.core.model.OAuthResponseException
 import com.github.scribejava.core.model.Verb
 import com.github.scribejava.core.oauth.OAuth10aService
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
 import java.io.IOException
 import java.util.concurrent.ExecutionException
-
-fun main() {
-    OAuthSingleton.setTestAccessToken()
-
-    // Get data
-    val response: Map<String, String> = OAuthSingleton.get("users/user")
-
-    // Parse the JSON
-    if (response.containsKey("response")) {
-        val responseString = response["response"]
-        if (responseString == null) {
-            println(UserData())
-            return
-        }
-        val parser: Json = Json { ignoreUnknownKeys = true }
-        val data: UserData = parser.decodeFromString<UserData>(responseString)
-        println(data)
-    }
-}
-
-@Serializable
-data class UserData (
-    val first_name: String = "N/A",
-    val last_name: String = "N/A",
-    val id: String = "N/A"
-)
 
 object OAuthSingleton {
     private val apiKey: String = listOf(BuildConfig.ключчасть, BuildConfig.частьключа, BuildConfig.ключевойэлементключа,
