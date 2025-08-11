@@ -28,7 +28,11 @@ class GradesPageViewModel: ViewModel() {
 
     suspend fun fetchUserGrades() {
         withContext(Dispatchers.IO) {
-            userGrades = gradesPageModel.fetchUserGrades()
+            try {
+                userGrades = gradesPageModel.fetchUserGrades()
+            } catch (e: Exception) {
+                return@withContext //ogarnij coś tutaj @aleksy
+            }
         }
     }
 }
