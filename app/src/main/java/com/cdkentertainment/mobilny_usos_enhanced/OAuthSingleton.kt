@@ -1,5 +1,6 @@
 package com.cdkentertainment.mobilny_usos_enhanced
 
+import android.content.Context
 import com.github.scribejava.core.builder.ServiceBuilder
 import com.github.scribejava.core.exceptions.OAuthException
 import com.github.scribejava.core.model.OAuth1AccessToken
@@ -7,6 +8,10 @@ import com.github.scribejava.core.model.OAuthRequest
 import com.github.scribejava.core.model.OAuthResponseException
 import com.github.scribejava.core.model.Verb
 import com.github.scribejava.core.oauth.OAuth10aService
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 import java.io.IOException
 import java.util.concurrent.ExecutionException
 
@@ -42,6 +47,39 @@ object OAuthSingleton {
         }
     }
 
+    suspend fun checkIfAccessTokenExists(context: Context): Boolean {
+        return withContext(Dispatchers.IO) {
+            if (oAuth1AccessToken != null) {
+                return@withContext !checkIfTokenExpired()
+            }
+            val accessToken: OAuth1AccessToken? = UserDataSingleton.readAccessToken(context)
+            if (accessToken != null) {
+                oAuth1AccessToken = accessToken
+                return@withContext !checkIfTokenExpired()
+            }
+            return@withContext false
+        }
+    }
+
+    suspend fun checkIfTokenExpired(): Boolean {
+        return withContext(Dispatchers.IO) {
+            val response: Map<String, String> = get("users/user")
+            val parser = Json { ignoreUnknownKeys = true }
+            if (response.containsKey("response") && response["response"] != null) {
+                val data: AccessTokenCheckClass = parser.decodeFromString<AccessTokenCheckClass>(response["response"]!!)
+                if (data.message != null) {
+                    // If there is an error message, the token is most likely expired, therefore return true
+                    println(data)
+                    return@withContext true
+                }
+                // No message = no error = token not expired
+                return@withContext false
+            }
+            // If the call failed, let user try to log in, therefore true
+            return@withContext true
+        }
+    }
+
     fun get(url: String): Map<String, String> {
         val result = LinkedHashMap<String, String>()
         val request = OAuthRequest(Verb.GET, baseUrl + url)
@@ -68,3 +106,8 @@ object OAuthSingleton {
         }
     }
 }
+
+@Serializable
+data class AccessTokenCheckClass(
+    val message: String? = null
+)
