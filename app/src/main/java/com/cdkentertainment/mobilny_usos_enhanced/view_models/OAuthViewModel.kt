@@ -43,6 +43,7 @@ class OAuthViewModel(): ViewModel() {
             isCheckingConnection = false
             return true
         }
+        isCheckingConnection = false
         return false
     }
 
