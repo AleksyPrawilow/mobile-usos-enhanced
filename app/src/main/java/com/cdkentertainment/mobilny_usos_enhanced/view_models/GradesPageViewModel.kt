@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
+import com.cdkentertainment.mobilny_usos_enhanced.models.CourseUnitIds
 import com.cdkentertainment.mobilny_usos_enhanced.models.GradesPageModel
 import com.cdkentertainment.mobilny_usos_enhanced.models.Season
 import kotlinx.coroutines.Dispatchers
@@ -17,20 +18,23 @@ fun main(): Unit = runBlocking {
     val gradesPageViewModel: GradesPageViewModel = GradesPageViewModel()
     launch {
         gradesPageViewModel.fetchUserGrades()
-        println(gradesPageViewModel.userGrades)
     }
 }
 
 class GradesPageViewModel: ViewModel() {
 
     var userGrades: List<Season>? by mutableStateOf(null)
+    var userSubjects: Map<String, CourseUnitIds>? by mutableStateOf(null)
     val gradesPageModel: GradesPageModel = GradesPageModel()
 
     suspend fun fetchUserGrades() {
         withContext(Dispatchers.IO) {
             try {
-                userGrades = gradesPageModel.fetchUserGrades()
+                val data:Pair<List<Season>, Map<String, CourseUnitIds>> = gradesPageModel.fetchUserGrades()
+                userGrades = data.first
+                userSubjects = data.second
             } catch (e: Exception) {
+                println(e)
                 return@withContext //ogarnij coś tutaj @aleksy
             }
         }
