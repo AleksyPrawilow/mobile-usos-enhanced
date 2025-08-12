@@ -1,4 +1,4 @@
-package com.cdkentertainment.mobilny_usos_enhanced;
+package com.cdkentertainment.mobilny_usos_enhanced.usos_installations;
 
 import com.github.scribejava.core.builder.api.DefaultApi10a;
 import com.github.scribejava.core.model.OAuth1RequestToken;

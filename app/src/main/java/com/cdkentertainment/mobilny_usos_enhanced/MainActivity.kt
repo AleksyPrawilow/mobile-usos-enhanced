@@ -23,6 +23,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.ui.theme.MobilnyUSOSEnhancedTheme
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.FloatingButtonViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.ScreenManagerViewModel
+import com.cdkentertainment.mobilny_usos_enhanced.view_models.VisibleItemsViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.views.FloatingButtonView
 import com.cdkentertainment.mobilny_usos_enhanced.views.ScreenManager
 
@@ -41,6 +42,8 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun ContentView() {
     val screenManagerViewModel: ScreenManagerViewModel = viewModel<ScreenManagerViewModel>()
+    val visibleItemsViewModel: VisibleItemsViewModel = viewModel<VisibleItemsViewModel>()
+    screenManagerViewModel.visibleItemsViewModel = visibleItemsViewModel
     val fabViewModel: FloatingButtonViewModel = viewModel<FloatingButtonViewModel>()
     val fabHorizonalBias: Float by animateFloatAsState(
         targetValue = if (fabViewModel.expanded) 0f else 1f,
@@ -70,7 +73,7 @@ fun ContentView() {
             .background(color = UISingleton.color1.primaryColor)
             .padding(12.dp)
     ) {
-        ScreenManager(screenManagerViewModel.selectedScreen, screenManagerViewModel)
+        ScreenManager(screenManagerViewModel.selectedScreen, screenManagerViewModel, visibleItemsViewModel)
         FloatingButtonView(
             fabViewModel = viewModel<FloatingButtonViewModel>(),
             screenManagerViewModel = viewModel<ScreenManagerViewModel>(),

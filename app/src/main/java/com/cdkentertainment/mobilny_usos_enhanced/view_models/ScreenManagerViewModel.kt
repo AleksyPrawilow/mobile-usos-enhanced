@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 
 class ScreenManagerViewModel: ViewModel() {
+    var visibleItemsViewModel: VisibleItemsViewModel? = null
     var selectedScreen: Screens by mutableStateOf(Screens.LOGIN)
         private set
     var authorized: Boolean by mutableStateOf(false)
@@ -24,12 +25,14 @@ class ScreenManagerViewModel: ViewModel() {
         if (selectedScreen == newScreen) {
             return
         }
+        visibleItemsViewModel?.setVisibleState(selectedScreen.ordinal, false)
+        visibleItemsViewModel?.setVisibleState(newScreen.ordinal, false)
         selectedScreen = newScreen
     }
 
     fun authorize() {
         authorized = true
-        selectedScreen = Screens.HOME
+        changeScreen(Screens.HOME)
     }
 }
 

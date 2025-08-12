@@ -5,20 +5,29 @@ import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.ScreenManagerViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.Screens
+import com.cdkentertainment.mobilny_usos_enhanced.view_models.VisibleItemsViewModel
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun ScreenManager(currentScreen: Screens, screenManagerViewModel: ScreenManagerViewModel) {
+fun ScreenManager(
+    currentScreen: Screens,
+    screenManagerViewModel: ScreenManagerViewModel,
+    visibleItemsViewModel: VisibleItemsViewModel = viewModel<VisibleItemsViewModel>()
+) {
     SharedTransitionLayout() {
         AnimatedContent(
-            transitionSpec = { fadeIn() + scaleIn() togetherWith fadeOut() },
+            transitionSpec = { fadeIn() + scaleIn() togetherWith fadeOut() + slideOutHorizontally(animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessLow)) },
             targetState = currentScreen
         ) { target ->
             val animatedVisibilityScope: AnimatedVisibilityScope = this@AnimatedContent
@@ -29,14 +38,54 @@ fun ScreenManager(currentScreen: Screens, screenManagerViewModel: ScreenManagerV
                     animatedVisibilityScope = this@AnimatedContent,
                     screenManagerViewModel = screenManagerViewModel
                 )
-                Screens.HOME -> HomePageView(sharedContentState, animatedVisibilityScope)
-                Screens.GRADES -> HomePageView(sharedContentState, animatedVisibilityScope)
-                Screens.TESTS -> HomePageView(sharedContentState, animatedVisibilityScope)
-                Screens.CALENDAR -> HomePageView(sharedContentState, animatedVisibilityScope)
-                Screens.GROUPS -> HomePageView(sharedContentState, animatedVisibilityScope)
-                Screens.PAYMENTS -> HomePageView(sharedContentState, animatedVisibilityScope)
-                Screens.ATTENDANCE -> HomePageView(sharedContentState, animatedVisibilityScope)
-                Screens.SETTINGS -> HomePageView(sharedContentState, animatedVisibilityScope)
+                Screens.HOME -> HomePageView(
+                    sharedTransitionScope = sharedContentState,
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    visibleItemsViewModel = visibleItemsViewModel,
+                    visibleIndex = 1
+                )
+                Screens.GRADES -> GradesPageView(
+                    sharedTransitionScope = sharedContentState,
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    visibleItemsViewModel = visibleItemsViewModel,
+                    visibleIndex = 2
+                )
+                Screens.TESTS -> HomePageView(
+                    sharedTransitionScope = sharedContentState,
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    visibleItemsViewModel = visibleItemsViewModel,
+                    visibleIndex = 3
+                )
+                Screens.CALENDAR -> HomePageView(
+                    sharedTransitionScope = sharedContentState,
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    visibleItemsViewModel = visibleItemsViewModel,
+                    visibleIndex = 4
+                )
+                Screens.GROUPS -> HomePageView(
+                    sharedTransitionScope = sharedContentState,
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    visibleItemsViewModel = visibleItemsViewModel,
+                    visibleIndex = 5
+                )
+                Screens.PAYMENTS -> HomePageView(
+                    sharedTransitionScope = sharedContentState,
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    visibleItemsViewModel = visibleItemsViewModel,
+                    visibleIndex = 6
+                )
+                Screens.ATTENDANCE -> HomePageView(
+                    sharedTransitionScope = sharedContentState,
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    visibleItemsViewModel = visibleItemsViewModel,
+                    visibleIndex = 7
+                )
+                Screens.SETTINGS -> HomePageView(
+                    sharedTransitionScope = sharedContentState,
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    visibleItemsViewModel = visibleItemsViewModel,
+                    visibleIndex = 8
+                )
             }
         }
     }

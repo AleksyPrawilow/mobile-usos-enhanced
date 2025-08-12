@@ -1,6 +1,7 @@
 package com.cdkentertainment.mobilny_usos_enhanced
 
 import android.content.Context
+import com.cdkentertainment.mobilny_usos_enhanced.usos_installations.UsosAPI
 import com.github.scribejava.core.builder.ServiceBuilder
 import com.github.scribejava.core.exceptions.OAuthException
 import com.github.scribejava.core.model.OAuth1AccessToken

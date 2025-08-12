@@ -8,6 +8,9 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.EaseInOutBack
+import androidx.compose.animation.core.Easing
+import androidx.compose.animation.core.TweenSpec
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
@@ -32,31 +35,40 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.HomePageViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.Screens
+import com.cdkentertainment.mobilny_usos_enhanced.view_models.VisibleItemsViewModel
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun SharedTransitionScope.HomePageView(sharedTransitionScope: SharedTransitionScope, animatedVisibilityScope: AnimatedVisibilityScope) {
+fun SharedTransitionScope.HomePageView(
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    visibleItemsViewModel: VisibleItemsViewModel = viewModel<VisibleItemsViewModel>(),
+    visibleIndex: Int = 1
+) {
     val homePageViewModel: HomePageViewModel = viewModel<HomePageViewModel>()
-    val visibleStates by homePageViewModel.visibleStates.collectAsState()
-
-    val itemsToAnimate: Int = 4
-    val enterTransition: EnterTransition = fadeIn() + slideInHorizontally()
-    val exitTransition: ExitTransition = fadeOut() + slideOutHorizontally()
+    val isVisible: List<Boolean> by visibleItemsViewModel.visibleStates.collectAsState()
+    val delayBetweenShows: Int = 150
+    val fadeDelay: Int = 50
+    val fadeDuration: Int = 500
+    val slideDuration: Int = 750
+    val easingForShows: Easing = EaseInOutBack
+    val fadeTweenSpec: (Int, Int, Easing) -> TweenSpec<Float> = { duration, delay, easing -> TweenSpec<Float>(durationMillis = duration, delay = delay, easing = easing) }
+    val slideTweenSpec: (Int, Int, Easing) -> TweenSpec<IntOffset> = { duration, delay, easing -> TweenSpec<IntOffset>(durationMillis = duration, delay = delay, easing = easing) }
+    val enterTrans: (TweenSpec<Float>, TweenSpec<IntOffset>) -> EnterTransition = { fadeSpec, slideSpec -> fadeIn(fadeSpec) + slideInHorizontally(slideSpec) }
+    val exitTrans: (TweenSpec<Float>, TweenSpec<IntOffset>) -> ExitTransition = { fadeSpec, slideSpec -> fadeOut(fadeSpec) + slideOutHorizontally(slideSpec) }
 
     LaunchedEffect(Unit) {
-        homePageViewModel.initList(itemsToAnimate)
         homePageViewModel.fetchData()
-        for (index in 0 until itemsToAnimate) {
-            homePageViewModel.setVisible(index, true)
-            delay(150)
-        }
+        delay(50)
+        visibleItemsViewModel.setVisibleState(visibleIndex, true)
     }
 
     Column(
@@ -68,9 +80,9 @@ fun SharedTransitionScope.HomePageView(sharedTransitionScope: SharedTransitionSc
     ) {
         Spacer(modifier = Modifier.height(16.dp))
         AnimatedVisibility(
-            visible = visibleStates.getOrNull(0) == true,
-            enter = enterTransition,
-            exit = exitTransition
+            visible = isVisible[visibleIndex],
+            enter = enterTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay), easingForShows), slideTweenSpec(slideDuration, delayBetweenShows, easingForShows)),
+            exit = exitTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay), easingForShows), slideTweenSpec(slideDuration, delayBetweenShows, easingForShows))
         ) {
             Text(
                 text = "Cześć, ${homePageViewModel.userInfo?.basicInfo?.first_name}!",
@@ -82,16 +94,16 @@ fun SharedTransitionScope.HomePageView(sharedTransitionScope: SharedTransitionSc
             )
         }
         AnimatedVisibility(
-            visible = visibleStates.getOrNull(1) == true,
-            enter = enterTransition,
-            exit = exitTransition
+            visible = isVisible[visibleIndex],
+            enter = enterTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * 2, easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * 2, easingForShows)),
+            exit = exitTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * 2, easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * 2, easingForShows))
         ) {
             UserDataView(homePageViewModel)
         }
         AnimatedVisibility(
-            visible = visibleStates.getOrNull(2) == true,
-            enter = enterTransition,
-            exit = exitTransition
+            visible = isVisible[visibleIndex],
+            enter = enterTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * 3, easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * 3, easingForShows)),
+            exit = exitTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * 3, easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * 3, easingForShows))
         ) {
             Text(
                 text = "Plan na dzisiaj:",
@@ -100,9 +112,9 @@ fun SharedTransitionScope.HomePageView(sharedTransitionScope: SharedTransitionSc
             )
         }
         AnimatedVisibility(
-            visible = visibleStates.getOrNull(3) == true,
-            enter = enterTransition,
-            exit = exitTransition
+            visible = isVisible[visibleIndex],
+            enter = enterTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * 4, easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * 4, easingForShows)),
+            exit = exitTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * 4, easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * 4, easingForShows))
         ) {
             Text(
                 text = "Brak zajęć.",
