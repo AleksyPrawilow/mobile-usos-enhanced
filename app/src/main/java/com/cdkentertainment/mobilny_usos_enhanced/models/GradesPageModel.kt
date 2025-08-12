@@ -8,7 +8,7 @@ import kotlinx.serialization.json.Json
 
 class GradesPageModel {
 
-    suspend fun fetchUserGrades() : List<Season> {
+    suspend fun fetchUserGrades() : Pair<List<Season>, Map<String, CourseUnitIds>>{
         return withContext(Dispatchers.IO) {
             val parser: Json = Json { ignoreUnknownKeys = true }
             val termIdsResponse: Map<String, String> = OAuthSingleton.get("courses/user?fields=terms[id]")
@@ -40,7 +40,7 @@ class GradesPageModel {
         }
     }
 
-    fun parseGradesToSeasons(data: Map<String, Map<String, UserGrades>>): List<Season> {
+    suspend fun parseGradesToSeasons(data: Map<String, Map<String, UserGrades>>): Pair<List<Season>, Map<String, CourseUnitIds>> {
         val resultList: ArrayList<Season> = ArrayList()
         val courseUnitIds: ArrayList<String> = ArrayList<String>()
         for (key in data.keys) {
@@ -75,15 +75,55 @@ class GradesPageModel {
             val avgGrade: Float = seasonGradesSum / seasonGradesCount.toFloat()
             val season = Season(seasonId = key, courseList = courseList, avgGrade = avgGrade)
             resultList.add(season)
-            println(avgGrade)
         }
 
-        return resultList
+        val courseUnitIdsString: String = courseUnitIds.joinToString("|")
+        val parsedCourseIds: Map<String, CourseUnitIds> = getCourseUnitIdsFromApi(courseUnitIdsString)
+        val returnResult = Pair<List<Season>, Map<String, CourseUnitIds>>(resultList, parsedCourseIds)
+        return returnResult
+    }
+
+    fun parseCourseUnitIds(courseData: Map<String, CourseUnitData?>): Map<String, CourseUnitIds>{
+        val resultData: LinkedHashMap<String, CourseUnitIds> = LinkedHashMap<String, CourseUnitIds>()
+        for (key in courseData.keys) {
+            if(courseData[key] != null) {
+                val currentElement: CourseUnitIds = CourseUnitIds(courseData[key]!!.course_name["pl"]!!, courseData[key]!!.classtype_id)
+                resultData.put(key, currentElement)
+            } //dorobic zwracanie nulla jesli znalazlo
+        }
+        return resultData
+    }
+
+    suspend fun getCourseUnitIdsFromApi(unitString: String): Map<String, CourseUnitIds> {
+        return withContext(Dispatchers.IO) {
+            val parser: Json = Json{ignoreUnknownKeys = true; encodeDefaults = true}
+            val apiResponse: Map<String, String> = OAuthSingleton.get("courses/units?unit_ids=$unitString&fields=course_name|classtype_id")
+            if (apiResponse.containsKey("response") && apiResponse["response"] != null) {
+                val responseString: String = apiResponse["response"]!!
+                return@withContext parseCourseUnitIds(parser.decodeFromString<Map<String, CourseUnitData?>>(responseString))
+
+            } else {
+                throw(Exception("API Error"))
+            }
+        }
     }
 }
 
+
 @Serializable
-data class Season (
+data class CourseUnitIds( //it is the final structure for Unit ids and names, Json parser doesn't use it
+    val course_name: String,
+    val classtype_id: String
+)
+
+@Serializable
+data class CourseUnitData(
+    val course_name: Map<String, String>,
+    val classtype_id: String
+)
+
+@Serializable
+data class Season ( //Final structure for grades per season
     val seasonId: String,
     val courseList: List<Course>,
     val avgGrade: Float ? = null
