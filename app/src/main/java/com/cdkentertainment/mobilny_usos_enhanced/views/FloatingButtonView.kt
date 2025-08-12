@@ -1,6 +1,8 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
 import androidx.compose.animation.core.EaseOut
+import androidx.compose.animation.core.EaseOutQuad
+import androidx.compose.animation.core.Easing
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
@@ -62,15 +64,16 @@ fun FloatingButtonView(
     val subButtonDelayNormal: Int = if (fabViewModel.expanded) 150 else 0
     val subButtonDelayIncrement: Int = 25
     val subButtonAnimDuration: Int = 250
+    val easing: Easing = EaseOutQuad
     val subButtonTargetValue: Float = if (fabViewModel.expanded) 1f else 0f
-    val subButtonOffset1: Float by animateFloatAsState(subButtonTargetValue, tween(subButtonAnimDuration, if (fabViewModel.expanded) subButtonDelayNormal + subButtonDelayIncrement * 0 else 0))
-    val subButtonOffset2: Float by animateFloatAsState(subButtonTargetValue, tween(subButtonAnimDuration, if (fabViewModel.expanded) subButtonDelayNormal + subButtonDelayIncrement * 1 else 0))
-    val subButtonOffset3: Float by animateFloatAsState(subButtonTargetValue, tween(subButtonAnimDuration, if (fabViewModel.expanded) subButtonDelayNormal + subButtonDelayIncrement * 2 else 0))
-    val subButtonOffset4: Float by animateFloatAsState(subButtonTargetValue, tween(subButtonAnimDuration, if (fabViewModel.expanded) subButtonDelayNormal + subButtonDelayIncrement * 3 else 0))
-    val subButtonOffset5: Float by animateFloatAsState(subButtonTargetValue, tween(subButtonAnimDuration, if (fabViewModel.expanded) subButtonDelayNormal + subButtonDelayIncrement * 4 else 0))
-    val subButtonOffset6: Float by animateFloatAsState(subButtonTargetValue, tween(subButtonAnimDuration, if (fabViewModel.expanded) subButtonDelayNormal + subButtonDelayIncrement * 5 else 0))
-    val subButtonOffset7: Float by animateFloatAsState(subButtonTargetValue, tween(subButtonAnimDuration, if (fabViewModel.expanded) subButtonDelayNormal + subButtonDelayIncrement * 6 else 0))
-    val subButtonOffset8: Float by animateFloatAsState(subButtonTargetValue, tween(subButtonAnimDuration, if (fabViewModel.expanded) subButtonDelayNormal + subButtonDelayIncrement * 7 else 0))
+    val subButtonOffset1: Float by animateFloatAsState(subButtonTargetValue, tween(subButtonAnimDuration, if (fabViewModel.expanded) subButtonDelayNormal + subButtonDelayIncrement * 0 else 0, easing = easing))
+    val subButtonOffset2: Float by animateFloatAsState(subButtonTargetValue, tween(subButtonAnimDuration, if (fabViewModel.expanded) subButtonDelayNormal + subButtonDelayIncrement * 1 else 0, easing = easing))
+    val subButtonOffset3: Float by animateFloatAsState(subButtonTargetValue, tween(subButtonAnimDuration, if (fabViewModel.expanded) subButtonDelayNormal + subButtonDelayIncrement * 2 else 0, easing = easing))
+    val subButtonOffset4: Float by animateFloatAsState(subButtonTargetValue, tween(subButtonAnimDuration, if (fabViewModel.expanded) subButtonDelayNormal + subButtonDelayIncrement * 3 else 0, easing = easing))
+    val subButtonOffset5: Float by animateFloatAsState(subButtonTargetValue, tween(subButtonAnimDuration, if (fabViewModel.expanded) subButtonDelayNormal + subButtonDelayIncrement * 4 else 0, easing = easing))
+    val subButtonOffset6: Float by animateFloatAsState(subButtonTargetValue, tween(subButtonAnimDuration, if (fabViewModel.expanded) subButtonDelayNormal + subButtonDelayIncrement * 5 else 0, easing = easing))
+    val subButtonOffset7: Float by animateFloatAsState(subButtonTargetValue, tween(subButtonAnimDuration, if (fabViewModel.expanded) subButtonDelayNormal + subButtonDelayIncrement * 6 else 0, easing = easing))
+    val subButtonOffset8: Float by animateFloatAsState(subButtonTargetValue, tween(subButtonAnimDuration, if (fabViewModel.expanded) subButtonDelayNormal + subButtonDelayIncrement * 7 else 0, easing = easing))
     val subButtonOffsetsRatios: List<Float> = listOf(subButtonOffset1, subButtonOffset2, subButtonOffset3, subButtonOffset4, subButtonOffset5, subButtonOffset6, subButtonOffset7, subButtonOffset8)
 
     repeat(8) { index ->

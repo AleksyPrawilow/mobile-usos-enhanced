@@ -24,7 +24,10 @@ object UISingleton {
     val uiElementsCornerRadius: Int = 24
 
     fun changeTheme() {
-        listOf(color1, color2, color3, color4).forEach { it.swapCopy() }
+        color1 = color1.swapCopy()
+        color2 = color2.swapCopy()
+        color3 = color3.swapCopy()
+        color4 = color4.swapCopy()
     }
 }
 
