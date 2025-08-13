@@ -122,7 +122,19 @@ class GradesPageModel {
     }
 }
 
+
 @Serializable
+data class CourseUnitIds( //it is the final structure for Unit ids and names, Json parser doesn't use it
+    val course_name: String,
+    val classtype_id: String
+)
+
+@Serializable
+data class CourseUnitData(
+    val course_name: Map<String, String>,
+    val classtype_id: String
+)
+
 data class ClasstypeIdInfo(
     val id: String,
     val name: LangDict
