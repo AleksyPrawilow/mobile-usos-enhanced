@@ -1,6 +1,5 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -28,41 +27,37 @@ fun GradeAverageView(gradeAverage: Float?) {
     Card(
         colors = CardColors(
             contentColor = UISingleton.color4.primaryColor,
-            containerColor = UISingleton.color2.primaryColor,
-            disabledContainerColor = UISingleton.color2.primaryColor,
+            containerColor = UISingleton.color3.primaryColor,
+            disabledContainerColor = UISingleton.color3.primaryColor,
             disabledContentColor = UISingleton.color4.primaryColor
         ),
         shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius),
         modifier = Modifier
             .fillMaxWidth()
-            .border(5.dp, UISingleton.color3.primaryColor, RoundedCornerShape(UISingleton.uiElementsCornerRadius))
+            .border(5.dp, UISingleton.color4.primaryColor, RoundedCornerShape(UISingleton.uiElementsCornerRadius))
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .padding(12.dp)
-                .background(UISingleton.color1.primaryColor, RoundedCornerShape(
-                    UISingleton.uiElementsCornerRadius.dp
-                ))
-                .padding(12.dp)
         ) {
             Text(
                 text = "Bieżąca średnia:",
-                color = UISingleton.color4.primaryColor,
+                color = UISingleton.color1.primaryColor,
                 style = MaterialTheme.typography.headlineSmall
             )
             Spacer(modifier = Modifier.weight(1f))
             Card(
                 colors = CardColors(
                     contentColor = UISingleton.color4.primaryColor,
-                    containerColor = UISingleton.color1.primaryColor,
-                    disabledContainerColor = UISingleton.color1.primaryColor,
+                    containerColor = UISingleton.color3.primaryColor,
+                    disabledContainerColor = UISingleton.color3.primaryColor,
                     disabledContentColor = UISingleton.color4.primaryColor
                 ),
                 shape = CircleShape,
                 modifier = Modifier
                     .size(48.dp)
-                    .border(5.dp, UISingleton.color2.primaryColor, CircleShape)
+                    .border(5.dp, UISingleton.color4.primaryColor, CircleShape)
             ) {
                 Box(
                     modifier = Modifier
@@ -70,7 +65,7 @@ fun GradeAverageView(gradeAverage: Float?) {
                 ) {
                     Text(
                         text = "%.2f".format(gradeAverage),
-                        color = UISingleton.color4.primaryColor,
+                        color = UISingleton.color1.primaryColor,
                         fontWeight = FontWeight.ExtraBold,
                         fontSize = 16.sp,
                         modifier = Modifier
