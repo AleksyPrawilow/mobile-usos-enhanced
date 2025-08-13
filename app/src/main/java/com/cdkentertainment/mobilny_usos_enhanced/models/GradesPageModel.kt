@@ -107,7 +107,26 @@ class GradesPageModel {
             }
         }
     }
+
+    suspend fun fetchClasstypeIds(): Map<String, ClasstypeIdInfo> {
+        return withContext(Dispatchers.IO) {
+            val parser: Json = Json{ignoreUnknownKeys = true}
+            val apiResponse: Map<String, String> = OAuthSingleton.get("courses/classtypes_index")
+            if (apiResponse.containsKey("response") && apiResponse["response"] != null) {
+                val responseString: String = apiResponse["response"]!!
+                return@withContext parser.decodeFromString<Map<String, ClasstypeIdInfo>>(responseString)
+            } else {
+                throw(Exception("API Error"))
+            }
+        }
+    }
 }
+
+@Serializable
+data class ClasstypeIdInfo(
+    val id: String,
+    val name: LangDict
+)
 
 
 @Serializable

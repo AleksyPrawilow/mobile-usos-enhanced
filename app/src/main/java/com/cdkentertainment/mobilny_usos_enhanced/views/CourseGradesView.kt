@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -23,19 +22,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
+import com.cdkentertainment.mobilny_usos_enhanced.models.ClasstypeIdInfo
 import com.cdkentertainment.mobilny_usos_enhanced.models.Course
-import com.cdkentertainment.mobilny_usos_enhanced.models.UserGrades
+import com.cdkentertainment.mobilny_usos_enhanced.models.CourseUnitIds
+
 
 @Composable
 fun CourseGradesView(
-    data: Course = Course(courseId = "Course", userGrades = UserGrades(
-        course_units_grades = mapOf("wyklad" to null, "cwiczenia" to null),
-        course_grades = emptyList()
-    ))
+    data: Course,
+    nameMap: Map<String, CourseUnitIds>,
+    classtypeIdInfo: Map<String, ClasstypeIdInfo>?
 ) {
     Card(
         colors = CardColors(
@@ -55,7 +55,7 @@ fun CourseGradesView(
                 .fillMaxWidth()
         ) {
             Text(
-                text = data.courseId,
+                text = nameMap[data.userGrades.course_units_grades.keys.first()]?.course_name ?: "N/A",
                 color = UISingleton.color4.primaryColor,
                 style = MaterialTheme.typography.headlineSmall
             )
@@ -66,28 +66,29 @@ fun CourseGradesView(
                     .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
             )
             for (courseUnit in data.userGrades.course_units_grades.keys) {
+                val unitClassType: String = nameMap[courseUnit]?.classtype_id ?: "N/A"
                 Row(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(UISingleton.color1.primaryColor, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
+                        .background(
+                            UISingleton.color1.primaryColor,
+                            RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp)
+                        )
                         .padding(12.dp)
                 ) {
                     val condition: Boolean =
                         data.userGrades.course_units_grades[courseUnit] != null && data.userGrades.course_units_grades[courseUnit]!![0]["1"] != null
-                    Column() {
-                        Text(
-                            text = courseUnit,
-                            color = UISingleton.color3.primaryColor,
-                            style = MaterialTheme.typography.titleLarge
-                        )
-                        Text(
-                            text = "Typ zajęć",
-                            color = UISingleton.color3.primaryColor,
-                            style = MaterialTheme.typography.titleSmall
-                        )
-                    }
-                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        text = classtypeIdInfo?.get(unitClassType)?.name?.pl ?: "N/A",
+                        color = UISingleton.color3.primaryColor,
+                        style = MaterialTheme.typography.titleLarge,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f)
+                    )
+                    //Spacer(modifier = Modifier.weight(1f))
                     Card(
                         colors = CardColors(
                             contentColor = UISingleton.color4.primaryColor,
@@ -117,18 +118,5 @@ fun CourseGradesView(
                 }
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun CourseGradesViewPreview() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(UISingleton.color1.primaryColor)
-            .padding(12.dp)
-    ) {
-        CourseGradesView()
     }
 }

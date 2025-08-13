@@ -74,7 +74,9 @@ fun SharedTransitionScope.GradesPageView(
     val exitTrans: (TweenSpec<Float>, TweenSpec<IntOffset>) -> ExitTransition = { fadeSpec, slideSpec -> fadeOut(fadeSpec) + slideOutHorizontally(slideSpec) }
 
     LaunchedEffect(Unit) {
-        gradesPageViewModel.fetchUserGrades()
+        if (gradesPageViewModel.userGrades == null) {
+            gradesPageViewModel.fetchUserGrades()
+        }
         delay(50)
         visibleItemsViewModel.setVisibleState(visibleIndex, true)
     }
@@ -158,7 +160,7 @@ fun SharedTransitionScope.GradesPageView(
                             enter = enterTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * (4 + courseIndex) * (iteration + 1), easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * (4 + courseIndex) * (iteration + 1), easingForShows)),
                             exit = exitTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * (4 + courseIndex) * (iteration + 1), easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * (4 + courseIndex) * (iteration + 1), easingForShows))
                         ) {
-                            CourseGradesView(course)
+                            CourseGradesView(course, gradesPageViewModel.userSubjects!!, gradesPageViewModel.classtypeIdInfo)
                         }
                     }
                     item {
