@@ -56,7 +56,7 @@ fun ScreenManager(
                     visibleItemsViewModel = visibleItemsViewModel,
                     visibleIndex = 3
                 )
-                Screens.CALENDAR -> HomePageView(
+                Screens.CALENDAR -> SchedulePageView(
                     sharedTransitionScope = sharedContentState,
                     animatedVisibilityScope = animatedVisibilityScope,
                     visibleItemsViewModel = visibleItemsViewModel,
