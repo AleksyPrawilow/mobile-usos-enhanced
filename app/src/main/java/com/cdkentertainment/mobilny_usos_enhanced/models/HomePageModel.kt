@@ -14,7 +14,8 @@ class HomePageModel {
             var basicUserData: BasicUserData
             var studentProgramData: List<StudentProgramData>
 
-            var response: Map<String, String> = OAuthSingleton.get("users/user?fields=first_name|last_name|sex|email|photo_urls[100x100]|mobile_numbers")
+            var response: Map<String, String> =
+                OAuthSingleton.get("users/user?fields=first_name|last_name|sex|email|photo_urls[100x100]|mobile_numbers")
             if (response.containsKey("response") && response["response"] != null) {
                 val responseString: String = response["response"]!!
                 basicUserData = parser.decodeFromString<BasicUserData>(responseString)
@@ -24,7 +25,8 @@ class HomePageModel {
             response = OAuthSingleton.get("progs/student?fields=id|programme")
             if (response.containsKey("response") && response["response"] != null) {
                 val responseString: String = response["response"]!!
-                studentProgramData = parser.decodeFromString<List<StudentProgramData>>(responseString)
+                studentProgramData =
+                    parser.decodeFromString<List<StudentProgramData>>(responseString)
             } else {
                 return@withContext null
             }
