@@ -51,10 +51,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
-import com.cdkentertainment.mobilny_usos_enhanced.view_models.GradesPageViewModel
+import com.cdkentertainment.mobilny_usos_enhanced.models.Schedule
+import com.cdkentertainment.mobilny_usos_enhanced.view_models.SchedulePageViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.Screens
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.VisibleItemsViewModel
 import kotlinx.coroutines.delay
+import java.time.LocalDate
 
 @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalFoundationApi::class)
 @Composable
@@ -64,7 +66,7 @@ fun SharedTransitionScope.SchedulePageView(
     visibleItemsViewModel: VisibleItemsViewModel = viewModel<VisibleItemsViewModel>(),
     visibleIndex: Int = 4
 ) {
-    val gradesPageViewModel: GradesPageViewModel = viewModel<GradesPageViewModel>()
+    val schedulePageViewModel: SchedulePageViewModel = viewModel<SchedulePageViewModel>()
     val isVisible: List<Boolean> by visibleItemsViewModel.visibleStates.collectAsState()
     val delayBetweenShows: Int = 150
     val fadeDelay: Int = 50
@@ -78,18 +80,19 @@ fun SharedTransitionScope.SchedulePageView(
     val daysOfWeek: List<String> = listOf("pn", "wt", "śr", "cz", "pt")
 
     LaunchedEffect(Unit) {
-        if (gradesPageViewModel.userGrades == null) {
-            gradesPageViewModel.fetchUserGrades()
+        if (schedulePageViewModel.schedule == null) {
+            schedulePageViewModel.fetchWeekData(LocalDate.of(2025, 5, 13))
         }
         delay(50)
         visibleItemsViewModel.setVisibleState(visibleIndex, true)
     }
 
-    if (gradesPageViewModel.userGrades == null) {
+    if (schedulePageViewModel.schedule == null) {
         Box(modifier = Modifier.fillMaxSize()) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
         }
     } else {
+        val schedule: Schedule = schedulePageViewModel.schedule!!
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier
@@ -203,6 +206,11 @@ fun SharedTransitionScope.SchedulePageView(
                         }
                     }
                 }
+            }
+            items(schedule.lessons[0]!!.size) { activity ->
+                Text(
+                    text = schedule.lessons[0]!![activity].course_name.pl
+                )
             }
         }
     }

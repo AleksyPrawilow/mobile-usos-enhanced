@@ -17,7 +17,7 @@ fun main(): Unit = runBlocking {
     OAuthSingleton.setTestAccessToken()
     val boom = SchedulePageViewModel()
     launch {
-        boom.fetchData()
+        boom.fetchWeekData(LocalDate.of(2025, 5, 13))
     }
 }
 
@@ -25,15 +25,21 @@ class SchedulePageViewModel: ViewModel() {
     var schedule: Schedule? by mutableStateOf(null)
     val model: SchedulePageModel = SchedulePageModel()
 
-    suspend fun fetchData() {
+    suspend fun fetchTodaysActivities() {
         withContext(Dispatchers.IO) {
             if (schedule != null) {
                 return@withContext
             }
-            schedule = model.getSingleDaySchedule(LocalDate.of(2025, 5, 17))
+            schedule = model.getSingleDaySchedule(LocalDate.now())
+        }
+    }
 
-            print(schedule)
-
+    suspend fun fetchWeekData(date: LocalDate) {
+        withContext(Dispatchers.IO) {
+            if (schedule != null) {
+                return@withContext
+            }
+            schedule = model.getWeekSchedule(date)
         }
     }
 }

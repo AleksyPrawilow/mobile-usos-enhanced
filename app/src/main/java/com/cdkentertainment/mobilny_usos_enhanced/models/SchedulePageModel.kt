@@ -87,7 +87,7 @@ data class Lesson(
     val start_time: String,
     val end_time: String,
     val room_number: String,
-    val course_name: Map<String, String>,
+    val course_name: LangDict,
     val classtype_id: String,
-    val building_name: Map<String, String>
+    val building_name: LangDict
 )
