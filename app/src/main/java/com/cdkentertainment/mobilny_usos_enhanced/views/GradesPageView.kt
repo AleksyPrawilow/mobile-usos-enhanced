@@ -63,7 +63,7 @@ fun SharedTransitionScope.GradesPageView(
 ) {
     val gradesPageViewModel: GradesPageViewModel = viewModel<GradesPageViewModel>()
     val isVisible: List<Boolean> by visibleItemsViewModel.visibleStates.collectAsState()
-    val delayBetweenShows: Int = 100
+    val delayBetweenShows: Int = 150
     val fadeDelay: Int = 50
     val fadeDuration: Int = 500
     val slideDuration: Int = 750

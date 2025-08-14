@@ -80,7 +80,7 @@ fun ScreenManager(
                     visibleItemsViewModel = visibleItemsViewModel,
                     visibleIndex = 7
                 )
-                Screens.SETTINGS -> HomePageView(
+                Screens.SETTINGS -> SettingsPageView(
                     sharedTransitionScope = sharedContentState,
                     animatedVisibilityScope = animatedVisibilityScope,
                     visibleItemsViewModel = visibleItemsViewModel,

@@ -18,12 +18,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -39,6 +41,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val context = LocalContext.current
+            LaunchedEffect(Unit) {
+                UserDataSingleton.readSettings(context)
+            }
             MobilnyUSOSEnhancedTheme {
                 ContentView()
             }
@@ -73,14 +79,17 @@ fun ContentView() {
             stiffness = 100f
         )
     )
-    val bgColor: Color by animateColorAsState(
-        targetValue = if (fabViewModel.expanded) Color(0x32000000) else Color(TRANSPARENT)
-    )
+    val bgOverlayColor: Color by animateColorAsState(targetValue = if (fabViewModel.expanded) Color(0x32000000) else Color(TRANSPARENT))
+
+    val color1: Color by animateColorAsState(UISingleton.color1.primaryColor)
+    val color2: Color by animateColorAsState(UISingleton.color2.primaryColor)
+    val color3: Color by animateColorAsState(UISingleton.color3.primaryColor)
+    val color4: Color by animateColorAsState(UISingleton.color4.primaryColor)
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = UISingleton.color1.primaryColor)
+            .background(color = color1)
             .padding(12.dp)
     ) {
         ScreenManager(screenManagerViewModel.selectedScreen, screenManagerViewModel, visibleItemsViewModel)
@@ -90,7 +99,7 @@ fun ContentView() {
                     //TODO: What even is this kind of logic?? Extremelly hacky and needs to be fixed
                     .requiredWidth(LocalConfiguration.current.screenWidthDp.dp + 32.dp)
                     .requiredHeight(LocalConfiguration.current.screenHeightDp.dp + 128.dp)
-                    .background(bgColor)
+                    .background(bgOverlayColor)
                     .clickable(
                         onClick = {
                             fabViewModel.changeExpanded(false)

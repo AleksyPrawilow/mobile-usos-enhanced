@@ -1,5 +1,7 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
+import android.content.Context
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.EaseOut
 import androidx.compose.animation.core.EaseOutQuad
 import androidx.compose.animation.core.Easing
@@ -15,7 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -24,8 +26,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -47,7 +51,7 @@ fun FloatingButtonView(
     val subButtonSize = 64
     val circleRadius = 100.0
     val iconRotation: Float by animateFloatAsState(
-        if (fabViewModel.expanded) 45.0f else 0.0f,
+        targetValue = if (fabViewModel.expanded) -45.0f else 0.0f,
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioHighBouncy,
             stiffness = Spring.StiffnessLow
@@ -60,6 +64,10 @@ fun FloatingButtonView(
             easing = EaseOut
         )
     )
+    val color1: Color by animateColorAsState(UISingleton.color1.primaryColor)
+    val color2: Color by animateColorAsState(UISingleton.color2.primaryColor)
+    val color3: Color by animateColorAsState(UISingleton.color3.primaryColor)
+    val color4: Color by animateColorAsState(UISingleton.color4.primaryColor)
     val buttonScale: Float by animateFloatAsState(if (fabViewModel.expanded) 1.25f else 1.0f)
     val subButtonDelayNormal: Int = if (fabViewModel.expanded) 150 else 0
     val subButtonDelayIncrement: Int = 25
@@ -76,6 +84,8 @@ fun FloatingButtonView(
     val subButtonOffset8: Float by animateFloatAsState(subButtonTargetValue, tween(subButtonAnimDuration, if (fabViewModel.expanded) subButtonDelayNormal + subButtonDelayIncrement * 7 else 0, easing = easing))
     val subButtonOffsetsRatios: List<Float> = listOf(subButtonOffset1, subButtonOffset2, subButtonOffset3, subButtonOffset4, subButtonOffset5, subButtonOffset6, subButtonOffset7, subButtonOffset8)
 
+    val context: Context = LocalContext.current
+
     repeat(8) { index ->
         val angle: Double = index * 45.0 - 90.0
         val x = cos(toRadians(angle)) * circleRadius
@@ -83,12 +93,12 @@ fun FloatingButtonView(
 
         IconButton(
             colors = IconButtonDefaults.iconButtonColors(
-                contentColor = UISingleton.color4.primaryColor,
-                containerColor = UISingleton.color2.primaryColor
+                contentColor = color4,
+                containerColor = color2
             ),
             onClick = {
                 fabViewModel.changeExpanded(false)
-                screenManagerViewModel.changeScreen(Screens.fromOrdinal(index + 1)!!)
+                screenManagerViewModel.changeScreen(Screens.fromOrdinal(index + 1)!!, context)
             },
             modifier = Modifier
                 .padding(16.dp)
@@ -100,7 +110,7 @@ fun FloatingButtonView(
                 )
                 .size(subButtonSize.dp)
                 .shadow(5.dp, CircleShape)
-                .border(5.dp, UISingleton.color4.primaryColor, CircleShape)
+                .border(5.dp, color4, CircleShape)
                 .then(modifier)
         ) {
             Icon(
@@ -116,8 +126,8 @@ fun FloatingButtonView(
 
     IconButton(
         colors = IconButtonDefaults.iconButtonColors(
-            contentColor = UISingleton.color4.primaryColor,
-            containerColor = UISingleton.color2.primaryColor
+            contentColor = color4,
+            containerColor = color2
         ),
         onClick = {
             fabViewModel.changeExpanded(!fabViewModel.expanded)
@@ -132,17 +142,18 @@ fun FloatingButtonView(
             .size(buttonSize.dp)
             .then(other = modifier)
             .shadow(5.dp, CircleShape)
-            .border(5.dp, UISingleton.color4.primaryColor, CircleShape)
+            .border(5.dp, color4, CircleShape)
     ) {
         Icon(
-            imageVector = Icons.Rounded.Add,
+            imageVector = Icons.Rounded.Menu,
             contentDescription = "More",
+            tint = color4,
             modifier = Modifier
                 .graphicsLayer(
                     rotationY = iconYRotation,
-                    rotationZ = iconRotation,
+                    rotationZ = iconRotation
                 )
-                .size(buttonSize.dp)
+                .size((subButtonSize * 0.75).dp)
         )
     } // FAB
 }
@@ -152,14 +163,14 @@ fun FloatingButtonView(
 fun FloatingButtonPreview() {
     val fabViewModel: FloatingButtonViewModel = viewModel<FloatingButtonViewModel>()
     val fabHorizonalBias: Float by animateFloatAsState(
-        if (fabViewModel.expanded) 0f else 1f,
+        targetValue = if (fabViewModel.expanded) 0f else 1f,
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioMediumBouncy,
             stiffness = 100f
         )
     )
     val fabVerticalBias: Float by animateFloatAsState(
-        if (fabViewModel.expanded) 0f else 1f,
+        targetValue = if (fabViewModel.expanded) 0f else 1f,
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioLowBouncy,
             stiffness = 100f
