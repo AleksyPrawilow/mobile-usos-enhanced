@@ -29,8 +29,8 @@ class SchedulePageModel {
         return date.format(formatter)
     }
 
-    private fun getDayOfWeekDate(fromDate: LocalDate = LocalDate.now(), dayOfWeek: DayOfWeek = DayOfWeek.MONDAY): String {
-        val dayOfWeek = fromDate.with(TemporalAdjusters.previousOrSame(dayOfWeek))
+    private fun getDayOfWeekDate(fromDate: LocalDate = LocalDate.now(), first: Boolean = true): String {
+        val dayOfWeek = if (first) fromDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)) else fromDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
         return getFormattedDateString(dayOfWeek)
     }
 
@@ -46,8 +46,8 @@ class SchedulePageModel {
 
     public suspend fun getWeekSchedule(date: LocalDate = LocalDate.now()): Schedule {
         return withContext(Dispatchers.IO) {
-            val firstDayOFWeekString = getDayOfWeekDate(date, DayOfWeek.MONDAY)
-            val lastDayOfWeekString = getDayOfWeekDate(date, DayOfWeek.SUNDAY)
+            val firstDayOFWeekString = getDayOfWeekDate(date, true)
+            val lastDayOfWeekString = getDayOfWeekDate(date, false)
             val response: Map<String, String> = OAuthSingleton.get("$baseUrl?start=$firstDayOFWeekString&days=7&fields=$fields")
 
             if (response.containsKey("response") && response["response"] != null) {
