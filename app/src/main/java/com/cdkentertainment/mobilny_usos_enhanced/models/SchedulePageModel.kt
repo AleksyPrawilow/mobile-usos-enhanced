@@ -13,7 +13,7 @@ import java.time.temporal.TemporalAdjusters
 class SchedulePageModel {
     private val parser = Json{ignoreUnknownKeys = true}
     private val fields = "start_time|end_time|room_number|course_name|classtype_id|building_name"
-    private val baseUrl = "tt/student"
+    private val requestUrl = "tt/student"
 
     private fun getDayIndexFromDate(date: LocalDate): Int {
         return date.dayOfWeek.value - 1
@@ -48,7 +48,7 @@ class SchedulePageModel {
         return withContext(Dispatchers.IO) {
             val firstDayOFWeekString = getDayOfWeekDate(date, true)
             val lastDayOfWeekString = getDayOfWeekDate(date, false)
-            val response: Map<String, String> = OAuthSingleton.get("$baseUrl?start=$firstDayOFWeekString&days=7&fields=$fields")
+            val response: Map<String, String> = OAuthSingleton.get("$requestUrl?start=$firstDayOFWeekString&days=7&fields=$fields")
 
             if (response.containsKey("response") && response["response"] != null) {
                 val responseString: String = response["response"]!!
@@ -66,7 +66,7 @@ class SchedulePageModel {
     public suspend fun getSingleDaySchedule(date: LocalDate = LocalDate.now()): Schedule {
         return withContext(Dispatchers.IO) {
             val dayString: String = getFormattedDateString(date)
-            val response: Map<String, String> = OAuthSingleton.get("$baseUrl?start=$dayString&days=1&fields=$fields")
+            val response: Map<String, String> = OAuthSingleton.get("$requestUrl?start=$dayString&days=1&fields=$fields")
 
             if (response.containsKey("response") && response["response"] != null) {
                 val responseString: String = response["response"]!!
