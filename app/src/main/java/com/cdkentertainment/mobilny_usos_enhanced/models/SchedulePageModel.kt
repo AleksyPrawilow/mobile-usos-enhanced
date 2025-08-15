@@ -29,9 +29,9 @@ class SchedulePageModel {
         return date.format(formatter)
     }
 
-    private fun getFirstDayOfWeekDate(fromDate: LocalDate = LocalDate.now()): String {
-        val firstDayOfWeek = fromDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
-        return getFormattedDateString(firstDayOfWeek)
+    private fun getDayOfWeekDate(fromDate: LocalDate = LocalDate.now(), first: Boolean = true): String {
+        val dayOfWeek = if (first) fromDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)) else fromDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
+        return getFormattedDateString(dayOfWeek)
     }
 
     private fun parseScheduleApiResponse(response: String): Schedule {
@@ -46,12 +46,15 @@ class SchedulePageModel {
 
     public suspend fun getWeekSchedule(date: LocalDate = LocalDate.now()): Schedule {
         return withContext(Dispatchers.IO) {
-            val firstDayOFWeekString = getFirstDayOfWeekDate(date)
+            val firstDayOFWeekString = getDayOfWeekDate(date, true)
+            val lastDayOfWeekString = getDayOfWeekDate(date, false)
             val response: Map<String, String> = OAuthSingleton.get("$requestUrl?start=$firstDayOFWeekString&days=7&fields=$fields")
 
             if (response.containsKey("response") && response["response"] != null) {
                 val responseString: String = response["response"]!!
                 val parsedSchedule: Schedule = parseScheduleApiResponse(responseString)
+                parsedSchedule.startDay = firstDayOFWeekString
+                parsedSchedule.endDay = lastDayOfWeekString
 
                 return@withContext parsedSchedule
             } else {
@@ -77,9 +80,10 @@ class SchedulePageModel {
     }
 }
 
-@Serializable
 data class Schedule (
-    val lessons: Map<Int, List<Lesson>>
+    val lessons: Map<Int, List<Lesson>>,
+    var startDay: String? = null,
+    var endDay: String? = null
 )
 
 @Serializable

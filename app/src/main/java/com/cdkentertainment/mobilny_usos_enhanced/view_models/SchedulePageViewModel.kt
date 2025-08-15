@@ -12,6 +12,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 fun main(): Unit = runBlocking {
     OAuthSingleton.setTestAccessToken()
@@ -22,8 +25,38 @@ fun main(): Unit = runBlocking {
 }
 
 class SchedulePageViewModel: ViewModel() {
+    private val timeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+    var selectedDay: Int by mutableStateOf(0)
+        private set
+    var selectedWeekOption: Int by mutableStateOf(0)
+        private set
+    var displayDateSelector: Boolean by mutableStateOf(false)
+        private set
     var schedule: Schedule? by mutableStateOf(null)
-    val model: SchedulePageModel = SchedulePageModel()
+        private set
+    private val model: SchedulePageModel = SchedulePageModel()
+
+    fun selectWeekOption(weekOptionIndex: Int) {
+        selectedWeekOption = weekOptionIndex
+    }
+
+    fun selectDay(dayIndex: Int) {
+        selectedDay = dayIndex
+    }
+
+    fun setDateSelectorVisibility(visible: Boolean) {
+        displayDateSelector = visible
+    }
+
+    fun resetSchedule() {
+        schedule = null
+    }
+
+    fun getTimeFromDate(date: String): String {
+        val localDateTime = LocalDateTime.parse(date, timeFormatter)
+        val localTime: LocalTime = localDateTime.toLocalTime()
+        return localTime.toString()
+    }
 
     suspend fun fetchTodaysActivities() {
         withContext(Dispatchers.IO) {
