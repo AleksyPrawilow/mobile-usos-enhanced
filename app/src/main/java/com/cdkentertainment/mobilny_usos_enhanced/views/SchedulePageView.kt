@@ -17,22 +17,14 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -42,8 +34,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush.Companion.verticalGradient
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
@@ -51,7 +41,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
-import com.cdkentertainment.mobilny_usos_enhanced.models.Schedule
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.SchedulePageViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.Screens
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.VisibleItemsViewModel
@@ -77,140 +66,91 @@ fun SharedTransitionScope.SchedulePageView(
     val slideTweenSpec: (Int, Int, Easing) -> TweenSpec<IntOffset> = { duration, delay, easing -> TweenSpec<IntOffset>(durationMillis = duration, delay = delay, easing = easing) }
     val enterTrans: (TweenSpec<Float>, TweenSpec<IntOffset>) -> EnterTransition = { fadeSpec, slideSpec -> fadeIn(fadeSpec) + slideInHorizontally(slideSpec) }
     val exitTrans: (TweenSpec<Float>, TweenSpec<IntOffset>) -> ExitTransition = { fadeSpec, slideSpec -> fadeOut(fadeSpec) + slideOutHorizontally(slideSpec) }
-    val daysOfWeek: List<String> = listOf("pn", "wt", "śr", "cz", "pt")
 
     LaunchedEffect(Unit) {
+        delay(50)
+        visibleItemsViewModel.setVisibleState(visibleIndex, true)
         if (schedulePageViewModel.schedule == null) {
             schedulePageViewModel.fetchWeekData(LocalDate.of(2025, 5, 13))
         }
-        delay(50)
-        visibleItemsViewModel.setVisibleState(visibleIndex, true)
     }
-
-    if (schedulePageViewModel.schedule == null) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
         }
-    } else {
-        val schedule: Schedule = schedulePageViewModel.schedule!!
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
-        ) {
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
+        item {
+            AnimatedVisibility(
+                visible = isVisible[visibleIndex],
+                enter = enterTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay), easingForShows), slideTweenSpec(slideDuration, delayBetweenShows, easingForShows)),
+                exit = exitTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay), easingForShows), slideTweenSpec(slideDuration, delayBetweenShows, easingForShows))
+            ) {
+                Text(
+                    text = "Rozkład zajęć",
+                    style = MaterialTheme.typography.headlineLarge,
+                    color = UISingleton.color4.primaryColor,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
             }
+        }
+        stickyHeader {
+            AnimatedVisibility(
+                visible = isVisible[visibleIndex],
+                enter = enterTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * 2, easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * 2, easingForShows)),
+                exit = exitTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * 2, easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * 2, easingForShows))
+            ) {
+                ScheduleDaySelectorView(schedulePageViewModel)
+            }
+        }
+//            item {
+//                AnimatedVisibility(
+//                    visible = isVisible[visibleIndex],
+//                    enter = enterTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * 2, easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * 2, easingForShows)),
+//                    exit = exitTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * 2, easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * 2, easingForShows))
+//                ) {
+//                    Card(
+//                        colors = CardColors(
+//                            contentColor = UISingleton.color4.primaryColor,
+//                            containerColor = UISingleton.color3.primaryColor,
+//                            disabledContainerColor = UISingleton.color3.primaryColor,
+//                            disabledContentColor = UISingleton.color4.primaryColor
+//                        ),
+//                        shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius),
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .border(5.dp, UISingleton.color4.primaryColor, RoundedCornerShape(UISingleton.uiElementsCornerRadius))
+//                    ) {
+//                        Text(
+//                            text = "${(schedulePageViewModel.schedule?.startDay?.replace("-", ".") ?: "N/A")} - ${(schedulePageViewModel.schedule?.endDay?.replace("-", ".") ?: "N/A")}",
+//                            style = MaterialTheme.typography.titleLarge,
+//                            color = UISingleton.color1.primaryColor,
+//                            modifier = Modifier
+//                                .padding(12.dp)
+//                        )
+//                    }
+//                }
+//            }
+        if (schedulePageViewModel.schedule == null) {
             item {
-                AnimatedVisibility(
-                    visible = isVisible[visibleIndex],
-                    enter = enterTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay), easingForShows), slideTweenSpec(slideDuration, delayBetweenShows, easingForShows)),
-                    exit = exitTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay), easingForShows), slideTweenSpec(slideDuration, delayBetweenShows, easingForShows))
-                ) {
-                    Text(
-                        text = "Rozkład zajęć",
-                        style = MaterialTheme.typography.headlineLarge,
-                        color = UISingleton.color4.primaryColor,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .fillMaxWidth()
+                Box(modifier = Modifier.fillMaxSize()) {
+                    CircularProgressIndicator(color = UISingleton.color3.primaryColor, modifier = Modifier.align(Alignment.Center))
+                }
+            }
+        } else {
+            if (schedulePageViewModel.schedule!!.lessons.containsKey(schedulePageViewModel.selectedDay)) {
+                items(schedulePageViewModel.schedule!!.lessons[schedulePageViewModel.selectedDay]!!.size, key = { it }) { activityIndex ->
+                    ActivityView(
+                        schedulePageViewModel = schedulePageViewModel,
+                        activity = schedulePageViewModel.schedule!!.lessons[schedulePageViewModel.selectedDay]!![activityIndex],
+                        modifier = Modifier.animateItem()
                     )
                 }
-            }
-            stickyHeader {
-                AnimatedVisibility(
-                    visible = isVisible[visibleIndex],
-                    enter = enterTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * 2, easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * 2, easingForShows)),
-                    exit = exitTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * 2, easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * 2, easingForShows))
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .shadow(5.dp, RoundedCornerShape(UISingleton.uiElementsCornerRadius))
-                            .background(
-                                brush = verticalGradient(
-                                    0.0f to UISingleton.color2.primaryColor,
-                                    0.5f to UISingleton.color2.primaryColor,
-                                    0.5f to UISingleton.color2.oppositeColor
-                                ),
-                                shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius))
-                    ) {
-                        Column(
-                            verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(12.dp)
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
-                                modifier = Modifier
-                                    .fillMaxHeight()
-                                    .horizontalScroll(rememberScrollState())
-                            ) {
-                                Button(
-                                    colors = ButtonDefaults.buttonColors(
-                                        contentColor = UISingleton.color4.primaryColor,
-                                        containerColor = UISingleton.color1.primaryColor
-                                    ),
-                                    onClick = {
-
-                                    }
-                                ) {
-                                    Text(
-                                        text = "Aktualny tydzień",
-                                        style = MaterialTheme.typography.titleLarge
-                                    )
-                                }
-                                Button(
-                                    colors = ButtonDefaults.buttonColors(
-                                        contentColor = UISingleton.color4.primaryColor,
-                                        containerColor = UISingleton.color1.primaryColor
-                                    ),
-                                    onClick = {
-
-                                    }
-                                ) {
-                                    Text(
-                                        text = "Inny tydzień",
-                                        style = MaterialTheme.typography.titleLarge
-                                    )
-                                }
-                            }
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
-                                modifier = Modifier
-                                    .fillMaxHeight()
-                                    .horizontalScroll(rememberScrollState())
-                            ) {
-                                for (dayIndex in 0 until daysOfWeek.size) {
-                                    Button(
-                                        colors = ButtonDefaults.buttonColors(
-                                            contentColor = UISingleton.color4.oppositeColor,
-                                            containerColor = UISingleton.color1.oppositeColor
-                                        ),
-                                        onClick = {
-
-                                        }
-                                    ) {
-                                        Text(
-                                            text = daysOfWeek[dayIndex],
-                                            style = MaterialTheme.typography.titleLarge
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            items(schedule.lessons[0]!!.size) { activity ->
-                Text(
-                    text = schedule.lessons[0]!![activity].course_name.pl
-                )
             }
         }
     }

@@ -83,7 +83,7 @@ fun SharedTransitionScope.GradesPageView(
 
     if (gradesPageViewModel.userGrades == null) {
         Box(modifier = Modifier.fillMaxSize()) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            CircularProgressIndicator(color = UISingleton.color3.primaryColor, modifier = Modifier.align(Alignment.Center))
         }
     } else {
         LazyColumn(
