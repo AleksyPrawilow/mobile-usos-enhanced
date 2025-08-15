@@ -8,7 +8,7 @@ import kotlinx.serialization.json.Json
 
 class LessonGroupPageModel {
     private val parser = Json {ignoreUnknownKeys = true}
-    private val fields = "course_id|course_name|lecturers|group_number|course_unit_id"
+    private val fields = "course_id|course_name|lecturers|group_number|course_unit_id|class_type_id"
     private val requestUrl = "groups/user"
     private val participantUrl = "groups/group"
     private val participantField = "participants"
@@ -61,7 +61,8 @@ data class LessonGroup (
     val course_unit_id: Int,
     val group_number: Int,
     val course_name: LangDict,
-    val lecturers: List<Human>
+    val lecturers: List<Human>,
+    val class_type_id: String
 )
 
 @Serializable

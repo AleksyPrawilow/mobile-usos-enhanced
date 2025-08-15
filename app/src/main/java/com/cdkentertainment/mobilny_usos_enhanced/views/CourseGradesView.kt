@@ -57,7 +57,7 @@ fun CourseGradesView(
             Text(
                 text = nameMap[data.userGrades.course_units_grades.keys.first()]?.course_name ?: "N/A",
                 color = UISingleton.color4.primaryColor,
-                style = MaterialTheme.typography.headlineSmall
+                style = MaterialTheme.typography.titleLarge
             )
             HorizontalDivider(
                 thickness = 5.dp,
