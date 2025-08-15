@@ -8,5 +8,7 @@ fun main(): Unit = runBlocking {
     OAuthSingleton.setTestAccessToken()
     val model = LessonGroupPageModel()
     val lessonGroups = model.getLessonGroups()
+    val participants = model.getParticipantOfGivenGroup("13", "461821") //do argumentów trzeba przekonwertować numer grupy i unitid z int na string
     println(lessonGroups)
+    println(participants)
 }
