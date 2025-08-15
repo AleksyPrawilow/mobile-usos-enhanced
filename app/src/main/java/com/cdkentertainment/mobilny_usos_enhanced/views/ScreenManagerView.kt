@@ -62,7 +62,7 @@ fun ScreenManager(
                     visibleItemsViewModel = visibleItemsViewModel,
                     visibleIndex = 4
                 )
-                Screens.GROUPS -> HomePageView(
+                Screens.GROUPS -> ClassGroupsPageView(
                     sharedTransitionScope = sharedContentState,
                     animatedVisibilityScope = animatedVisibilityScope,
                     visibleItemsViewModel = visibleItemsViewModel,

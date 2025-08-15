@@ -44,7 +44,7 @@ fun GradeAverageView(gradeAverage: Float?) {
             Text(
                 text = "Bieżąca średnia:",
                 color = UISingleton.color1.primaryColor,
-                style = MaterialTheme.typography.headlineSmall
+                style = MaterialTheme.typography.titleLarge
             )
             Spacer(modifier = Modifier.weight(1f))
             Card(
