@@ -89,7 +89,7 @@ fun SharedTransitionScope.LoginPageView(
                     style = MaterialTheme.typography.titleLarge,
                     color = UISingleton.color3.primaryColor
                 )
-                CircularProgressIndicator()
+                CircularProgressIndicator(color = UISingleton.color3.primaryColor)
             }
         }
         AnimatedVisibility(oAuthViewModel.authorized) {

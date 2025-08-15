@@ -1,6 +1,7 @@
 package com.cdkentertainment.mobilny_usos_enhanced
 
 import android.content.Context
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -14,12 +15,31 @@ val Context.dataStore by preferencesDataStore("user_settings")
 object UserDataSingleton {
     private val ACCESS_TOKEN_KEY = stringPreferencesKey("access_token_key")
     private val ACCESS_TOKEN_SECRET = stringPreferencesKey("access_token_secret")
+    private val DARK_THEME = booleanPreferencesKey("DARK_THEME")
+
+    var currentSettings: SettingsObject = SettingsObject()
 
     suspend fun saveUserCredentials(context: Context, accessToken: OAuth1AccessToken) {
         context.dataStore.edit { settings ->
             settings[ACCESS_TOKEN_KEY] = accessToken.token
             settings[ACCESS_TOKEN_SECRET] = accessToken.tokenSecret
         }
+    }
+
+    suspend fun saveUserSettings(context: Context) {
+        println("Saving user settings...")
+        context.dataStore.edit { settings ->
+            settings[DARK_THEME] = currentSettings.darkTheme
+        }
+    }
+
+    suspend fun readSettings(context: Context) {
+        println("Reading user settings...")
+        val darkTheme = context.dataStore.data
+            .map { prefs -> prefs[DARK_THEME] ?: false }
+            .first()
+        UISingleton.changeTheme(darkTheme)
+        currentSettings = SettingsObject(darkTheme = darkTheme)
     }
 
     fun readAccessTokenKey(context: Context): Flow<String> {
@@ -41,3 +61,7 @@ object UserDataSingleton {
         return null
     }
 }
+
+data class SettingsObject(
+    var darkTheme: Boolean = false
+)

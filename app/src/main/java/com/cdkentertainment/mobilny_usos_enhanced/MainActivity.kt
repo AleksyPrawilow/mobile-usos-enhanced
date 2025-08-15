@@ -1,22 +1,31 @@
 package com.cdkentertainment.mobilny_usos_enhanced
 
+import android.graphics.Color.TRANSPARENT
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeight
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -32,6 +41,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val context = LocalContext.current
+            LaunchedEffect(Unit) {
+                UserDataSingleton.readSettings(context)
+            }
             MobilnyUSOSEnhancedTheme {
                 ContentView()
             }
@@ -66,14 +79,34 @@ fun ContentView() {
             stiffness = 100f
         )
     )
+    val bgOverlayColor: Color by animateColorAsState(targetValue = if (fabViewModel.expanded) Color(0x32000000) else Color(TRANSPARENT))
+
+    val color1: Color by animateColorAsState(UISingleton.color1.primaryColor)
+    val color2: Color by animateColorAsState(UISingleton.color2.primaryColor)
+    val color3: Color by animateColorAsState(UISingleton.color3.primaryColor)
+    val color4: Color by animateColorAsState(UISingleton.color4.primaryColor)
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = UISingleton.color1.primaryColor)
+            .background(color = color1)
             .padding(12.dp)
     ) {
         ScreenManager(screenManagerViewModel.selectedScreen, screenManagerViewModel, visibleItemsViewModel)
+        if (fabViewModel.expanded) {
+            Box(
+                modifier = Modifier
+                    //TODO: What even is this kind of logic?? Extremelly hacky and needs to be fixed
+                    .requiredWidth(LocalConfiguration.current.screenWidthDp.dp + 32.dp)
+                    .requiredHeight(LocalConfiguration.current.screenHeightDp.dp + 128.dp)
+                    .background(bgOverlayColor)
+                    .clickable(
+                        onClick = {
+                            fabViewModel.changeExpanded(false)
+                        }
+                    )
+            )
+        }
         FloatingButtonView(
             fabViewModel = viewModel<FloatingButtonViewModel>(),
             screenManagerViewModel = viewModel<ScreenManagerViewModel>(),
@@ -93,5 +126,6 @@ fun ContentView() {
 @Preview(showBackground = true)
 @Composable
 fun ContentViewPreview() {
+    OAuthSingleton.setTestAccessToken()
     ContentView()
 }

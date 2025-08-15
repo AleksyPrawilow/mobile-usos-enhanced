@@ -21,16 +21,44 @@ object UISingleton {
     var color4: ColorObject by mutableStateOf(ColorObject(Color(0xFF1B3C53), Color(0xFFF9F3EF)))
         private set
 
+    private val lightTheme: Theme = Theme(
+        color1 = ColorObject(Color(0xFFF9F3EF), Color(0xFF1B3C53)),
+        color2 = ColorObject(Color(0xFFD2C1B6), Color(0xFF456882)),
+        color3 = ColorObject(Color(0xFF456882), Color(0xFFD2C1B6)),
+        color4 = ColorObject(Color(0xFF1B3C53), Color(0xFFF9F3EF))
+    )
+    private val darkTheme: Theme = Theme(
+        color1 = ColorObject(Color(0xFF1B3C53), Color(0xFFF9F3EF)),
+        color2 = ColorObject(Color(0xFF456882), Color(0xFFD2C1B6)),
+        color3 = ColorObject(Color(0xFFD2C1B6), Color(0xFF456882)),
+        color4 = ColorObject(Color(0xFFF9F3EF), Color(0xFF1B3C53))
+    )
+
     val uiElementsCornerRadius: Int = 24
 
-    fun changeTheme() {
-        color1 = color1.swapCopy()
-        color2 = color2.swapCopy()
-        color3 = color3.swapCopy()
-        color4 = color4.swapCopy()
+    fun changeTheme(dark: Boolean) {
+        if (dark) {
+            color1 = darkTheme.color1
+            color2 = darkTheme.color2
+            color3 = darkTheme.color3
+            color4 = darkTheme.color4
+        } else {
+            color1 = lightTheme.color1
+            color2 = lightTheme.color2
+            color3 = lightTheme.color3
+            color4 = lightTheme.color4
+        }
     }
 }
 
-data class ColorObject(val primaryColor: Color, val oppositeColor: Color) {
-    fun swapCopy() = ColorObject(oppositeColor, primaryColor)
-}
+data class Theme(
+    val color1: ColorObject,
+    val color2: ColorObject,
+    val color3: ColorObject,
+    val color4: ColorObject
+)
+
+data class ColorObject(
+    val primaryColor: Color,
+    val oppositeColor: Color
+)
