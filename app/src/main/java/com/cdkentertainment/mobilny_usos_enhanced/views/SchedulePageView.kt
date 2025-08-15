@@ -153,6 +153,9 @@ fun SharedTransitionScope.SchedulePageView(
                 }
             }
         }
+        item {
+            Spacer(modifier = Modifier.height(64.dp))
+        }
     }
 }
 
