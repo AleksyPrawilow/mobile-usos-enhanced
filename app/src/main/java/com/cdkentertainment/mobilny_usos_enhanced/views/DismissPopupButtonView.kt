@@ -37,7 +37,7 @@ fun DismissPopupButtonView(
             .size(48.dp)
             .shadow(5.dp, shape = RoundedCornerShape(topStart = 0.dp, topEnd = UISingleton.uiElementsCornerRadius.dp, bottomStart = UISingleton.uiElementsCornerRadius.dp, bottomEnd = 0.dp))
             .clickable(onClick = onDismissRequest)
-            .background(iconBackgroundBrush)
+            .background(UISingleton.color1.primaryColor)
             .then(modifier)
     )
 }

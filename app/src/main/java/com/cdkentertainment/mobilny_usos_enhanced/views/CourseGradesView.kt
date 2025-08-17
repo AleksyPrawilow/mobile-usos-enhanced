@@ -107,7 +107,7 @@ fun CourseGradesView(
                         ) {
                             Text(
                                 text = if (condition) data.userGrades.course_units_grades[courseUnit]!![0]["1"]!!.value_symbol else "-",
-                                color = UISingleton.color3.primaryColor,
+                                color = UISingleton.color4.primaryColor,
                                 fontSize = 24.sp,
                                 fontWeight = FontWeight.ExtraBold,
                                 modifier = Modifier

@@ -74,7 +74,7 @@ fun ScreenManager(
                     visibleItemsViewModel = visibleItemsViewModel,
                     visibleIndex = 6
                 )
-                Screens.ATTENDANCE -> HomePageView(
+                Screens.ATTENDANCE -> AttendancePageView(
                     sharedTransitionScope = sharedContentState,
                     animatedVisibilityScope = animatedVisibilityScope,
                     visibleItemsViewModel = visibleItemsViewModel,

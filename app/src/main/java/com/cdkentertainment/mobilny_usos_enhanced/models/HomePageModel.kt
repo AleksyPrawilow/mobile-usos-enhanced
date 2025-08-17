@@ -15,7 +15,7 @@ class HomePageModel {
             var studentProgramData: List<StudentProgramData>
 
             var response: Map<String, String> =
-                OAuthSingleton.get("users/user?fields=first_name|last_name|sex|email|photo_urls[100x100]|mobile_numbers")
+                OAuthSingleton.get("users/user?fields=id|first_name|last_name|sex|email|photo_urls[100x100]|mobile_numbers")
             if (response.containsKey("response") && response["response"] != null) {
                 val responseString: String = response["response"]!!
                 basicUserData = parser.decodeFromString<BasicUserData>(responseString)
@@ -43,6 +43,7 @@ data class UserInfoClass(
 
 @Serializable
 data class BasicUserData(
+    val id: String,
     val first_name: String,
     val last_name: String,
     val sex: String,
