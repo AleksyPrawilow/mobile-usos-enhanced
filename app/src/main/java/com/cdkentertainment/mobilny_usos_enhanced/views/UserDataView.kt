@@ -25,7 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,7 +44,7 @@ import com.cdkentertainment.mobilny_usos_enhanced.view_models.HomePageViewModel
 
 @Composable
 fun UserDataView(homePageViewModel: HomePageViewModel) {
-    var expanded: Boolean by remember { mutableStateOf(false) }
+    var expanded: Boolean by rememberSaveable { mutableStateOf(false) }
     val paddingSize: Int = 12
     val context: Context = LocalContext.current
     val profilePicture: Painter? = if (homePageViewModel.userInfo != null) rememberAsyncImagePainter(

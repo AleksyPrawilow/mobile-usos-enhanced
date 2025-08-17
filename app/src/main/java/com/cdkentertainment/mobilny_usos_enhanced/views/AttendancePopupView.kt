@@ -19,7 +19,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,25 +28,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
-import com.cdkentertainment.mobilny_usos_enhanced.models.LessonGroup
-import com.cdkentertainment.mobilny_usos_enhanced.view_models.LessonGroupPageViewModel
+import com.cdkentertainment.mobilny_usos_enhanced.view_models.AttendancePageViewModel
 
 @Composable
-fun ClassGroupPopupView(
-    data: LessonGroup,
-    viewModel: LessonGroupPageViewModel,
-    groupKey: String,
+fun AttendancePopupView(
+    viewModel: AttendancePageViewModel,
     onDismissRequest: () -> Unit
 ) {
     Dialog(
         onDismissRequest = onDismissRequest,
         properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true)
     ) {
-        LaunchedEffect(Unit) {
-            if (viewModel.groupDetails[groupKey]?.participants == null) {
-                viewModel.groupDetails[groupKey]?.participants = viewModel.fetchParticipants(data.group_number.toString(), data.course_unit_id.toString())
-            }
-        }
         Box(
             contentAlignment = Alignment.TopCenter,
             modifier = Modifier
@@ -64,7 +55,7 @@ fun ClassGroupPopupView(
                 }
                 item {
                     Text(
-                        text = "${data.course_name.pl} - ${data.class_type_id}",
+                        text = "${viewModel.popupData?.classGroupData?.course_name?.pl ?: "N/A"} - ${viewModel.popupData?.classGroupData?.class_type_id ?: "N/A"}",
                         style = MaterialTheme.typography.headlineMedium,
                         color = UISingleton.color4.primaryColor,
                         textAlign = TextAlign.Center,
@@ -75,7 +66,7 @@ fun ClassGroupPopupView(
                 }
                 item {
                     Text(
-                        text = "Grupa ${data.group_number}",
+                        text = "Grupa ${viewModel.popupData?.classGroupData?.group_number ?: "N/A"}",
                         style = MaterialTheme.typography.headlineSmall,
                         color = UISingleton.color3.primaryColor,
                         textAlign = TextAlign.Center,
@@ -104,7 +95,7 @@ fun ClassGroupPopupView(
                                 .fillMaxWidth()
                         ) {
                             Text(
-                                text = "Prowadzący",
+                                text = "Obecność",
                                 color = UISingleton.color4.primaryColor,
                                 style = MaterialTheme.typography.titleLarge
                             )
@@ -114,32 +105,15 @@ fun ClassGroupPopupView(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
                             )
-                            for (lecturer in 0 until data.lecturers.size) {
-                                Row(
-                                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .background(
-                                            UISingleton.color2.primaryColor,
-                                            RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp)
-                                        )
-                                        .padding(12.dp)
-                                ) {
-                                    Text(
-                                        text = "${lecturer + 1}. ${data.lecturers[lecturer].first_name} ${data.lecturers[lecturer].last_name}",
-                                        color = UISingleton.color4.primaryColor,
-                                        style = MaterialTheme.typography.titleLarge,
-                                    )
-                                }
-                            }
+                            AttendanceStatCardView("Frekwencja", "100%")
+                            AttendanceStatCardView("Nieuspr. nieobecności", "0")
                         }
                     }
                 }
-                if (viewModel.groupDetails[groupKey]?.participants != null) {
+                if (true) {
                     item {
                         Text(
-                            text = "Uczestnicy",
+                            text = "Spotkania",
                             color = UISingleton.color4.primaryColor,
                             style = MaterialTheme.typography.titleLarge,
                             modifier = Modifier
@@ -171,12 +145,11 @@ fun ClassGroupPopupView(
                         )
                     }
 
-                    items(viewModel.groupDetails[groupKey]?.participants!!.participants.size, key = { index -> viewModel.groupDetails[groupKey]!!.participants!!.participants[index].id }) { index ->
-                        GroupParticipantCardView(
+                    items(5, key = { it }) { index ->
+                        AttendanceDateCardView(
                             index = index,
-                            participant = viewModel.groupDetails[groupKey]!!.participants!!.participants[index],
+                            date = "12 Października 2025",
                             viewModel = viewModel,
-                            groupKey = groupKey,
                             modifier = Modifier.animateItem()
                         )
                     }

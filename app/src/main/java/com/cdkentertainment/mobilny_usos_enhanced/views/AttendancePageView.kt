@@ -1,5 +1,6 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
+import android.content.Context
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
@@ -39,6 +40,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
@@ -47,20 +49,23 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.models.LessonGroup
-import com.cdkentertainment.mobilny_usos_enhanced.view_models.LessonGroupPageViewModel
+import com.cdkentertainment.mobilny_usos_enhanced.view_models.AttendancePageViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.Screens
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.VisibleItemsViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalFoundationApi::class)
 @Composable
-fun SharedTransitionScope.ClassGroupsPageView(
+fun SharedTransitionScope.AttendancePageView(
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
     visibleItemsViewModel: VisibleItemsViewModel = viewModel<VisibleItemsViewModel>(),
-    visibleIndex: Int = 5
+    visibleIndex: Int = 7
 ) {
-    val groupsPageViewModel: LessonGroupPageViewModel = viewModel<LessonGroupPageViewModel>()
+    val attendancePageViewModel: AttendancePageViewModel = viewModel<AttendancePageViewModel>()
     val isVisible: List<Boolean> by visibleItemsViewModel.visibleStates.collectAsState()
     val delayBetweenShows: Int = 150
     val fadeDelay: Int = 50
@@ -72,13 +77,24 @@ fun SharedTransitionScope.ClassGroupsPageView(
     val enterTrans: (TweenSpec<Float>, TweenSpec<IntOffset>) -> EnterTransition = { fadeSpec, slideSpec -> fadeIn(fadeSpec) + slideInHorizontally(slideSpec) }
     val exitTrans: (TweenSpec<Float>, TweenSpec<IntOffset>) -> ExitTransition = { fadeSpec, slideSpec -> fadeOut(fadeSpec) + slideOutHorizontally(slideSpec) }
 
+    val context: Context = LocalContext.current
+    val onPopupDismissRequest: () -> Unit = {
+        CoroutineScope(Dispatchers.IO).launch {
+            attendancePageViewModel.dismissPopup(context)
+        }
+    }
+
     LaunchedEffect(Unit) {
-        groupsPageViewModel.fetchLessonGroups()
+        attendancePageViewModel.fetchLessonGroups()
         delay(50)
         visibleItemsViewModel.setVisibleState(visibleIndex, true)
     }
 
-    if (groupsPageViewModel.lessonGroups == null) {
+    if (attendancePageViewModel.showPopup) {
+        AttendancePopupView(viewModel = attendancePageViewModel, onDismissRequest = onPopupDismissRequest)
+    }
+
+    if (attendancePageViewModel.lessonGroups == null) {
         Box(modifier = Modifier.fillMaxSize()) {
             CircularProgressIndicator(color = UISingleton.color3.primaryColor, modifier = Modifier.align(Alignment.Center))
         }
@@ -99,7 +115,7 @@ fun SharedTransitionScope.ClassGroupsPageView(
                     exit = exitTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay), easingForShows), slideTweenSpec(slideDuration, delayBetweenShows, easingForShows))
                 ) {
                     Text(
-                        text = "Grupy zajęciowe",
+                        text = "Obecność",
                         style = MaterialTheme.typography.headlineLarge,
                         color = UISingleton.color4.primaryColor,
                         textAlign = TextAlign.Center,
@@ -108,8 +124,8 @@ fun SharedTransitionScope.ClassGroupsPageView(
                     )
                 }
             }
-            for (seasonId in groupsPageViewModel.lessonGroups!!.groups.keys) {
-                val season: List<LessonGroup>? = groupsPageViewModel.lessonGroups!!.groups[seasonId]
+            for (seasonId in attendancePageViewModel.lessonGroups!!.groups.keys) {
+                val season: List<LessonGroup>? = attendancePageViewModel.lessonGroups!!.groups[seasonId]
                 val groupCount: Int = season?.size ?: 0
                 stickyHeader {
                     AnimatedVisibility(
@@ -148,7 +164,7 @@ fun SharedTransitionScope.ClassGroupsPageView(
                             enter = enterTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * (3 + groupIndex), easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * (3 + groupIndex), easingForShows)),
                             exit = exitTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * (3 + groupIndex), easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * (3 + groupIndex), easingForShows))
                         ) {
-                            ClassGroupView(group, groupsPageViewModel)
+                            AttendanceClassGroupView(data = group, viewModel = attendancePageViewModel)
                         }
                     }
                 } else {
@@ -186,7 +202,7 @@ fun SharedTransitionScope.ClassGroupsPageView(
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Preview(showBackground = true)
 @Composable
-fun ClassGroupsPagePreview() {
+fun AttendancePagePreview() {
     OAuthSingleton.setTestAccessToken()
     val currentScreen: Screens = Screens.GROUPS
     Box(
@@ -198,7 +214,7 @@ fun ClassGroupsPagePreview() {
         SharedTransitionLayout {
             AnimatedContent(targetState = currentScreen) { target ->
                 if (currentScreen == target) {
-                    ClassGroupsPageView(this@SharedTransitionLayout, this@AnimatedContent)
+                    AttendancePageView(this@SharedTransitionLayout, this@AnimatedContent)
                 }
             }
         }
