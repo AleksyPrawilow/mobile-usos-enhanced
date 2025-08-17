@@ -16,8 +16,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -144,17 +142,7 @@ fun FloatingButtonView(
             .shadow(5.dp, CircleShape)
             .border(5.dp, color4, CircleShape)
     ) {
-        Icon(
-            imageVector = Icons.Rounded.Menu,
-            contentDescription = "More",
-            tint = color4,
-            modifier = Modifier
-                .graphicsLayer(
-                    rotationY = iconYRotation,
-                    rotationZ = iconRotation
-                )
-                .size((subButtonSize * 0.75).dp)
-        )
+        FloatingButtonIconView(fabViewModel, color4)
     } // FAB
 }
 
