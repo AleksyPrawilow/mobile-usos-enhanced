@@ -5,27 +5,23 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
-import com.cdkentertainment.mobilny_usos_enhanced.models.AttendancePageModel
 import com.cdkentertainment.mobilny_usos_enhanced.models.HomePageModel
 import com.cdkentertainment.mobilny_usos_enhanced.models.LessonGroup
 import com.cdkentertainment.mobilny_usos_enhanced.models.LessonGroupPageModel
 import com.cdkentertainment.mobilny_usos_enhanced.models.SeasonGroups
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 
 //----- Tutaj dałem tymczasowo funkcję do testowania
-fun main(): Unit = runBlocking {
-    OAuthSingleton.setTestAccessToken()
-    launch {
-        val model = AttendancePageModel()
-        val test = model.getGivenSubjectAttendanceDates("461823", "111")
-        println(test)
-    }
-}
+//fun main(): Unit = runBlocking {
+//    OAuthSingleton.setTestAccessToken()
+//    launch {
+//        val model = AttendancePageModel()
+//        val test = model.getGivenSubjectAttendanceDates("461823", "111")
+//        println(test)
+//    }
+//}
 class AttendancePageViewModel: ViewModel() {
     var lessonGroups: SeasonGroups? by mutableStateOf(null)
         private set
