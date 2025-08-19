@@ -136,6 +136,9 @@ fun SharedTransitionScope.SchedulePageView(
 //                    }
 //                }
 //            }
+//        item {
+//            TimetableView(schedulePageViewModel)
+//        }
         if (schedulePageViewModel.schedule == null) {
             item {
                 Box(modifier = Modifier.fillMaxSize()) {
