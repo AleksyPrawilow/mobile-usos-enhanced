@@ -112,7 +112,7 @@ fun SharedTransitionScope.GradesPageView(
                 }
             }
             if (gradesPageViewModel.userGrades != null) {
-                for (iteration in 0 until gradesPageViewModel.userGrades!!.size) {
+                for (iteration in gradesPageViewModel.userGrades!!.size - 1 downTo  0) {
                     val season: Season = gradesPageViewModel.userGrades!![iteration]
                     val subjectCount: Int = season.courseList.size
                     stickyHeader {
