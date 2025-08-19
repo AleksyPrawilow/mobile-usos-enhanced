@@ -108,7 +108,7 @@ fun SharedTransitionScope.ClassGroupsPageView(
                     )
                 }
             }
-            for (seasonId in groupsPageViewModel.lessonGroups!!.groups.keys) {
+            for (seasonId in groupsPageViewModel.lessonGroups!!.groups.keys.reversed()) {
                 val season: List<LessonGroup>? = groupsPageViewModel.lessonGroups!!.groups[seasonId]
                 val groupCount: Int = season?.size ?: 0
                 stickyHeader {
