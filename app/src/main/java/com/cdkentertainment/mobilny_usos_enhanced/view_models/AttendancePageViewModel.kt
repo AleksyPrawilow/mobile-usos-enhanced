@@ -13,6 +13,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 
+//----- Tutaj dałem tymczasowo funkcję do testowania
+//fun main(): Unit = runBlocking {
+//    OAuthSingleton.setTestAccessToken()
+//    launch {
+//        val model = AttendancePageModel()
+//        val test = model.getGivenSubjectAttendanceDates("461823", "111")
+//        println(test)
+//    }
+//}
 class AttendancePageViewModel: ViewModel() {
     var lessonGroups: SeasonGroups? by mutableStateOf(null)
         private set
