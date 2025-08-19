@@ -33,6 +33,14 @@ class AttendancePageModel {
         return datesList
     }
 
+    public fun filterPastAttendanceDates(dates: List<AttendanceDatesObject>): List<AttendanceDatesObject> {
+        val currentDateTime: LocalDateTime = LocalDateTime.now()
+        val pastDates = dates.filter {
+            it.endDateTime < currentDateTime
+        }
+        return pastDates
+    }
+
     public suspend fun getGivenSubjectAttendanceDates(courseUnitId: String, groupNumber: String): List<AttendanceDatesObject> {
         return withContext(Dispatchers.IO) {
             val response = OAuthSingleton.get("$attendanceUrl?unit_id=$courseUnitId&group_number=$groupNumber&fields=$fields")
