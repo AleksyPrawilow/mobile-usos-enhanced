@@ -3,6 +3,7 @@ package com.cdkentertainment.mobilny_usos_enhanced.views
 import android.graphics.Color.TRANSPARENT
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -25,6 +27,7 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush.Companion.verticalGradient
 import androidx.compose.ui.graphics.Color
@@ -139,26 +142,40 @@ fun ScheduleDaySelectorView(schedulePageViewModel: SchedulePageViewModel) {
             }
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
+                horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
                 modifier = Modifier
                     .fillMaxHeight()
                     .horizontalScroll(rememberScrollState())
             ) {
                 for (dayIndex in 0 until daysOfWeek.size) {
-                    Button(
-                        colors = ButtonDefaults.buttonColors(
-                            contentColor = UISingleton.color4.oppositeColor,
-                            containerColor = if (schedulePageViewModel.selectedDay == dayIndex) UISingleton.color1.oppositeColor else Color(TRANSPARENT)
-                        ),
-                        onClick = {
-                            schedulePageViewModel.selectDay(dayIndex)
-                        }
-                    ) {
-                        Text(
-                            text = daysOfWeek[dayIndex],
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                    }
+                    Text(
+                        text = daysOfWeek[dayIndex],
+                        style = MaterialTheme.typography.titleMedium,
+                        color = UISingleton.color4.oppositeColor,
+                        modifier = Modifier
+                            .background(if (schedulePageViewModel.selectedDay == dayIndex) UISingleton.color1.oppositeColor else Color(TRANSPARENT), CircleShape)
+                            .clip(CircleShape)
+                            .clickable(
+                                onClick = {
+                                    schedulePageViewModel.selectDay(dayIndex)
+                                }
+                            )
+                            .padding(horizontal = 16.dp, 12.dp)
+                    )
+//                    Button(
+//                        colors = ButtonDefaults.buttonColors(
+//                            contentColor = UISingleton.color4.oppositeColor,
+//                            containerColor = if (schedulePageViewModel.selectedDay == dayIndex) UISingleton.color1.oppositeColor else Color(TRANSPARENT)
+//                        ),
+//                        onClick = {
+//                            schedulePageViewModel.selectDay(dayIndex)
+//                        }
+//                    ) {
+//                        Text(
+//                            text = daysOfWeek[dayIndex],
+//                            style = MaterialTheme.typography.titleMedium
+//                        )
+//                    }
                 }
             }
         }
