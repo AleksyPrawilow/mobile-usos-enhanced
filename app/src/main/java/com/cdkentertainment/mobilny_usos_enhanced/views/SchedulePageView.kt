@@ -25,14 +25,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -136,26 +134,26 @@ fun SharedTransitionScope.SchedulePageView(
 //                    }
 //                }
 //            }
-//        item {
-//            TimetableView(schedulePageViewModel)
-//        }
-        if (schedulePageViewModel.schedule == null) {
-            item {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    CircularProgressIndicator(color = UISingleton.color3.primaryColor, modifier = Modifier.align(Alignment.Center))
-                }
-            }
-        } else {
-            if (schedulePageViewModel.schedule!!.lessons.containsKey(schedulePageViewModel.selectedDay)) {
-                items(schedulePageViewModel.schedule!!.lessons[schedulePageViewModel.selectedDay]!!.size, key = { it }) { activityIndex ->
-                    ActivityView(
-                        schedulePageViewModel = schedulePageViewModel,
-                        activity = schedulePageViewModel.schedule!!.lessons[schedulePageViewModel.selectedDay]!![activityIndex],
-                        modifier = Modifier.animateItem()
-                    )
-                }
-            }
+        item {
+            TimetableView(schedulePageViewModel)
         }
+//        if (schedulePageViewModel.schedule == null) {
+//            item {
+//                Box(modifier = Modifier.fillMaxSize()) {
+//                    CircularProgressIndicator(color = UISingleton.color3.primaryColor, modifier = Modifier.align(Alignment.Center))
+//                }
+//            }
+//        } else {
+//            if (schedulePageViewModel.schedule!!.lessons.containsKey(schedulePageViewModel.selectedDay)) {
+//                items(schedulePageViewModel.schedule!!.lessons[schedulePageViewModel.selectedDay]!!.size, key = { it }) { activityIndex ->
+//                    ActivityView(
+//                        schedulePageViewModel = schedulePageViewModel,
+//                        activity = schedulePageViewModel.schedule!!.lessons[schedulePageViewModel.selectedDay]!![activityIndex],
+//                        modifier = Modifier.animateItem()
+//                    )
+//                }
+//            }
+//        }
         item {
             Spacer(modifier = Modifier.height(64.dp))
         }

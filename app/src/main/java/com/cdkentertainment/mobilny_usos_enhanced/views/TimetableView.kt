@@ -1,8 +1,9 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -51,64 +53,79 @@ fun TimetableView(schedulePageViewModel: SchedulePageViewModel? = null) {
     val endHour: Int = 22
     val totalHours: Int = endHour - startHour
     val totalHeight: Dp = hoursDp * totalHours
-    var show: Boolean by rememberSaveable{ mutableStateOf(true) }
+    var show: Boolean by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         delay(150)
         show = true
     }
-    AnimatedVisibility(show, enter = fadeIn() + slideInHorizontally()) {
-        Box(
-            contentAlignment = Alignment.TopStart,
-            modifier = Modifier.fillMaxWidth()
+    Box(
+        contentAlignment = Alignment.TopStart,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(0.dp),
+            modifier = Modifier
+                .height(totalHeight)
         ) {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(0.dp),
-                modifier = Modifier
-                    .height(totalHeight)
-            ) {
-                for (hour in startHour..endHour) {
-                    Row(
-                        modifier = Modifier.height(hoursDp)
+            for (hour in startHour..endHour) {
+                Row(
+                    modifier = Modifier.height(hoursDp)
+                ) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .size(60.dp)
                     ) {
+                        androidx.compose.animation.AnimatedVisibility(
+                            show,
+                            enter = scaleIn(tween(300, delayMillis = 150 * (hour - startHour)))
+                        ) {
                             Text(
                                 text = "$hour:00",
                                 fontSize = 18.sp.scaleIndependent(),
                                 color = UISingleton.color3.primaryColor,
                                 modifier = Modifier
-                                    .align(Alignment.CenterVertically)
+                                    .align(Alignment.Center)
                                     .graphicsLayer(
                                         rotationZ = 0f
                                     )
                                     .width(60.dp)
                             )
+                        }
+                    }
+                    AnimatedVisibility(
+                        visible = show,
+                        enter = expandHorizontally(tween(300, delayMillis = 300 * (hour - startHour)), if ((hour - startHour) % 2 == 0) Alignment.End else Alignment.End),
+                    ) {
                         Box(
                             contentAlignment = Alignment.TopStart
                         ) {
-                            for (quarter in 0..4) {
+                            for (quarter in 0..1) {
                                 HorizontalDivider(
-                                    thickness = if (quarter == 0 || quarter == 4) 2.dp else 1.dp,
+                                    thickness = if (quarter == 0 || quarter == 1) 2.dp else 1.dp,
                                     color = UISingleton.color2.primaryColor,
                                     modifier = Modifier
-                                        .offset(y = minutesDp * quarter)
+                                        .offset(y = minutesDp * quarter * 4)
                                         .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
+                                        .fillMaxWidth()
                                 )
                             }
                         }
                     }
                 }
             }
-            if (schedulePageViewModel?.schedule != null) {
-                if (schedulePageViewModel.schedule!!.lessons.containsKey(schedulePageViewModel.selectedDay)) {
-                    for (activityIndex in 0 until schedulePageViewModel.schedule!!.lessons[schedulePageViewModel.selectedDay]!!.size) {
-                        TestActivityView(
-                            minutesDp,
-                            schedulePageViewModel.schedule!!.lessons[schedulePageViewModel.selectedDay]!![activityIndex],
-                            schedulePageViewModel,
-                            modifier = Modifier
-                                .padding(start = 60.dp)
-                        )
-                    }
+        }
+        if (schedulePageViewModel?.schedule != null) {
+            if (schedulePageViewModel.schedule!!.lessons.containsKey(schedulePageViewModel.selectedDay)) {
+                for (activityIndex in 0 until schedulePageViewModel.schedule!!.lessons[schedulePageViewModel.selectedDay]!!.size) {
+                    TestActivityView(
+                        minutesDp,
+                        schedulePageViewModel.schedule!!.lessons[schedulePageViewModel.selectedDay]!![activityIndex],
+                        schedulePageViewModel,
+                        modifier = Modifier
+                            .padding(start = 60.dp)
+                    )
                 }
             }
         }
@@ -116,7 +133,12 @@ fun TimetableView(schedulePageViewModel: SchedulePageViewModel? = null) {
 }
 
 @Composable
-fun TestActivityView(minutesDp: Dp, data: Lesson?, viewModel: SchedulePageViewModel?,  modifier: Modifier) {
+fun TestActivityView(
+    minutesDp: Dp,
+    data: Lesson?,
+    viewModel: SchedulePageViewModel?,
+    modifier: Modifier
+) {
     val minutesFromStart: Int = 7 * 60
     val startTime: String = viewModel!!.getTimeFromDate(data!!.start_time)
     val (hoursStr, minutesStr) = startTime.split(":")
@@ -196,7 +218,7 @@ fun TestActivityView(minutesDp: Dp, data: Lesson?, viewModel: SchedulePageViewMo
 }
 
 @Composable
-fun TextUnit.scaleIndependent() : TextUnit {
+fun TextUnit.scaleIndependent(): TextUnit {
     return this / LocalDensity.current.fontScale
 }
 
