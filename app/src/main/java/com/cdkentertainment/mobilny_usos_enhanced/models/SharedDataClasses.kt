@@ -2,7 +2,7 @@ package com.cdkentertainment.mobilny_usos_enhanced.models
 
 import kotlinx.serialization.Serializable
 
-public class SharedDataClasses {
+class SharedDataClasses {
     @Serializable
     data class IdAndDescription(
         val id: String,

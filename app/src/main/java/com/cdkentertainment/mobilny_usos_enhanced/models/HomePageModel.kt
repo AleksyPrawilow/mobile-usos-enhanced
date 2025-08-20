@@ -55,11 +55,5 @@ data class BasicUserData(
 @Serializable
 data class StudentProgramData(
     val id: String,
-    val programme: ProgramData
-)
-
-@Serializable
-data class ProgramData(
-    val id: String,
-    val description: Map<String, String>
+    val programme: SharedDataClasses.IdAndDescription
 )
