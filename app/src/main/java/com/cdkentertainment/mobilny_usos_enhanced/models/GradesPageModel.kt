@@ -108,26 +108,19 @@ class GradesPageModel {
         }
     }
 
-    suspend fun fetchClasstypeIds(): Map<String, ClasstypeIdInfo> {
+    suspend fun fetchClasstypeIds(): Map<String, SharedDataClasses.IdAndName> {
         return withContext(Dispatchers.IO) {
             val parser: Json = Json{ignoreUnknownKeys = true}
             val apiResponse: Map<String, String> = OAuthSingleton.get("courses/classtypes_index")
             if (apiResponse.containsKey("response") && apiResponse["response"] != null) {
                 val responseString: String = apiResponse["response"]!!
-                return@withContext parser.decodeFromString<Map<String, ClasstypeIdInfo>>(responseString)
+                return@withContext parser.decodeFromString<Map<String, SharedDataClasses.IdAndName>>(responseString)
             } else {
                 throw(Exception("API Error"))
             }
         }
     }
 }
-
-@Serializable
-data class ClasstypeIdInfo(
-    val id: String,
-    val name: LangDict
-)
-
 
 @Serializable
 data class CourseUnitIds( //it is the final structure for Unit ids and names, Json parser doesn't use it
@@ -163,14 +156,8 @@ data class UserGrades (
 @Serializable
 data class TermGrade (
     val value_symbol: String = "N/A",
-    val value_description: LangDict,
+    val value_description: SharedDataClasses.LangDict,
     val exam_id: Int,
     val exam_session_number: Int,
     val grade_value: Float ? = null
-)
-
-@Serializable
-data class LangDict(
-    val pl: String,
-    val en: String
 )

@@ -91,7 +91,7 @@ data class Lesson(
     val start_time: String,
     val end_time: String,
     val room_number: String,
-    val course_name: LangDict,
+    val course_name: SharedDataClasses.LangDict,
     val classtype_id: String,
-    val building_name: LangDict
+    val building_name: SharedDataClasses.LangDict
 )

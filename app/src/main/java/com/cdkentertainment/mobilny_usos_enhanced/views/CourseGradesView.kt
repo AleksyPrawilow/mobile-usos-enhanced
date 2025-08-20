@@ -26,16 +26,16 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
-import com.cdkentertainment.mobilny_usos_enhanced.models.ClasstypeIdInfo
 import com.cdkentertainment.mobilny_usos_enhanced.models.Course
 import com.cdkentertainment.mobilny_usos_enhanced.models.CourseUnitIds
+import com.cdkentertainment.mobilny_usos_enhanced.models.SharedDataClasses
 
 
 @Composable
 fun CourseGradesView(
     data: Course,
     nameMap: Map<String, CourseUnitIds>,
-    classtypeIdInfo: Map<String, ClasstypeIdInfo>?
+    classtypeIdInfo: Map<String, SharedDataClasses.IdAndName>?
 ) {
     Card(
         colors = CardColors(

@@ -12,13 +12,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
-import com.cdkentertainment.mobilny_usos_enhanced.models.Human
+import com.cdkentertainment.mobilny_usos_enhanced.models.SharedDataClasses
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.LessonGroupPageViewModel
 
 @Composable
 fun GroupParticipantCardView(
     index: Int,
-    participant: Human,
+    participant: SharedDataClasses.Human,
     viewModel: LessonGroupPageViewModel,
     groupKey: String,
     modifier: Modifier = Modifier
