@@ -68,11 +68,9 @@ fun ScreenManager(
                     visibleItemsViewModel = visibleItemsViewModel,
                     visibleIndex = 5
                 )
-                Screens.PAYMENTS -> HomePageView(
+                Screens.PAYMENTS -> PaymentsPageView(
                     sharedTransitionScope = sharedContentState,
-                    animatedVisibilityScope = animatedVisibilityScope,
-                    visibleItemsViewModel = visibleItemsViewModel,
-                    visibleIndex = 6
+                    animatedVisibilityScope = animatedVisibilityScope
                 )
                 Screens.ATTENDANCE -> AttendancePageView(
                     sharedTransitionScope = sharedContentState,
