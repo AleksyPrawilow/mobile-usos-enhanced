@@ -329,6 +329,9 @@ fun SharedTransitionScope.PaymentsPageView(
                 )
             }
         }
+        item {
+            Spacer(modifier = Modifier.height(64.dp))
+        }
     }
 }
 
