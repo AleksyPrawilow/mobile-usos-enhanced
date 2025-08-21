@@ -79,7 +79,7 @@ fun SharedTransitionScope.PaymentsPageView(
 
     LaunchedEffect(Unit) {
         paymentsPageViewModel.fetchPayments()
-        delay(50)
+        delay(150)
         showElements = true
         delay(150)
         showTexts = true
@@ -183,8 +183,8 @@ fun SharedTransitionScope.PaymentsPageView(
                         Text(
                             text = "Nierozliczone płatności",
                             style = MaterialTheme.typography.headlineSmall,
+                            color = UISingleton.color4.primaryColor
                         )
-
                     }
                 }
             }
@@ -236,6 +236,7 @@ fun SharedTransitionScope.PaymentsPageView(
                             Text(
                                 text = "Brak nierozliczonych płatności",
                                 style = MaterialTheme.typography.titleLarge,
+                                color = UISingleton.color4.primaryColor
                             )
                         }
                     }
@@ -254,6 +255,7 @@ fun SharedTransitionScope.PaymentsPageView(
                         Text(
                             text = "Rozliczone płatności",
                             style = MaterialTheme.typography.headlineSmall,
+                            color = UISingleton.color4.primaryColor
                         )
                     }
                 }
@@ -307,6 +309,7 @@ fun SharedTransitionScope.PaymentsPageView(
                             Text(
                                 text = "Brak rozliczonych płatności",
                                 style = MaterialTheme.typography.titleLarge,
+                                color = UISingleton.color4.primaryColor
                             )
                         }
                     }
