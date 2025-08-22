@@ -2,11 +2,7 @@ package com.cdkentertainment.mobilny_usos_enhanced.views
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionLayout
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.EaseOutQuad
 import androidx.compose.animation.core.animateFloatAsState
@@ -48,12 +44,8 @@ import com.cdkentertainment.mobilny_usos_enhanced.view_models.PaymentsPageViewMo
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.Screens
 import kotlinx.coroutines.delay
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun SharedTransitionScope.PaymentsPageView(
-    sharedTransitionScope: SharedTransitionScope,
-    animatedVisibilityScope: AnimatedVisibilityScope
-) {
+fun PaymentsPageView() {
     val enterTransition: (Int) -> EnterTransition = UIHelper.slideEnterTransition
     val paymentsPageViewModel: PaymentsPageViewModel = viewModel<PaymentsPageViewModel>()
     var showElements: Boolean by rememberSaveable { mutableStateOf(false) }
@@ -220,7 +212,6 @@ fun SharedTransitionScope.PaymentsPageView(
     }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Preview(showBackground = true)
 @Composable
 fun PaymentsPagePreview() {
@@ -232,11 +223,9 @@ fun PaymentsPagePreview() {
             .background(UISingleton.color1.primaryColor)
             .padding(12.dp)
     ) {
-        SharedTransitionLayout {
-            AnimatedContent(targetState = currentScreen) { target ->
-                if (currentScreen == target) {
-                    PaymentsPageView(this@SharedTransitionLayout, this@AnimatedContent)
-                }
+        AnimatedContent(targetState = currentScreen) { target ->
+            if (currentScreen == target) {
+                PaymentsPageView()
             }
         }
     }

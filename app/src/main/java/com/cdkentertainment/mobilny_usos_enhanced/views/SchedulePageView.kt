@@ -2,12 +2,8 @@ package com.cdkentertainment.mobilny_usos_enhanced.views
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionLayout
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.EaseInOutBack
 import androidx.compose.animation.core.Easing
 import androidx.compose.animation.core.TweenSpec
@@ -45,11 +41,9 @@ import com.cdkentertainment.mobilny_usos_enhanced.view_models.VisibleItemsViewMo
 import kotlinx.coroutines.delay
 import java.time.LocalDate
 
-@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun SharedTransitionScope.SchedulePageView(
-    sharedTransitionScope: SharedTransitionScope,
-    animatedVisibilityScope: AnimatedVisibilityScope,
+fun SchedulePageView(
     visibleItemsViewModel: VisibleItemsViewModel = viewModel<VisibleItemsViewModel>(),
     visibleIndex: Int = 4
 ) {
@@ -160,7 +154,6 @@ fun SharedTransitionScope.SchedulePageView(
     }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Preview(showBackground = true)
 @Composable
 fun SchedulePagePreview() {
@@ -172,11 +165,9 @@ fun SchedulePagePreview() {
             .background(UISingleton.color1.primaryColor)
             .padding(12.dp)
     ) {
-        SharedTransitionLayout {
-            AnimatedContent(targetState = currentScreen) { target ->
-                if (currentScreen == target) {
-                    SchedulePageView(this@SharedTransitionLayout, this@AnimatedContent)
-                }
+        AnimatedContent(targetState = currentScreen) { target ->
+            if (currentScreen == target) {
+                SchedulePageView()
             }
         }
     }

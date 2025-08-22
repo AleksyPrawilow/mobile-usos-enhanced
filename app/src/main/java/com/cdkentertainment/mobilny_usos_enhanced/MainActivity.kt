@@ -26,7 +26,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.ui.theme.MobilnyUSOSEnhancedTheme
@@ -121,11 +120,4 @@ fun ContentView() {
                 .graphicsLayer(scaleX = 1 - fabOffsetRatio, scaleY = 1 - fabOffsetRatio)
         )
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ContentViewPreview() {
-    OAuthSingleton.setTestAccessToken()
-    ContentView()
 }
