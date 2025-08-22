@@ -13,6 +13,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -24,11 +26,19 @@ import com.cdkentertainment.mobilny_usos_enhanced.models.Payment
 fun PaymentView(
     payment: Payment
 ) {
-    Column {
+    Column(
+        modifier = Modifier
+            .drawBehind {
+                drawRoundRect(
+                    UISingleton.color3.primaryColor,
+                    cornerRadius = CornerRadius(UISingleton.uiElementsCornerRadius.dp.toPx(), UISingleton.uiElementsCornerRadius.dp.toPx())
+                )
+            }
+    ) {
         Card(
             colors = CardDefaults.cardColors(
-                containerColor = UISingleton.color1.primaryColor,
-                disabledContainerColor = UISingleton.color1.primaryColor,
+                containerColor = UISingleton.color2.primaryColor,
+                disabledContainerColor = UISingleton.color2.primaryColor,
                 contentColor = UISingleton.color4.primaryColor,
                 disabledContentColor = UISingleton.color4.primaryColor
             ),
@@ -36,7 +46,7 @@ fun PaymentView(
                 bottomStart = 0.dp,
                 topEnd = UISingleton.uiElementsCornerRadius.dp,
                 topStart = UISingleton.uiElementsCornerRadius.dp,
-                bottomEnd = UISingleton.uiElementsCornerRadius.dp
+                bottomEnd = 0.dp//UISingleton.uiElementsCornerRadius.dp
             ),
             modifier = Modifier
                 .fillMaxWidth()
@@ -60,7 +70,7 @@ fun PaymentView(
                 color = UISingleton.color3.primaryColor,
                 modifier = Modifier
                     .background(
-                        UISingleton.color1.primaryColor,
+                        UISingleton.color2.primaryColor,
                         RoundedCornerShape(
                             bottomStart = UISingleton.uiElementsCornerRadius.dp,
                             bottomEnd = UISingleton.uiElementsCornerRadius.dp,
