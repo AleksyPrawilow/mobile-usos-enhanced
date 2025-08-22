@@ -3,10 +3,6 @@ package com.cdkentertainment.mobilny_usos_enhanced.views
 import android.content.Context
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionLayout
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -47,13 +43,8 @@ import com.cdkentertainment.mobilny_usos_enhanced.view_models.Screens
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun SharedTransitionScope.LoginPageView(
-    sharedTransitionScope: SharedTransitionScope,
-    animatedVisibilityScope: AnimatedVisibilityScope,
-    screenManagerViewModel: ScreenManagerViewModel = viewModel<ScreenManagerViewModel>()
-) {
+fun LoginPageView(screenManagerViewModel: ScreenManagerViewModel = viewModel<ScreenManagerViewModel>()) {
     val coroutineScope = rememberCoroutineScope()
     val context: Context = LocalContext.current
     val oAuthViewModel: OAuthViewModel = viewModel<OAuthViewModel>()
@@ -182,7 +173,6 @@ fun SharedTransitionScope.LoginPageView(
     }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Preview(showBackground = true)
 @Composable
 fun LoginPreview() {
@@ -193,14 +183,9 @@ fun LoginPreview() {
             .background(UISingleton.color1.primaryColor)
             .padding(12.dp)
     ) {
-        SharedTransitionLayout {
-            AnimatedContent(targetState = currentScreen) { target ->
-                if (currentScreen == target) {
-                    LoginPageView(
-                        sharedTransitionScope = this@SharedTransitionLayout,
-                        animatedVisibilityScope = this@AnimatedContent
-                    )
-                }
+        AnimatedContent(targetState = currentScreen) { target ->
+            if (currentScreen == target) {
+                LoginPageView()
             }
         }
     }

@@ -2,12 +2,8 @@ package com.cdkentertainment.mobilny_usos_enhanced.views
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionLayout
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.EaseInOutBack
 import androidx.compose.animation.core.Easing
 import androidx.compose.animation.core.TweenSpec
@@ -17,7 +13,6 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
@@ -26,9 +21,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -38,7 +30,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
@@ -52,11 +43,9 @@ import com.cdkentertainment.mobilny_usos_enhanced.view_models.Screens
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.VisibleItemsViewModel
 import kotlinx.coroutines.delay
 
-@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun SharedTransitionScope.ClassGroupsPageView(
-    sharedTransitionScope: SharedTransitionScope,
-    animatedVisibilityScope: AnimatedVisibilityScope,
+fun ClassGroupsPageView(
     visibleItemsViewModel: VisibleItemsViewModel = viewModel<VisibleItemsViewModel>(),
     visibleIndex: Int = 5
 ) {
@@ -117,27 +106,7 @@ fun SharedTransitionScope.ClassGroupsPageView(
                         enter = enterTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * 2, easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * 2, easingForShows)),
                         exit = exitTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * 2, easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * 2, easingForShows))
                     ) {
-                        Card(
-                            colors = CardColors(
-                                contentColor = UISingleton.color4.primaryColor,
-                                containerColor = UISingleton.color1.primaryColor,
-                                disabledContainerColor = UISingleton.color1.primaryColor,
-                                disabledContentColor = UISingleton.color4.primaryColor
-                            ),
-                            shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp),
-                            modifier = Modifier
-                                .border(5.dp, UISingleton.color2.primaryColor, RoundedCornerShape(
-                                    UISingleton.uiElementsCornerRadius.dp))
-                                .shadow(5.dp, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
-                        ) {
-                            Text(
-                                text = seasonId,
-                                color = UISingleton.color4.primaryColor,
-                                style = MaterialTheme.typography.headlineMedium,
-                                modifier = Modifier
-                                    .padding(12.dp)
-                            )
-                        }
+                        SemesterCardView(seasonId)
                     }
                 }
                 if (season != null) {
@@ -183,7 +152,6 @@ fun SharedTransitionScope.ClassGroupsPageView(
     }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Preview(showBackground = true)
 @Composable
 fun ClassGroupsPagePreview() {
@@ -195,11 +163,9 @@ fun ClassGroupsPagePreview() {
             .background(UISingleton.color1.primaryColor)
             .padding(12.dp)
     ) {
-        SharedTransitionLayout {
-            AnimatedContent(targetState = currentScreen) { target ->
-                if (currentScreen == target) {
-                    ClassGroupsPageView(this@SharedTransitionLayout, this@AnimatedContent)
-                }
+        AnimatedContent(targetState = currentScreen) { target ->
+            if (currentScreen == target) {
+                ClassGroupsPageView()
             }
         }
     }

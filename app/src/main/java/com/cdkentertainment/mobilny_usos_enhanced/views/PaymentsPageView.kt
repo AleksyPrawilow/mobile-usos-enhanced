@@ -2,20 +2,11 @@ package com.cdkentertainment.mobilny_usos_enhanced.views
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionLayout
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.EaseOutBack
 import androidx.compose.animation.core.EaseOutQuad
-import androidx.compose.animation.core.Easing
-import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.slideInHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -43,31 +34,19 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
+import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.models.Payment
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.PaymentsPageViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.Screens
 import kotlinx.coroutines.delay
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun SharedTransitionScope.PaymentsPageView(
-    sharedTransitionScope: SharedTransitionScope,
-    animatedVisibilityScope: AnimatedVisibilityScope
-) {
-    val appearDuration   : Int = 500
-    val delayBetweenShows: Int = 150
-    val safeEasing = Easing { fraction ->
-        EaseOutBack.transform(fraction.coerceIn(0f, 0.9999f))
-    }
-    val tweenSlideSpec : (Int) -> FiniteAnimationSpec<IntOffset> = { delayIndex: Int -> tween(appearDuration, delayBetweenShows * delayIndex, safeEasing) }
-    val tweenFadeSpec  : (Int) -> FiniteAnimationSpec<Float>     = { delayIndex: Int -> tween(appearDuration, delayBetweenShows * delayIndex, safeEasing) }
-    val enterTransition: (Int) -> EnterTransition = { delayIndex: Int -> slideInHorizontally(tweenSlideSpec(delayIndex)) + fadeIn(tweenFadeSpec(delayIndex)) }
-
+fun PaymentsPageView() {
+    val enterTransition: (Int) -> EnterTransition = UIHelper.slideEnterTransition
     val paymentsPageViewModel: PaymentsPageViewModel = viewModel<PaymentsPageViewModel>()
     var showElements: Boolean by rememberSaveable { mutableStateOf(false) }
     var showTexts: Boolean by rememberSaveable { mutableStateOf(false) }
@@ -94,10 +73,7 @@ fun SharedTransitionScope.PaymentsPageView(
             Spacer(modifier = Modifier.height(16.dp))
         }
         item {
-            AnimatedVisibility(
-                visible = showElements,
-                enter = enterTransition(0)
-            ) {
+            AnimatedVisibility(showElements, enter = enterTransition(0)) {
                 Text(
                     text = "Płatności",
                     style = MaterialTheme.typography.headlineLarge,
@@ -147,6 +123,9 @@ fun SharedTransitionScope.PaymentsPageView(
                     }
                 }
             }
+        }
+        item {
+            Spacer(Modifier.height(32.dp))
         }
         val unpaidPayments: List<Payment>? = paymentsPageViewModel.unpaidPayments
         val paidPayments: List<Payment>? = paymentsPageViewModel.paidPayments
@@ -233,7 +212,6 @@ fun SharedTransitionScope.PaymentsPageView(
     }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Preview(showBackground = true)
 @Composable
 fun PaymentsPagePreview() {
@@ -245,11 +223,9 @@ fun PaymentsPagePreview() {
             .background(UISingleton.color1.primaryColor)
             .padding(12.dp)
     ) {
-        SharedTransitionLayout {
-            AnimatedContent(targetState = currentScreen) { target ->
-                if (currentScreen == target) {
-                    PaymentsPageView(this@SharedTransitionLayout, this@AnimatedContent)
-                }
+        AnimatedContent(targetState = currentScreen) { target ->
+            if (currentScreen == target) {
+                PaymentsPageView()
             }
         }
     }

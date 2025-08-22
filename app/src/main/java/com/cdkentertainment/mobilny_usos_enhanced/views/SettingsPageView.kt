@@ -2,12 +2,8 @@ package com.cdkentertainment.mobilny_usos_enhanced.views
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionLayout
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.EaseInOutBack
 import androidx.compose.animation.core.Easing
@@ -45,11 +41,8 @@ import com.cdkentertainment.mobilny_usos_enhanced.view_models.SettingsPageViewMo
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.VisibleItemsViewModel
 import kotlinx.coroutines.delay
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun SharedTransitionScope.SettingsPageView(
-    sharedTransitionScope: SharedTransitionScope,
-    animatedVisibilityScope: AnimatedVisibilityScope,
+fun SettingsPageView(
     visibleItemsViewModel: VisibleItemsViewModel = viewModel<VisibleItemsViewModel>(),
     visibleIndex: Int = 8
 ) {
@@ -133,7 +126,6 @@ fun SharedTransitionScope.SettingsPageView(
     }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Preview(showBackground = true)
 @Composable
 fun SettingsPagePreview() {
@@ -149,11 +141,9 @@ fun SettingsPagePreview() {
             .background(color1)
             .padding(12.dp)
     ) {
-        SharedTransitionLayout {
-            AnimatedContent(targetState = currentScreen) { target ->
-                if (currentScreen == target) {
-                    SettingsPageView(this@SharedTransitionLayout, this@AnimatedContent)
-                }
+        AnimatedContent(targetState = currentScreen) { target ->
+            if (currentScreen == target) {
+                SettingsPageView()
             }
         }
     }
