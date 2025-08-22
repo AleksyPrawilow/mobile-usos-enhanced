@@ -67,10 +67,10 @@ fun PaymentView(
             Text(
                 text = payment.payment_deadline,
                 style = MaterialTheme.typography.titleMedium,
-                color = UISingleton.color3.primaryColor,
+                color = UISingleton.color1.primaryColor,
                 modifier = Modifier
                     .background(
-                        UISingleton.color2.primaryColor,
+                        UISingleton.color4.primaryColor,
                         RoundedCornerShape(
                             bottomStart = UISingleton.uiElementsCornerRadius.dp,
                             bottomEnd = UISingleton.uiElementsCornerRadius.dp,
