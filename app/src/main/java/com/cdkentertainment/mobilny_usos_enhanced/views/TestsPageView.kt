@@ -3,6 +3,7 @@ package com.cdkentertainment.mobilny_usos_enhanced.views
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,19 +29,20 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
-import com.cdkentertainment.mobilny_usos_enhanced.view_models.PaymentsPageViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.Screens
+import com.cdkentertainment.mobilny_usos_enhanced.view_models.TestsPageViewModel
 import kotlinx.coroutines.delay
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TestsPageView() {
     val enterTransition: (Int) -> EnterTransition = UIHelper.slideEnterTransition
 
-    val paymentsPageViewModel: PaymentsPageViewModel = viewModel<PaymentsPageViewModel>()
+    val testsPageViewModel: TestsPageViewModel = viewModel<TestsPageViewModel>()
     var showElements: Boolean by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        paymentsPageViewModel.fetchPayments()
+        testsPageViewModel.fetchTests()
         delay(150)
         showElements = true
     }
@@ -69,6 +71,19 @@ fun TestsPageView() {
         item {
             Spacer(Modifier.height(16.dp))
         }
+        stickyHeader {
+            AnimatedVisibility(showElements, enter = enterTransition(1)) {
+                SemesterCardView("2025/SL")
+            }
+        }
+        for (index in 0 until 5) {
+            item {
+                AnimatedVisibility(showElements, enter = enterTransition(2 + index)) {
+                    TestCardView()
+                }
+            }
+        }
+
         item {
             Spacer(modifier = Modifier.height(64.dp))
         }
