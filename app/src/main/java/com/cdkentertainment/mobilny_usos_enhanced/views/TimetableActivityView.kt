@@ -65,7 +65,7 @@ fun TimetableActivityView(
         modifier = Modifier
             .fillMaxWidth()
             .height(minutesDp * (durationMinutes / 15))
-            .padding(6.dp)
+            .padding(horizontal = 6.dp)
             .offset(x = -40.dp * (1f - appearFactor), y = minutesDp * ((startTimeMinutes - minutesFromStart) / 15))
             .padding(start = 60.dp)
             .graphicsLayer(
