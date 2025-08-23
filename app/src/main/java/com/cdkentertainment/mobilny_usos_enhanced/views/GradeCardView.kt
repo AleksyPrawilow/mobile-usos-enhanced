@@ -1,7 +1,6 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -44,7 +43,7 @@ fun GradeCardView(
         Text(
             text = courseName,
             color = UISingleton.color4.primaryColor,
-            style = MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.titleMedium,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f)
@@ -54,13 +53,12 @@ fun GradeCardView(
             modifier = Modifier
                 .defaultMinSize(minWidth = 48.dp)
                 .height(48.dp)
-                .background(UISingleton.color1.primaryColor, RoundedCornerShape(50.dp))
-                .border(5.dp, UISingleton.color2.primaryColor, RoundedCornerShape(50.dp))
+                .background(UISingleton.color3.primaryColor, RoundedCornerShape(50.dp))
                 .padding(horizontal = 6.dp)
         ) {
             Text(
                 text = grade,
-                color = UISingleton.color4.primaryColor,
+                color = UISingleton.color1.primaryColor,
                 fontSize = 18.sp.scaleIndependent(),
                 fontWeight = FontWeight.ExtraBold,
                 maxLines = 1,

@@ -8,6 +8,7 @@ import androidx.compose.animation.core.EaseOutQuad
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -100,6 +101,7 @@ fun PaymentsPageView() {
                     modifier = Modifier
                         .fillMaxWidth()
                         .animateContentSize()
+                        .border(5.dp, UISingleton.color4.primaryColor, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
                 ) {
                     Column(
                         modifier = Modifier.padding(12.dp)
@@ -110,7 +112,6 @@ fun PaymentsPageView() {
                                 style = MaterialTheme.typography.headlineMedium,
                                 fontWeight = FontWeight.ExtraBold,
                                 color = UISingleton.color1.primaryColor
-
                             )
                         }
                         AnimatedVisibility(showTexts, enter = enterTransition(3)) {
@@ -125,7 +126,7 @@ fun PaymentsPageView() {
             }
         }
         item {
-            Spacer(Modifier.height(32.dp))
+            Spacer(Modifier.height(16.dp))
         }
         val unpaidPayments: List<Payment>? = paymentsPageViewModel.unpaidPayments
         val paidPayments: List<Payment>? = paymentsPageViewModel.paidPayments
@@ -168,7 +169,7 @@ fun PaymentsPageView() {
             }
         }
         item {
-            Spacer(Modifier.height(32.dp))
+            Spacer(Modifier.height(16.dp))
         }
         item {
             AnimatedVisibility(showTexts, enter = enterTransition(8 + unpaidSize)) {

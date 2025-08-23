@@ -9,16 +9,13 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.ScreenManagerViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.Screens
-import com.cdkentertainment.mobilny_usos_enhanced.view_models.VisibleItemsViewModel
 
 @Composable
 fun ScreenManager(
     currentScreen: Screens,
-    screenManagerViewModel: ScreenManagerViewModel,
-    visibleItemsViewModel: VisibleItemsViewModel = viewModel<VisibleItemsViewModel>()
+    screenManagerViewModel: ScreenManagerViewModel
 ) {
     AnimatedContent(
         transitionSpec = { fadeIn() + scaleIn() togetherWith fadeOut() + slideOutHorizontally(animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessLow)) },
@@ -28,32 +25,14 @@ fun ScreenManager(
             Screens.LOGIN -> LoginPageView(
                 screenManagerViewModel = screenManagerViewModel
             )
-            Screens.HOME -> HomePageView(
-                visibleItemsViewModel = visibleItemsViewModel,
-                visibleIndex = 1
-            )
-            Screens.GRADES -> GradesPageView(
-                visibleItemsViewModel = visibleItemsViewModel,
-                visibleIndex = 2
-            )
+            Screens.HOME -> HomePageView()
+            Screens.GRADES -> GradesPageView()
             Screens.TESTS -> TestsPageView()
-            Screens.CALENDAR -> SchedulePageView(
-                visibleItemsViewModel = visibleItemsViewModel,
-                visibleIndex = 4
-            )
-            Screens.GROUPS -> ClassGroupsPageView(
-                visibleItemsViewModel = visibleItemsViewModel,
-                visibleIndex = 5
-            )
+            Screens.CALENDAR -> SchedulePageView()
+            Screens.GROUPS -> ClassGroupsPageView()
             Screens.PAYMENTS -> PaymentsPageView()
-            Screens.ATTENDANCE -> AttendancePageView(
-                visibleItemsViewModel = visibleItemsViewModel,
-                visibleIndex = 7
-            )
-            Screens.SETTINGS -> SettingsPageView(
-                visibleItemsViewModel = visibleItemsViewModel,
-                visibleIndex = 8
-            )
+            Screens.ATTENDANCE -> AttendancePageView()
+            Screens.SETTINGS -> SettingsPageView()
         }
     }
 }

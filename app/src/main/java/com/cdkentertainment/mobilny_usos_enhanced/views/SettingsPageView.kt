@@ -3,15 +3,7 @@ package com.cdkentertainment.mobilny_usos_enhanced.views
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.EaseInOutBack
-import androidx.compose.animation.core.Easing
-import androidx.compose.animation.core.TweenSpec
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,38 +17,28 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
+import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.Screens
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.SettingsPageViewModel
-import com.cdkentertainment.mobilny_usos_enhanced.view_models.VisibleItemsViewModel
 import kotlinx.coroutines.delay
 
 @Composable
-fun SettingsPageView(
-    visibleItemsViewModel: VisibleItemsViewModel = viewModel<VisibleItemsViewModel>(),
-    visibleIndex: Int = 8
-) {
+fun SettingsPageView() {
     val settingsPageViewModel: SettingsPageViewModel = viewModel<SettingsPageViewModel>()
-    val isVisible: List<Boolean> by visibleItemsViewModel.visibleStates.collectAsState()
-    val delayBetweenShows: Int = 150
-    val fadeDelay: Int = 50
-    val fadeDuration: Int = 500
-    val slideDuration: Int = 750
-    val easingForShows: Easing = EaseInOutBack
-    val fadeTweenSpec: (Int, Int, Easing) -> TweenSpec<Float> = { duration, delay, easing -> TweenSpec<Float>(durationMillis = duration, delay = delay, easing = easing) }
-    val slideTweenSpec: (Int, Int, Easing) -> TweenSpec<IntOffset> = { duration, delay, easing -> TweenSpec<IntOffset>(durationMillis = duration, delay = delay, easing = easing) }
-    val enterTrans: (TweenSpec<Float>, TweenSpec<IntOffset>) -> EnterTransition = { fadeSpec, slideSpec -> fadeIn(fadeSpec) + slideInHorizontally(slideSpec) }
-    val exitTrans: (TweenSpec<Float>, TweenSpec<IntOffset>) -> ExitTransition = { fadeSpec, slideSpec -> fadeOut(fadeSpec) + slideOutHorizontally(slideSpec) }
+    val enterTransition: (Int) -> EnterTransition = UIHelper.slideEnterTransition
+    var showElements: Boolean by rememberSaveable { mutableStateOf(false) }
 
     val color1: Color by animateColorAsState(UISingleton.color1.primaryColor)
     val color2: Color by animateColorAsState(UISingleton.color2.primaryColor)
@@ -66,8 +48,8 @@ fun SettingsPageView(
     val checkLambda: (Boolean) -> Unit
 
     LaunchedEffect(Unit) {
-        delay(50)
-        visibleItemsViewModel.setVisibleState(visibleIndex, true)
+        delay(150)
+        showElements = true
     }
 
     LazyColumn(
@@ -80,11 +62,7 @@ fun SettingsPageView(
             Spacer(modifier = Modifier.height(16.dp))
         }
         item {
-            AnimatedVisibility(
-                visible = isVisible[visibleIndex],
-                enter = enterTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay), easingForShows), slideTweenSpec(slideDuration, delayBetweenShows, easingForShows)),
-                exit = exitTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay), easingForShows), slideTweenSpec(slideDuration, delayBetweenShows, easingForShows))
-            ) {
+            AnimatedVisibility(showElements, enter = enterTransition(0)) {
                 Text(
                     text = "Ustawienia",
                     style = MaterialTheme.typography.headlineLarge,
@@ -96,11 +74,7 @@ fun SettingsPageView(
             }
         }
         item {
-            AnimatedVisibility(
-                visible = isVisible[visibleIndex],
-                enter = enterTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * 2, easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * 2, easingForShows)),
-                exit = exitTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * 2, easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * 2, easingForShows))
-            ) {
+            AnimatedVisibility(showElements, enter = enterTransition(1)) {
                 SwitchSettingView(
                     color1, color2, color3, color4,
                     text = "Ciemny motyw",
@@ -111,18 +85,6 @@ fun SettingsPageView(
                 )
             }
         }
-//        AnimatedVisibility(
-//            visible = isVisible[visibleIndex],
-//            enter = enterTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * 3, easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * 3, easingForShows)),
-//            exit = exitTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * 3, easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * 3, easingForShows))
-//        ) {
-//        }
-//        AnimatedVisibility(
-//            visible = isVisible[visibleIndex],
-//            enter = enterTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * 4, easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * 4, easingForShows)),
-//            exit = exitTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * 4, easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * 4, easingForShows))
-//        ) {
-//        }
     }
 }
 

@@ -5,7 +5,6 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -48,14 +47,14 @@ fun NodeFolderView(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(if (nestIndex == 0) UISingleton.uiElementsCornerRadius.dp else 0.dp))
+                .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
                 .background(UISingleton.color1.primaryColor)
                 .clickable(onClick = onClick)
                 .zIndex(1f)
         ) {
             Text(
                 "This is a node folder $nestIndex",
-                style = MaterialTheme.typography.titleLarge,
+                style = MaterialTheme.typography.titleMedium,
                 color = UISingleton.color4.primaryColor,
                 modifier = Modifier
                     .padding(12.dp)
@@ -85,35 +84,18 @@ fun NodeFolderView(
                             bottomEnd = UISingleton.uiElementsCornerRadius.dp
                         )
                     )
-                    .border(5.dp,
-                        UISingleton.color1.primaryColor,
-                        RoundedCornerShape(
-                            topStart = 0.dp,
-                            topEnd = 0.dp,
-                            bottomStart = UISingleton.uiElementsCornerRadius.dp,
-                            bottomEnd = UISingleton.uiElementsCornerRadius.dp
-                        )
-                    )
                     .zIndex(0.75f)
-                    .padding(top = 12.dp + UISingleton.uiElementsCornerRadius.dp, bottom = UISingleton.uiElementsCornerRadius.dp)
+                    .padding(top = 12.dp + UISingleton.uiElementsCornerRadius.dp, bottom = 12.dp)
+                    .padding(horizontal = 6.dp)
             ) {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    // if the node is not a folder wrap it in a box with horizontal padding
-                    Box(
-                        modifier = Modifier.padding(horizontal = 12.dp)
-                    ) {
-                        NodeGradeView()
-                    }
-                    if (nestIndex < 2) {
+                    if (nestIndex < 3) {
                         NodeFolderView(nestIndex = nestIndex + 1)
                     }
-                    Box(
-                        modifier = Modifier.padding(horizontal = 12.dp)
-                    ) {
-                        NodeGradeView()
-                    }
+                    NodeGradeView()
+                    NodeGradeView()
                 }
             }
         }

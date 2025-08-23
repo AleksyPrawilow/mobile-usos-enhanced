@@ -1,7 +1,6 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -97,8 +96,8 @@ fun AttendanceDateCardView(
         ) {
             Text(
                 text = date,
-                style = MaterialTheme.typography.titleLarge,
-                color = UISingleton.color3.primaryColor,
+                style = MaterialTheme.typography.titleMedium,
+                color = UISingleton.color4.primaryColor,
                 textAlign = TextAlign.Start,
                 modifier = Modifier
                     .padding(12.dp)
@@ -107,11 +106,10 @@ fun AttendanceDateCardView(
             Icon(
                 imageVector = imageVectors[state.value],
                 contentDescription = "Icon",
-                tint = UISingleton.color4.primaryColor,
+                tint = UISingleton.color1.primaryColor,
                 modifier = Modifier
                     .size(48.dp)
-                    .background(UISingleton.color2.primaryColor, CircleShape)
-                    .border(5.dp, UISingleton.color1.primaryColor, CircleShape)
+                    .background(UISingleton.color3.primaryColor, CircleShape)
                     .padding(8.dp)
             )
         }

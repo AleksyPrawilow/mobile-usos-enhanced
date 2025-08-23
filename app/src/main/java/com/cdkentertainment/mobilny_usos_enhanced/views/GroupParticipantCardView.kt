@@ -46,7 +46,7 @@ fun GroupParticipantCardView(
     ) {
         Text(
             text = "${index + 1}. ${participant.first_name} ${participant.last_name}",
-            style = MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.titleMedium,
             color = UISingleton.color4.primaryColor,
             modifier = Modifier
                 .padding(12.dp)

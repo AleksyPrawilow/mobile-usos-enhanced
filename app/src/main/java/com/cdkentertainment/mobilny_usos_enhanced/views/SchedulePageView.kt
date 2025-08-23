@@ -3,14 +3,6 @@ package com.cdkentertainment.mobilny_usos_enhanced.views
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.core.EaseInOutBack
-import androidx.compose.animation.core.Easing
-import androidx.compose.animation.core.TweenSpec
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -25,43 +17,33 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
+import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.SchedulePageViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.Screens
-import com.cdkentertainment.mobilny_usos_enhanced.view_models.VisibleItemsViewModel
 import kotlinx.coroutines.delay
 import java.time.LocalDate
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun SchedulePageView(
-    visibleItemsViewModel: VisibleItemsViewModel = viewModel<VisibleItemsViewModel>(),
-    visibleIndex: Int = 4
-) {
+fun SchedulePageView() {
     val schedulePageViewModel: SchedulePageViewModel = viewModel<SchedulePageViewModel>()
-    val isVisible: List<Boolean> by visibleItemsViewModel.visibleStates.collectAsState()
-    val delayBetweenShows: Int = 150
-    val fadeDelay: Int = 50
-    val fadeDuration: Int = 500
-    val slideDuration: Int = 750
-    val easingForShows: Easing = EaseInOutBack
-    val fadeTweenSpec: (Int, Int, Easing) -> TweenSpec<Float> = { duration, delay, easing -> TweenSpec<Float>(durationMillis = duration, delay = delay, easing = easing) }
-    val slideTweenSpec: (Int, Int, Easing) -> TweenSpec<IntOffset> = { duration, delay, easing -> TweenSpec<IntOffset>(durationMillis = duration, delay = delay, easing = easing) }
-    val enterTrans: (TweenSpec<Float>, TweenSpec<IntOffset>) -> EnterTransition = { fadeSpec, slideSpec -> fadeIn(fadeSpec) + slideInHorizontally(slideSpec) }
-    val exitTrans: (TweenSpec<Float>, TweenSpec<IntOffset>) -> ExitTransition = { fadeSpec, slideSpec -> fadeOut(fadeSpec) + slideOutHorizontally(slideSpec) }
+    val enterTransition: (Int) -> EnterTransition = UIHelper.slideEnterTransition
+    var showElements: Boolean by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        delay(50)
-        visibleItemsViewModel.setVisibleState(visibleIndex, true)
+        delay(150)
+        showElements = true
         if (schedulePageViewModel.schedule == null) {
             schedulePageViewModel.fetchWeekData(LocalDate.of(2025, 5, 13))
         }
@@ -76,11 +58,7 @@ fun SchedulePageView(
             Spacer(modifier = Modifier.height(16.dp))
         }
         item {
-            AnimatedVisibility(
-                visible = isVisible[visibleIndex],
-                enter = enterTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay), easingForShows), slideTweenSpec(slideDuration, delayBetweenShows, easingForShows)),
-                exit = exitTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay), easingForShows), slideTweenSpec(slideDuration, delayBetweenShows, easingForShows))
-            ) {
+            AnimatedVisibility(showElements, enter = enterTransition(0)) {
                 Text(
                     text = "Rozkład zajęć",
                     style = MaterialTheme.typography.headlineLarge,
@@ -92,62 +70,13 @@ fun SchedulePageView(
             }
         }
         stickyHeader {
-            AnimatedVisibility(
-                visible = isVisible[visibleIndex],
-                enter = enterTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * 2, easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * 2, easingForShows)),
-                exit = exitTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * 2, easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * 2, easingForShows))
-            ) {
+            AnimatedVisibility(showElements, enter = enterTransition(1)) {
                 ScheduleDaySelectorView(schedulePageViewModel)
             }
         }
-//            item {
-//                AnimatedVisibility(
-//                    visible = isVisible[visibleIndex],
-//                    enter = enterTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * 2, easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * 2, easingForShows)),
-//                    exit = exitTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * 2, easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * 2, easingForShows))
-//                ) {
-//                    Card(
-//                        colors = CardColors(
-//                            contentColor = UISingleton.color4.primaryColor,
-//                            containerColor = UISingleton.color3.primaryColor,
-//                            disabledContainerColor = UISingleton.color3.primaryColor,
-//                            disabledContentColor = UISingleton.color4.primaryColor
-//                        ),
-//                        shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius),
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .border(5.dp, UISingleton.color4.primaryColor, RoundedCornerShape(UISingleton.uiElementsCornerRadius))
-//                    ) {
-//                        Text(
-//                            text = "${(schedulePageViewModel.schedule?.startDay?.replace("-", ".") ?: "N/A")} - ${(schedulePageViewModel.schedule?.endDay?.replace("-", ".") ?: "N/A")}",
-//                            style = MaterialTheme.typography.titleLarge,
-//                            color = UISingleton.color1.primaryColor,
-//                            modifier = Modifier
-//                                .padding(12.dp)
-//                        )
-//                    }
-//                }
-//            }
         item {
             TimetableView(schedulePageViewModel)
         }
-//        if (schedulePageViewModel.schedule == null) {
-//            item {
-//                Box(modifier = Modifier.fillMaxSize()) {
-//                    CircularProgressIndicator(color = UISingleton.color3.primaryColor, modifier = Modifier.align(Alignment.Center))
-//                }
-//            }
-//        } else {
-//            if (schedulePageViewModel.schedule!!.lessons.containsKey(schedulePageViewModel.selectedDay)) {
-//                items(schedulePageViewModel.schedule!!.lessons[schedulePageViewModel.selectedDay]!!.size, key = { it }) { activityIndex ->
-//                    ActivityView(
-//                        schedulePageViewModel = schedulePageViewModel,
-//                        activity = schedulePageViewModel.schedule!!.lessons[schedulePageViewModel.selectedDay]!![activityIndex],
-//                        modifier = Modifier.animateItem()
-//                    )
-//                }
-//            }
-//        }
         item {
             Spacer(modifier = Modifier.height(64.dp))
         }
