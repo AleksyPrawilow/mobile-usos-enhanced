@@ -115,6 +115,7 @@ fun ClassGroupPopupView(
                                     .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
                             )
                             for (lecturer in 0 until data.lecturers.size) {
+                                //TODO: Can this be replaced with GroupParticipantCardView.kt?
                                 Row(
                                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                                     verticalAlignment = Alignment.CenterVertically,
@@ -129,7 +130,7 @@ fun ClassGroupPopupView(
                                     Text(
                                         text = "${lecturer + 1}. ${data.lecturers[lecturer].first_name} ${data.lecturers[lecturer].last_name}",
                                         color = UISingleton.color4.primaryColor,
-                                        style = MaterialTheme.typography.titleLarge,
+                                        style = MaterialTheme.typography.titleMedium,
                                     )
                                 }
                             }

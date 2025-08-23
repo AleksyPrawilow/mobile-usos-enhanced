@@ -35,28 +35,16 @@ class PaymentsPageModel {
 @Serializable
 data class Payment (
     val id: String,
-    val user: Human,
+    val user: SharedDataClasses.Human,
     val saldo_amount: Float,
-    val type: IdAndDescription,
-    val description: LangDict,
+    val type: SharedDataClasses.IdAndDescription,
+    val description: SharedDataClasses.LangDict,
     val state: String,
     val account_number: String,
     val payment_deadline: String,
     val interest: Float?,
     val total_amount: Float,
-    val currency: IdAndName,
-    val faculty: IdAndName,
+    val currency: SharedDataClasses.IdAndName,
+    val faculty: SharedDataClasses.IdAndName,
     val default_choice_date: String?
-)
-
-@Serializable
-data class IdAndDescription(
-    val id: String,
-    val description: LangDict
-)
-
-@Serializable
-data class IdAndName(
-    val id: String,
-    val name: LangDict
 )

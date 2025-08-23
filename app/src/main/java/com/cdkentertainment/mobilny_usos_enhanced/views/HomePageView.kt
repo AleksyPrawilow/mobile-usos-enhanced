@@ -3,14 +3,6 @@ package com.cdkentertainment.mobilny_usos_enhanced.views
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.core.EaseInOutBack
-import androidx.compose.animation.core.Easing
-import androidx.compose.animation.core.TweenSpec
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,42 +18,32 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
+import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.HomePageViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.Screens
-import com.cdkentertainment.mobilny_usos_enhanced.view_models.VisibleItemsViewModel
 import kotlinx.coroutines.delay
 
 @Composable
-fun HomePageView(
-    visibleItemsViewModel: VisibleItemsViewModel = viewModel<VisibleItemsViewModel>(),
-    visibleIndex: Int = 1
-) {
+fun HomePageView() {
     val homePageViewModel: HomePageViewModel = viewModel<HomePageViewModel>()
-    val isVisible: List<Boolean> by visibleItemsViewModel.visibleStates.collectAsState()
-    val delayBetweenShows: Int = 150
-    val fadeDelay: Int = 50
-    val fadeDuration: Int = 500
-    val slideDuration: Int = 750
-    val easingForShows: Easing = EaseInOutBack
-    val fadeTweenSpec: (Int, Int, Easing) -> TweenSpec<Float> = { duration, delay, easing -> TweenSpec<Float>(durationMillis = duration, delay = delay, easing = easing) }
-    val slideTweenSpec: (Int, Int, Easing) -> TweenSpec<IntOffset> = { duration, delay, easing -> TweenSpec<IntOffset>(durationMillis = duration, delay = delay, easing = easing) }
-    val enterTrans: (TweenSpec<Float>, TweenSpec<IntOffset>) -> EnterTransition = { fadeSpec, slideSpec -> fadeIn(fadeSpec) + slideInHorizontally(slideSpec) }
-    val exitTrans: (TweenSpec<Float>, TweenSpec<IntOffset>) -> ExitTransition = { fadeSpec, slideSpec -> fadeOut(fadeSpec) + slideOutHorizontally(slideSpec) }
+    val enterTransition: (Int) -> EnterTransition = UIHelper.slideEnterTransition
+    var showElements: Boolean by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         homePageViewModel.fetchData()
-        delay(50)
-        visibleItemsViewModel.setVisibleState(visibleIndex, true)
+        delay(150)
+        showElements = true
     }
 
     Column(
@@ -72,11 +54,7 @@ fun HomePageView(
             .verticalScroll(rememberScrollState())
     ) {
         Spacer(modifier = Modifier.height(16.dp))
-        AnimatedVisibility(
-            visible = isVisible[visibleIndex],
-            enter = enterTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay), easingForShows), slideTweenSpec(slideDuration, delayBetweenShows, easingForShows)),
-            exit = exitTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay), easingForShows), slideTweenSpec(slideDuration, delayBetweenShows, easingForShows))
-        ) {
+        AnimatedVisibility(showElements, enter = enterTransition(0)) {
             Text(
                 text = "Cześć, ${homePageViewModel.userInfo?.basicInfo?.first_name}!",
                 style = MaterialTheme.typography.headlineLarge,
@@ -86,29 +64,17 @@ fun HomePageView(
                     .fillMaxWidth()
             )
         }
-        AnimatedVisibility(
-            visible = isVisible[visibleIndex],
-            enter = enterTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * 2, easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * 2, easingForShows)),
-            exit = exitTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * 2, easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * 2, easingForShows))
-        ) {
+        AnimatedVisibility(showElements, enter = enterTransition(1)) {
             UserDataView(homePageViewModel)
         }
-        AnimatedVisibility(
-            visible = isVisible[visibleIndex],
-            enter = enterTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * 3, easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * 3, easingForShows)),
-            exit = exitTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * 3, easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * 3, easingForShows))
-        ) {
+        AnimatedVisibility(showElements, enter = enterTransition(2)) {
             Text(
                 text = "Plan na dzisiaj:",
                 color = UISingleton.color4.primaryColor,
                 style = MaterialTheme.typography.headlineMedium
             )
         }
-        AnimatedVisibility(
-            visible = isVisible[visibleIndex],
-            enter = enterTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * 4, easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * 4, easingForShows)),
-            exit = exitTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * 4, easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * 4, easingForShows))
-        ) {
+        AnimatedVisibility(showElements, enter = enterTransition(3)) {
             Text(
                 text = "Brak zajęć.",
                 color = UISingleton.color4.primaryColor,

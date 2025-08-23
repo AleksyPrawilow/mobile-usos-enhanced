@@ -60,19 +60,13 @@ data class LessonGroup (
     val course_id: String,
     val course_unit_id: Int,
     val group_number: Int,
-    val course_name: LangDict,
-    val lecturers: List<Human>,
+    val course_name: SharedDataClasses.LangDict,
+    val lecturers: List<SharedDataClasses.Human>,
     val class_type_id: String
 )
 
-@Serializable
-data class Human (
-    val id: String,
-    val first_name: String,
-    val last_name: String
-)
 
 @Serializable
 data class Participants(
-    val participants: List<Human>
+    val participants: List<SharedDataClasses.Human>
 )

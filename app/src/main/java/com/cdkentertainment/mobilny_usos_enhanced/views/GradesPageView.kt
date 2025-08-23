@@ -3,14 +3,6 @@ package com.cdkentertainment.mobilny_usos_enhanced.views
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.core.EaseInOutBack
-import androidx.compose.animation.core.Easing
-import androidx.compose.animation.core.TweenSpec
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -26,48 +18,38 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
+import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.models.Course
 import com.cdkentertainment.mobilny_usos_enhanced.models.Season
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.GradesPageViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.Screens
-import com.cdkentertainment.mobilny_usos_enhanced.view_models.VisibleItemsViewModel
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun GradesPageView(
-    visibleItemsViewModel: VisibleItemsViewModel = viewModel<VisibleItemsViewModel>(),
-    visibleIndex: Int = 2
-) {
+fun GradesPageView() {
     val gradesPageViewModel: GradesPageViewModel = viewModel<GradesPageViewModel>()
-    val isVisible: List<Boolean> by visibleItemsViewModel.visibleStates.collectAsState()
-    val delayBetweenShows: Int = 150
-    val fadeDelay: Int = 50
-    val fadeDuration: Int = 500
-    val slideDuration: Int = 750
-    val easingForShows: Easing = EaseInOutBack
-    val fadeTweenSpec: (Int, Int, Easing) -> TweenSpec<Float> = { duration, delay, easing -> TweenSpec<Float>(durationMillis = duration, delay = delay, easing = easing) }
-    val slideTweenSpec: (Int, Int, Easing) -> TweenSpec<IntOffset> = { duration, delay, easing -> TweenSpec<IntOffset>(durationMillis = duration, delay = delay, easing = easing) }
-    val enterTrans: (TweenSpec<Float>, TweenSpec<IntOffset>) -> EnterTransition = { fadeSpec, slideSpec -> fadeIn(fadeSpec) + slideInHorizontally(slideSpec) }
-    val exitTrans: (TweenSpec<Float>, TweenSpec<IntOffset>) -> ExitTransition = { fadeSpec, slideSpec -> fadeOut(fadeSpec) + slideOutHorizontally(slideSpec) }
+    val enterTransition: (Int) -> EnterTransition = UIHelper.slideEnterTransition
+    var showElements: Boolean by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         if (gradesPageViewModel.userGrades == null) {
             gradesPageViewModel.fetchUserGrades()
         }
-        delay(50)
-        visibleItemsViewModel.setVisibleState(visibleIndex, true)
+        delay(150)
+        showElements = true
     }
 
     if (gradesPageViewModel.userGrades == null) {
@@ -85,11 +67,7 @@ fun GradesPageView(
                 Spacer(modifier = Modifier.height(16.dp))
             }
             item {
-                AnimatedVisibility(
-                    visible = isVisible[visibleIndex],
-                    enter = enterTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay), easingForShows), slideTweenSpec(slideDuration, delayBetweenShows, easingForShows)),
-                    exit = exitTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay), easingForShows), slideTweenSpec(slideDuration, delayBetweenShows, easingForShows))
-                ) {
+                AnimatedVisibility(showElements, enter = enterTransition(0)) {
                     Text(
                         text = "Oceny",
                         style = MaterialTheme.typography.headlineLarge,
@@ -105,41 +83,23 @@ fun GradesPageView(
                     val season: Season = gradesPageViewModel.userGrades!![iteration]
                     val subjectCount: Int = season.courseList.size
                     stickyHeader {
-                        AnimatedVisibility(
-                            visible = isVisible[visibleIndex],
-                            enter = enterTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * 2 * (iteration + 1), easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * 2 * (iteration + 1), easingForShows)),
-                            exit = exitTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * 2 * (iteration + 1), easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * 2 * (iteration + 1), easingForShows))
-                        ) {
+                        AnimatedVisibility(showElements, enter = enterTransition(1)){
                             SemesterCardView(season.seasonId)
                         }
                     }
                     item {
-                        AnimatedVisibility(
-                            visible = isVisible[visibleIndex],
-                            enter = enterTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * 3 * (iteration + 1), easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * 3 * (iteration + 1), easingForShows)),
-                            exit = exitTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * 3 * (iteration + 1), easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * 3 * (iteration + 1), easingForShows))
-                        ) {
+                        AnimatedVisibility(showElements, enter = enterTransition(2)) {
                             GradeAverageView(season.avgGrade)
                         }
                     }
                     items(season.courseList.size) { courseIndex ->
                         val course: Course = season.courseList[courseIndex]
-                        AnimatedVisibility(
-                            visible = isVisible[visibleIndex],
-                            enter = enterTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * (4 + courseIndex) * (iteration + 1), easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * (4 + courseIndex) * (iteration + 1), easingForShows)),
-                            exit = exitTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * (4 + courseIndex) * (iteration + 1), easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * (4 + courseIndex) * (iteration + 1), easingForShows))
-                        ) {
+                        AnimatedVisibility(showElements, enter = enterTransition(3 + courseIndex)){
                             CourseGradesView(course, gradesPageViewModel.userSubjects!!, gradesPageViewModel.classtypeIdInfo)
                         }
                     }
                     item {
-                        AnimatedVisibility(
-                            visible = isVisible[visibleIndex],
-                            enter = enterTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * (5 + subjectCount) * (iteration + 1), easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * (5 + subjectCount) * (iteration + 1), easingForShows)),
-                            exit = exitTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * (5 + subjectCount) * (iteration + 1), easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * (5 + subjectCount) * (iteration + 1), easingForShows))
-                        ) {
-                            Spacer(modifier = Modifier.height(24.dp))
-                        }
+                        Spacer(modifier = Modifier.height(24.dp))
                     }
                 }
                 item {

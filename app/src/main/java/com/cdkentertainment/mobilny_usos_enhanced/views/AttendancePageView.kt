@@ -4,14 +4,6 @@ import android.content.Context
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.core.EaseInOutBack
-import androidx.compose.animation.core.Easing
-import androidx.compose.animation.core.TweenSpec
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -27,22 +19,23 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
+import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.models.LessonGroup
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.AttendancePageViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.Screens
-import com.cdkentertainment.mobilny_usos_enhanced.view_models.VisibleItemsViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -50,21 +43,10 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun AttendancePageView(
-    visibleItemsViewModel: VisibleItemsViewModel = viewModel<VisibleItemsViewModel>(),
-    visibleIndex: Int = 7
-) {
+fun AttendancePageView() {
     val attendancePageViewModel: AttendancePageViewModel = viewModel<AttendancePageViewModel>()
-    val isVisible: List<Boolean> by visibleItemsViewModel.visibleStates.collectAsState()
-    val delayBetweenShows: Int = 150
-    val fadeDelay: Int = 50
-    val fadeDuration: Int = 500
-    val slideDuration: Int = 750
-    val easingForShows: Easing = EaseInOutBack
-    val fadeTweenSpec: (Int, Int, Easing) -> TweenSpec<Float> = { duration, delay, easing -> TweenSpec<Float>(durationMillis = duration, delay = delay, easing = easing) }
-    val slideTweenSpec: (Int, Int, Easing) -> TweenSpec<IntOffset> = { duration, delay, easing -> TweenSpec<IntOffset>(durationMillis = duration, delay = delay, easing = easing) }
-    val enterTrans: (TweenSpec<Float>, TweenSpec<IntOffset>) -> EnterTransition = { fadeSpec, slideSpec -> fadeIn(fadeSpec) + slideInHorizontally(slideSpec) }
-    val exitTrans: (TweenSpec<Float>, TweenSpec<IntOffset>) -> ExitTransition = { fadeSpec, slideSpec -> fadeOut(fadeSpec) + slideOutHorizontally(slideSpec) }
+    val enterTransition: (Int) -> EnterTransition = UIHelper.slideEnterTransition
+    var showElements: Boolean by rememberSaveable { mutableStateOf(false) }
 
     val context: Context = LocalContext.current
     val onPopupDismissRequest: () -> Unit = {
@@ -75,8 +57,8 @@ fun AttendancePageView(
 
     LaunchedEffect(Unit) {
         attendancePageViewModel.fetchLessonGroups()
-        delay(50)
-        visibleItemsViewModel.setVisibleState(visibleIndex, true)
+        delay(150)
+        showElements = true
     }
 
     if (attendancePageViewModel.showPopup) {
@@ -98,11 +80,7 @@ fun AttendancePageView(
                 Spacer(modifier = Modifier.height(16.dp))
             }
             item {
-                AnimatedVisibility(
-                    visible = isVisible[visibleIndex],
-                    enter = enterTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay), easingForShows), slideTweenSpec(slideDuration, delayBetweenShows, easingForShows)),
-                    exit = exitTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay), easingForShows), slideTweenSpec(slideDuration, delayBetweenShows, easingForShows))
-                ) {
+                AnimatedVisibility(showElements, enter = enterTransition(0)) {
                     Text(
                         text = "Obecność",
                         style = MaterialTheme.typography.headlineLarge,
@@ -117,32 +95,20 @@ fun AttendancePageView(
                 val season: List<LessonGroup>? = attendancePageViewModel.lessonGroups!!.groups[seasonId]
                 val groupCount: Int = season?.size ?: 0
                 stickyHeader {
-                    AnimatedVisibility(
-                        visible = isVisible[visibleIndex],
-                        enter = enterTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * 2, easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * 2, easingForShows)),
-                        exit = exitTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * 2, easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * 2, easingForShows))
-                    ) {
+                    AnimatedVisibility(showElements, enter = enterTransition(1)) {
                         SemesterCardView(seasonId)
                     }
                 }
                 if (season != null) {
                     items(season.size) { groupIndex ->
                         val group: LessonGroup = season[groupIndex]
-                        AnimatedVisibility(
-                            visible = isVisible[visibleIndex],
-                            enter = enterTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * (3 + groupIndex), easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * (3 + groupIndex), easingForShows)),
-                            exit = exitTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * (3 + groupIndex), easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * (3 + groupIndex), easingForShows))
-                        ) {
+                        AnimatedVisibility(showElements, enter = enterTransition(2 + groupIndex)) {
                             AttendanceClassGroupView(data = group, viewModel = attendancePageViewModel)
                         }
                     }
                 } else {
                     item {
-                        AnimatedVisibility(
-                            visible = isVisible[visibleIndex],
-                            enter = enterTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * 3, easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * 3, easingForShows)),
-                            exit = exitTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * 3, easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * 3, easingForShows))
-                        ) {
+                        AnimatedVisibility(showElements, enter = enterTransition(2)) {
                             Text(
                                 text = "Brak grup zajęciowych w tym semestrze",
                                 style = MaterialTheme.typography.titleLarge,
@@ -152,13 +118,7 @@ fun AttendancePageView(
                     }
                 }
                 item {
-                    AnimatedVisibility(
-                        visible = isVisible[visibleIndex],
-                        enter = enterTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * (4 + groupCount), easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * (4 + groupCount), easingForShows)),
-                        exit = exitTrans(fadeTweenSpec(fadeDuration, (delayBetweenShows + fadeDelay) * (4 + groupCount), easingForShows), slideTweenSpec(slideDuration, delayBetweenShows * (4 + groupCount), easingForShows))
-                    ) {
-                        Spacer(modifier = Modifier.height(24.dp))
-                    }
+                    Spacer(modifier = Modifier.height(24.dp))
                 }
             }
             item {

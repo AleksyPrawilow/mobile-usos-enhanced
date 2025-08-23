@@ -129,7 +129,7 @@ fun UserDataView(homePageViewModel: HomePageViewModel) {
                 AnimatedVisibility(expanded) {
                     Column {
                         Text(
-                            text = "${homePageViewModel.userInfo?.programme[0]?.programme?.description["pl"]}",
+                            text = "${homePageViewModel.userInfo?.programme[0]?.programme?.description?.pl}",
                             style = MaterialTheme.typography.titleMedium,
                             color = UISingleton.color3.primaryColor
                         )
