@@ -29,7 +29,7 @@ class GradesPageModel {
                 throw(Exception("API Error"))
             }
 
-            val response: Map<String, String> = OAuthSingleton.get("grades/terms2?term_ids=$termIds")
+            val response: Map<String, String> = OAuthSingleton.get("grades/terms2?term_ids=$termIds&fields=date_modified|modification_author|value_symbol|passes|value_description|exam_id|exam_session_number")
 
             if (response.containsKey("response") && response["response"] != null) {
                 val responseString: String = response["response"]!!
@@ -159,5 +159,7 @@ data class TermGrade (
     val value_description: SharedDataClasses.LangDict,
     val exam_id: Int,
     val exam_session_number: Int,
-    val grade_value: Float ? = null
+    val grade_value: Float ? = null,
+    val date_modified: String? = null,
+    val modification_author: SharedDataClasses.Human? = null
 )
