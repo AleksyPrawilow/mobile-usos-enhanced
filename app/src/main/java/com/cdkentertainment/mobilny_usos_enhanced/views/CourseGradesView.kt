@@ -11,6 +11,10 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -19,6 +23,7 @@ import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.models.Course
 import com.cdkentertainment.mobilny_usos_enhanced.models.CourseUnitIds
 import com.cdkentertainment.mobilny_usos_enhanced.models.SharedDataClasses
+import com.cdkentertainment.mobilny_usos_enhanced.models.TermGrade
 
 
 @Composable
@@ -27,6 +32,16 @@ fun CourseGradesView(
     nameMap: Map<String, CourseUnitIds>,
     classtypeIdInfo: Map<String, SharedDataClasses.IdAndName>?
 ) {
+    var showDetails: Boolean by rememberSaveable { mutableStateOf(false) }
+    var popupGrade: TermGrade? by rememberSaveable { mutableStateOf(null) }
+
+    if (showDetails && popupGrade != null) {
+        GradePopupView(popupGrade!!) {
+            showDetails = false
+            popupGrade = null
+        }
+    }
+
     Card(
         colors = CardColors(
             contentColor = UISingleton.color4.primaryColor,
@@ -61,7 +76,11 @@ fun CourseGradesView(
                 GradeCardView(
                     classtypeIdInfo?.get(unitClassType)?.name?.pl ?: "N/A",
                     if (condition) data.userGrades.course_units_grades[courseUnit]!![0]["1"]!!.value_symbol else "-"
-                    )
+                ) {
+                    println("Hello?")
+                    showDetails = true
+                    popupGrade = data.userGrades.course_units_grades[courseUnit]!![0]["1"]
+                }
             }
         }
     }

@@ -15,3 +15,5 @@
 local.properties
 /secrets.properties
 /app/build/generated/source/buildConfig/
+/.kotlin
+/.kotlin/errors

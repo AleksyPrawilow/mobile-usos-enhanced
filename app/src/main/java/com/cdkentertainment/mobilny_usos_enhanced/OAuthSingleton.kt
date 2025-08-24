@@ -86,7 +86,7 @@ object OAuthSingleton {
         val request = OAuthRequest(Verb.GET, baseUrl + url)
         service.signRequest(oAuth1AccessToken, request)
         try {
-            val response = service.execute(request)
+            val response = service.execute(request) //tutaj można zrobić weryfikację przez status code
             result["response"] = response.body
             return result
         } catch(e: InterruptedException) {

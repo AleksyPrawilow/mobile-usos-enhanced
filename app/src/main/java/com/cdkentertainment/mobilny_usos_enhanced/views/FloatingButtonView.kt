@@ -27,10 +27,13 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.FloatingButtonViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.ScreenManagerViewModel
@@ -103,16 +106,27 @@ fun FloatingButtonView(
                 .offset(x = x.dp * subButtonOffsetsRatios[index], y = y.dp * subButtonOffsetsRatios[index])
                 .graphicsLayer(
                     transformOrigin = TransformOrigin.Center,
-                    scaleX = subButtonOffsetsRatios[index],
-                    scaleY = subButtonOffsetsRatios[index]
+                    scaleX = subButtonOffsetsRatios[index] * if (screenManagerViewModel.selectedScreen.ordinal == index + 1) 1.15f else 1.0f,
+                    scaleY = subButtonOffsetsRatios[index] * if (screenManagerViewModel.selectedScreen.ordinal == index + 1) 1.15f else 1.0f
                 )
                 .size(subButtonSize.dp)
                 .shadow(5.dp, CircleShape)
                 .border(5.dp, color4, CircleShape)
                 .then(modifier)
         ) {
+            val image: ImageVector = when(index) {
+                0 -> ImageVector.vectorResource(R.drawable.rounded_home_24)
+                1 -> ImageVector.vectorResource(R.drawable.rounded_star_24)
+                2 -> ImageVector.vectorResource(R.drawable.rounded_receipt_long_24)
+                3 -> ImageVector.vectorResource(R.drawable.rounded_calendar_month_24)
+                4 -> ImageVector.vectorResource(R.drawable.rounded_group_24)
+                5 -> ImageVector.vectorResource(R.drawable.rounded_payments_24)
+                6 -> ImageVector.vectorResource(R.drawable.rounded_alarm_24)
+                7 -> ImageVector.vectorResource(R.drawable.rounded_settings_24)
+                else -> Screens.fromOrdinal(1 + index)!!.icon
+            }
             Icon(
-                imageVector = Screens.fromOrdinal(1 + index)!!.icon,
+                imageVector = image,
                 contentDescription = "Section ${index + 1}",
                 modifier = Modifier
                     .size((subButtonSize * 0.5).dp)
