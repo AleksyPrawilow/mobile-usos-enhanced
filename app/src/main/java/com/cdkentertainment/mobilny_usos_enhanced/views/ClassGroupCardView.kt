@@ -68,45 +68,4 @@ fun ClassGroupCardView(
                 .padding(horizontal = 12.dp, vertical = 6.dp)
         )
     }
-
-//    Card(
-//        colors = CardColors(
-//            contentColor = UISingleton.color4.primaryColor,
-//            containerColor = UISingleton.color2.primaryColor,
-//            disabledContainerColor = UISingleton.color2.primaryColor,
-//            disabledContentColor = UISingleton.color4.primaryColor
-//        ),
-//        onClick = onClick,
-//        shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp),
-//        modifier = Modifier
-//            .fillMaxWidth()
-//    ) {
-//        Column(
-//            verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically),
-//            modifier = Modifier
-//                .padding(12.dp)
-//                .fillMaxWidth()
-//        ) {
-//            Text(
-//                text = data.course_name.pl,
-//                color = UISingleton.color4.primaryColor,
-//                style = MaterialTheme.typography.titleLarge,
-//                maxLines = 2,
-//                overflow = TextOverflow.Ellipsis
-//            )
-//            HorizontalDivider(
-//                thickness = 5.dp,
-//                color = UISingleton.color3.primaryColor,
-//                modifier = Modifier
-//                    .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
-//            )
-//            Text(
-//                text = "${data.class_type_id}, grupa ${data.group_number}",
-//                style = MaterialTheme.typography.titleMedium,
-//                color = UISingleton.color3.primaryColor,
-//                maxLines = 1,
-//                overflow = TextOverflow.Ellipsis
-//            )
-//        }
-//    }
 }

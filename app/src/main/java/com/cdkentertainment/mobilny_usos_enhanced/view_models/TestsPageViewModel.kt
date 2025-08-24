@@ -21,11 +21,16 @@ fun main(): Unit = runBlocking { //dla testów
 }
 
 class TestsPageViewModel: ViewModel() {
-    var tests: Int? by mutableStateOf(null)
+    var tests: TestsPageModel.TestsContainer? by mutableStateOf(null)
+    val model = TestsPageModel()
 
     suspend fun fetchTests() {
         withContext(Dispatchers.IO) {
-            tests = null
+            try {
+                tests = model.getAllTests()
+            } catch(e: Exception) {
+                println(e)
+            }
         }
     }
 }

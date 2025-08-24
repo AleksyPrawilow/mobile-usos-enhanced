@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,6 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,6 +31,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
+import com.cdkentertainment.mobilny_usos_enhanced.models.TestsPageModel
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.Screens
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.TestsPageViewModel
 import kotlinx.coroutines.delay
@@ -71,21 +74,42 @@ fun TestsPageView() {
         item {
             Spacer(Modifier.height(16.dp))
         }
-        stickyHeader {
-            AnimatedVisibility(showElements, enter = enterTransition(1)) {
-                SemesterCardView("2025/SL")
-            }
-        }
-        for (index in 0 until 5) {
-            item {
-                AnimatedVisibility(showElements, enter = enterTransition(2 + index)) {
-                    TestCardView()
+        if (testsPageViewModel.tests != null) {
+            for (semester in testsPageViewModel.tests!!.tests.keys.reversed()) {
+                val semesterTests: Map<String, TestsPageModel.Test>? = testsPageViewModel.tests!!.tests[semester]
+                stickyHeader {
+                    AnimatedVisibility(showElements, enter = enterTransition(1)) {
+                        SemesterCardView(semester)
+                    }
+                }
+                if (semesterTests != null) {
+                    val keys: List<String> = semesterTests.keys.toList()
+                    for (index in 0 until semesterTests.keys.size) {
+                        val test: TestsPageModel.Test? = semesterTests[keys[index]]
+                        if (test != null) {
+                            item {
+                                AnimatedVisibility(showElements, enter = enterTransition(2 + index)) {
+                                    TestCardView(semesterTests[keys[index]]!!)
+                                }
+                            }
+                        }
+                    }
                 }
             }
-        }
-
-        item {
-            Spacer(modifier = Modifier.height(64.dp))
+            item {
+                Spacer(modifier = Modifier.height(64.dp))
+            }
+        } else {
+            item {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(128.dp)
+                ) {
+                    CircularProgressIndicator(color = UISingleton.color3.primaryColor)
+                }
+            }
         }
     }
 }

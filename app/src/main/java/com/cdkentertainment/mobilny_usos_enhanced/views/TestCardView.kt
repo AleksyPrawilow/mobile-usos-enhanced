@@ -25,10 +25,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
+import com.cdkentertainment.mobilny_usos_enhanced.models.TestsPageModel
 
 // TODO: Combine this into a separate class while changing the ClassGroupCardView.kt to something more universal
 @Composable
-fun TestCardView() {
+fun TestCardView(
+    testData: TestsPageModel.Test
+) {
     var expanded: Boolean by rememberSaveable { mutableStateOf(false) }
     val onClick: () -> Unit = { expanded = !expanded }
 
@@ -47,7 +50,7 @@ fun TestCardView() {
                 .zIndex(1f)
         ) {
             Text(
-                text = "Nazwa kursu",
+                text = testData.course_edition?.course_name?.pl ?: "N/A",
                 color = UISingleton.color4.primaryColor,
                 style = MaterialTheme.typography.titleLarge,
                 maxLines = 2,
