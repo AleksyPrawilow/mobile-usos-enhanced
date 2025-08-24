@@ -4,22 +4,11 @@ package com.cdkentertainment.mobilny_usos_enhanced.models
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
 class TestsPageModel {
-    @Serializable
-    public data class TestsContainer ( val tests: Map<String, Map<String, Test>>)
-    @Serializable
-    public data class CourseEdition (
-        val course_id: String,
-        val course_name: SharedDataClasses.LangDict
-    )
-    @Serializable
-    public data class Test (
-        val node_id: Int,
-        val course_edition: CourseEdition ?
-    )
     private val parser: Json = Json { ignoreUnknownKeys = true }
     private val allTestsUrl: String = "crstests/participant"
     private fun parseAllTests(responseString: String): TestsContainer {
@@ -39,3 +28,24 @@ class TestsPageModel {
         }
     }
 }
+
+@Serializable
+data class TestsContainer ( val tests: Map<String, Map<String, Test>>)
+@Serializable
+data class CourseEdition (
+    val course_id: String,
+    val course_name: SharedDataClasses.LangDict
+)
+@Serializable
+data class LimitToGroupsObject (
+    val course_unit_id: Int,
+    val group_number: Int
+)
+@Serializable
+data class Test (
+    val node_id: Int,
+    val course_edition: CourseEdition ?,
+//    val limit_to_groups: LimitToGroupsObject, //narazie nie działa
+    val name: SharedDataClasses.LangDict,
+    val description: SharedDataClasses.LangDict
+)
