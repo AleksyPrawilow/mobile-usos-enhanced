@@ -31,7 +31,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
-import com.cdkentertainment.mobilny_usos_enhanced.models.TestsPageModel
+import com.cdkentertainment.mobilny_usos_enhanced.models.Test
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.Screens
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.TestsPageViewModel
 import kotlinx.coroutines.delay
@@ -76,7 +76,7 @@ fun TestsPageView() {
         }
         if (testsPageViewModel.tests != null) {
             for (semester in testsPageViewModel.tests!!.tests.keys.reversed()) {
-                val semesterTests: Map<String, TestsPageModel.Test>? = testsPageViewModel.tests!!.tests[semester]
+                val semesterTests: Map<String, Test>? = testsPageViewModel.tests!!.tests[semester]
                 stickyHeader {
                     AnimatedVisibility(showElements, enter = enterTransition(1)) {
                         SemesterCardView(semester)
@@ -85,7 +85,7 @@ fun TestsPageView() {
                 if (semesterTests != null) {
                     val keys: List<String> = semesterTests.keys.toList()
                     for (index in 0 until semesterTests.keys.size) {
-                        val test: TestsPageModel.Test? = semesterTests[keys[index]]
+                        val test: Test? = semesterTests[keys[index]]
                         if (test != null) {
                             item {
                                 AnimatedVisibility(showElements, enter = enterTransition(2 + index)) {
