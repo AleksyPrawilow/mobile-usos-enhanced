@@ -26,6 +26,9 @@ class TestsPageViewModel: ViewModel() {
 
     suspend fun fetchTests() {
         withContext(Dispatchers.IO) {
+            if (tests != null) {
+                return@withContext
+            }
             try {
                 tests = model.getAllTests()
             } catch(e: Exception) {
