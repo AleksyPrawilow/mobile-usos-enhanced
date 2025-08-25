@@ -13,7 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,9 +32,10 @@ fun CourseGradesView(
     nameMap: Map<String, CourseUnitIds>,
     classtypeIdInfo: Map<String, SharedDataClasses.IdAndName>?
 ) {
-    var showDetails: Boolean by rememberSaveable { mutableStateOf(false) }
-    var popupGrade: TermGrade? by rememberSaveable { mutableStateOf(null) }
+    var showDetails: Boolean by remember { mutableStateOf(false) }
+    var popupGrade: TermGrade? by remember { mutableStateOf(null) }
 
+    //TODO: Transfer to the view model so it persists. rememberSaveable does not work here!!!
     if (showDetails && popupGrade != null) {
         GradePopupView(popupGrade!!) {
             showDetails = false
