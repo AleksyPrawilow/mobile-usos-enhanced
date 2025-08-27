@@ -26,10 +26,12 @@ fun SupabaseTestPlayground() {
     var outputText: String by remember { mutableStateOf("Output text") }
     var functionText: String by remember { mutableStateOf("Function text") }
     LaunchedEffect(Unit) {
-        outputText = DatabaseSingleton.client.from("Universities").select().data
-        functionText = DatabaseSingleton.client.postgrest.rpc("UniversitiesList").data
+        outputText = DatabaseSingleton.client.from("universities").select().data
+        functionText = DatabaseSingleton.client.postgrest.rpc("universities_list").data
         // .rpc to fukcje
         // .data to wynik
+        DatabaseSingleton.signInUser()
+        DatabaseSingleton.updateUserSession("212236", 1)
     }
 
     Box(
