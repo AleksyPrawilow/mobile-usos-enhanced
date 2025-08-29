@@ -1,19 +1,9 @@
 package com.cdkentertainment.mobilny_usos_enhanced.view_models
 
 import android.content.Context
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.DateRange
-import androidx.compose.material.icons.rounded.Home
-import androidx.compose.material.icons.rounded.Notifications
-import androidx.compose.material.icons.rounded.Person
-import androidx.compose.material.icons.rounded.Settings
-import androidx.compose.material.icons.rounded.ShoppingCart
-import androidx.compose.material.icons.rounded.Star
-import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.UserDataSingleton
 import kotlinx.coroutines.CoroutineScope
@@ -43,16 +33,17 @@ class ScreenManagerViewModel: ViewModel() {
     }
 }
 
-enum class Screens(val icon: ImageVector) {
-    LOGIN(Icons.Rounded.Person),
-    HOME(Icons.Rounded.Home),
-    GRADES(Icons.Rounded.Star),
-    TESTS(Icons.Rounded.Warning),
-    CALENDAR(Icons.Rounded.DateRange),
-    GROUPS(Icons.Rounded.Person),
-    PAYMENTS(Icons.Rounded.ShoppingCart),
-    ATTENDANCE(Icons.Rounded.Notifications),
-    SETTINGS(Icons.Rounded.Settings);
+enum class Screens(val pageName: Pair<String, String>) {
+    LOGIN(Pair("Logowanie", "Login")),
+    HOME(Pair("Home", "Home")),
+    GRADES(Pair("Oceny", "Grades")),
+    TESTS(Pair("Sprawdziany", "Tests")),
+    CALENDAR(Pair("Kalendarz", "Calendar")),
+    GROUPS(Pair("Grupy", "Groups")),
+    PAYMENTS(Pair("Płatności", "Payments")),
+    ATTENDANCE(Pair("Obecność", "Attendance")),
+    LECTURERS(Pair("Prowadzacy", "Lecturers")),
+    SETTINGS(Pair("Ustawienia", "Settings"));
 
     companion object {
         fun fromOrdinal(ordinal: Int): Screens? = Screens.entries.getOrNull(ordinal)

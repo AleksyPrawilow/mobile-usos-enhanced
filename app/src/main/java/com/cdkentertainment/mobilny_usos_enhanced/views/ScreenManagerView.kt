@@ -32,6 +32,7 @@ fun ScreenManager(
             Screens.GROUPS -> ClassGroupsPageView()
             Screens.PAYMENTS -> PaymentsPageView()
             Screens.ATTENDANCE -> AttendancePageView()
+            Screens.LECTURERS -> HomePageView()
             Screens.SETTINGS -> SettingsPageView()
         }
     }
