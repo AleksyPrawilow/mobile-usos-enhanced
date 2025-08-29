@@ -39,8 +39,8 @@ class GradesPageViewModel: ViewModel() {
                 }
             }
             try {
-                val data:Pair<List<Season>, Map<String, CourseUnitIds>> = gradesPageModel.fetchUserGrades()
-                userGrades = data.first
+                val data:Pair<List<Season>, Map<String, CourseUnitIds>>? = gradesPageModel.fetchUserGrades()
+                userGrades = data!!.first
                 userSubjects = data.second
             } catch (e: Exception) {
                 println(e)

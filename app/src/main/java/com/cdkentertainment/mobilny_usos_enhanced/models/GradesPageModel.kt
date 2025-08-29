@@ -7,33 +7,64 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
 class GradesPageModel {
-
-    suspend fun fetchUserGrades() : Pair<List<Season>, Map<String, CourseUnitIds>>{
+    private val parser = Json{ignoreUnknownKeys = true}
+    private val userTermsUrl: String = "courses/user"
+    private val userTermsFields: String = "terms[id]"
+    private val gradesUrl: String = "grades/terms2"
+    private val gradesFields: String =
+        "date_modified|modification_author|value_symbol|passes|value_description|exam_id|exam_session_number"
+    @Serializable
+    private data class TermIdObject (
+        val terms: List<TermId>
+    )
+    @Serializable
+    private data class TermId (
+        val id: String
+    )
+    private suspend fun getTermsIdsString(): String {
         return withContext(Dispatchers.IO) {
-            val parser: Json = Json { ignoreUnknownKeys = true }
-            val termIdsResponse: Map<String, String> = OAuthSingleton.get("courses/user?fields=terms[id]")
+            val termIdsResponse: Map<String, String> = OAuthSingleton.get("$userTermsUrl?fields=$userTermsFields")
             var termIds: String = ""
-
             if (termIdsResponse.containsKey("response") && termIdsResponse["response"] != null) {
                 val termIdsResponseString: String = termIdsResponse["response"]!!
-                var termIdsObject: Map<String, List<Map<String, String>>> = parser.decodeFromString<Map<String, List<Map<String, String>>>>(termIdsResponseString)
-
-                val termListSize: Int = termIdsObject["terms"]!!.size
-                for (i in 0 until termListSize) {
-                    termIds += termIdsObject["terms"]!![i]["id"]
-                    if (i + 1 != termListSize) {
-                       termIds += "|"
-                    }
+                val termIdsObject: TermIdObject = parser.decodeFromString<TermIdObject>(termIdsResponseString)
+                val termList: MutableList<String> = mutableListOf<String>()
+                for (term in termIdsObject.terms) {
+                    termList.add(term.id)
                 }
+                termIds = termList.joinToString(separator = "|")
+                return@withContext termIds
             } else {
-                throw(Exception("API Error"))
+                throw (Exception("API Error"))
             }
+        }
+    }
 
-            val response: Map<String, String> = OAuthSingleton.get("grades/terms2?term_ids=$termIds&fields=date_modified|modification_author|value_symbol|passes|value_description|exam_id|exam_session_number")
+    private fun parseGradesToSeasonsAndCalculateAvgGrade(responseString: String): Map<String, Map<String, CourseGrades>> {
+        val parsedGrades: Map<String, Map<String, CourseGrades>> = parser.decodeFromString<Map<String, Map<String, CourseGrades>>>(responseString) //niestety ewidentnie ktoś kto pisał to api chciał nam to utrudnić
+        val finalSeasonObject: MutableList<Season> = mutableListOf<Season>()
+        for (seasonId in parsedGrades.keys) {
+            val currentCourse = parsedGrades[seasonId]
+            if (currentCourse != null) {
+                for (unit in currentCourse.keys) {
+
+                }
+            }
+            val currentSeasonObject: Season = Season(seasonId, )
+        }
+        return parsedGrades
+    }
+
+    public suspend fun fetchUserGrades() : Pair<List<Season>, Map<String, CourseUnitIds>> ?{
+        return withContext(Dispatchers.IO) {
+            val termIds: String = getTermsIdsString()
+            val response: Map< String, String> = OAuthSingleton.get("$gradesUrl?term_ids=$termIds&fields=$gradesFields")
 
             if (response.containsKey("response") && response["response"] != null) {
                 val responseString: String = response["response"]!!
-                return@withContext parseGradesToSeasons(parser.decodeFromString<Map<String, Map<String, UserGrades>>>(responseString))
+                val parsedGrades: Map<String, Map<String, CourseGrades>> = parseGradesToSeasonsAndCalculateAvgGrade(responseString)
+                println(parsedGrades)
+                return@withContext null
             } else {
                 throw(Exception("API Error"))
             }
@@ -110,7 +141,6 @@ class GradesPageModel {
 
     suspend fun fetchClasstypeIds(): Map<String, SharedDataClasses.IdAndName> {
         return withContext(Dispatchers.IO) {
-            val parser: Json = Json{ignoreUnknownKeys = true}
             val apiResponse: Map<String, String> = OAuthSingleton.get("courses/classtypes_index")
             if (apiResponse.containsKey("response") && apiResponse["response"] != null) {
                 val responseString: String = apiResponse["response"]!!
@@ -121,6 +151,46 @@ class GradesPageModel {
         }
     }
 }
+
+@Serializable
+data class CourseGrades (
+    val course_units_grades: Map<String, List<Map<String, SingleTermGradeObject?>>>,
+    val course_grades: List<Map<String, String> ?>?
+)
+@Serializable
+data class SingleTermGradeObject (
+    val value_symbol: String = "N/A",
+    val value_description: SharedDataClasses.LangDict,
+    val exam_id: Int,
+    val exam_session_number: Int,
+    val grade_value: Float ? = null,
+    val date_modified: String? = null,
+    val modification_author: SharedDataClasses.Human? = null
+)
+@Serializable
+data class Season ( //Final structure for grades per season
+    val seasonId: String,
+    val courseList: List<Course>,
+    val avgGrade: Float ? = null
+)
+@Serializable
+data class Course (
+    val courseId: String,
+    val courseGrades: CourseGrades
+)
+//@Serializable
+//data class UserGrades (
+//    val course_units_grades : Map<String, List<Map<String, TermGrade ?>> ?>,
+//    val course_grades: List<Map<String, String> ?>?
+//)
+
+
+
+
+
+
+
+
 
 @Serializable
 data class CourseUnitIds( //it is the final structure for Unit ids and names, Json parser doesn't use it
@@ -134,24 +204,7 @@ data class CourseUnitData(
     val classtype_id: String
 )
 
-@Serializable
-data class Season ( //Final structure for grades per season
-    val seasonId: String,
-    val courseList: List<Course>,
-    val avgGrade: Float ? = null
-)
 
-@Serializable
-data class Course (
-    val courseId: String,
-    val userGrades: UserGrades
-)
-
-@Serializable
-data class UserGrades (
-    val course_units_grades : Map<String, List<Map<String, TermGrade ?>> ?>,
-    val course_grades: List<Map<String, String> ?>?
-)
 
 @Serializable
 data class TermGrade (
