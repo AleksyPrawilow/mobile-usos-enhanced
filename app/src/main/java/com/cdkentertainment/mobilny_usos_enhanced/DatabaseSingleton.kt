@@ -1,8 +1,12 @@
 package com.cdkentertainment.mobilny_usos_enhanced
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import com.cdkentertainment.mobilny_usos_enhanced.models.BasicUserData
+import com.cdkentertainment.mobilny_usos_enhanced.usos_installations.Universities
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.auth.auth
-import io.github.jan.supabase.auth.providers.builtin.Email
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.postgrest
@@ -10,6 +14,7 @@ import io.github.jan.supabase.postgrest.rpc
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 
 object DatabaseSingleton {
     val client = createSupabaseClient(
@@ -23,23 +28,29 @@ object DatabaseSingleton {
         install(Postgrest)
     }
 
-    suspend fun signInUser() {
-        withContext(Dispatchers.IO) {
-            try {
-                client.auth.signInWith(Email) {
-                    email = "example@gmail.com"
-                    password = "examplepassword"
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-    }
+    var selectedUniversity: Universities by mutableStateOf(Universities.UAM)
+    var userInformation: BasicUserData? by mutableStateOf(null)
 
-    suspend fun updateUserSession(userId: String, universityId: Int) {
+    suspend fun updateUserSession(userId: String) {
         withContext(Dispatchers.IO) {
             try {
-                val userSessionData = UserSessionData(userId, universityId)
+                val previousSessionString: String = client.postgrest.rpc("check_user_session", UserSessionData(userId, 1)).data
+                val parser: Json = Json { ignoreUnknownKeys = true }
+                var previousSession: List<UserSessionFullData> = listOf()
+                try {
+                    previousSession = parser.decodeFromString<List<UserSessionFullData>>(previousSessionString)
+                } catch (e: Exception) {
+                    previousSession = listOf()
+                    e.printStackTrace()
+                }
+                if (previousSession.count() != 0) {
+                    val currentUser: String? = client.auth.currentUserOrNull()?.id
+                    if (previousSession[0].user_session == currentUser) {
+                        println("no update")
+                        return@withContext
+                    }
+                }
+                val userSessionData = UserSessionData(userId, selectedUniversity.ordinal)
                 val res = client.postgrest.rpc("upsert_user_session_to_current", userSessionData)
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -52,4 +63,11 @@ object DatabaseSingleton {
 private data class UserSessionData(
     val p_user_id: String,
     val p_university_id: Int
+)
+
+@Serializable
+private data class UserSessionFullData(
+    val user_id: String,
+    val user_session: String?,
+    val university_id: Int
 )

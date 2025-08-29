@@ -1,14 +1,21 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
 import android.content.Context
+import android.graphics.Color.TRANSPARENT
+import android.util.Log
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -26,7 +33,11 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,10 +47,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.cdkentertainment.mobilny_usos_enhanced.DatabaseSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
-import com.cdkentertainment.mobilny_usos_enhanced.view_models.OAuthViewModel
+import com.cdkentertainment.mobilny_usos_enhanced.view_models.LoginPageViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.ScreenManagerViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.Screens
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -47,130 +60,346 @@ import kotlinx.coroutines.launch
 fun LoginPageView(screenManagerViewModel: ScreenManagerViewModel = viewModel<ScreenManagerViewModel>()) {
     val coroutineScope = rememberCoroutineScope()
     val context: Context = LocalContext.current
-    val oAuthViewModel: OAuthViewModel = viewModel<OAuthViewModel>()
-    oAuthViewModel.context = context
+    val pageViewModel: LoginPageViewModel = viewModel<LoginPageViewModel>()
+    val currentState: LoginPageViewModel.LoginState = pageViewModel.loginState
 
     LaunchedEffect(Unit) {
-        if (oAuthViewModel.tryAutoLogin()) {
-            delay(1000)
-            screenManagerViewModel.authorize()
-        }
+        pageViewModel.tryGoogleAutoLogIn(context)
     }
 
     Column(
-        verticalArrangement = Arrangement.spacedBy(15.dp, Alignment.CenterVertically),
+        verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
+        modifier = Modifier.fillMaxSize().padding(16.dp)
     ) {
         Text(
             text = "Mobilny USOS Enhanced",
             style = MaterialTheme.typography.headlineLarge,
+            color = UISingleton.color4.primaryColor,
             textAlign = TextAlign.Center,
-            color = UISingleton.color4.primaryColor
+            modifier = Modifier.fillMaxWidth()
         )
-        AnimatedVisibility(oAuthViewModel.isCheckingConnection) {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = "Sprawdzam połączenie...",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = UISingleton.color3.primaryColor
-                )
-                CircularProgressIndicator(color = UISingleton.color3.primaryColor)
+        AnimatedContent(
+            transitionSpec = { fadeIn() + scaleIn() togetherWith fadeOut() + slideOutHorizontally() },
+            targetState = currentState
+        ) { state ->
+            when (state) {
+                LoginPageViewModel.LoginState.GOOGLE_AUTO_LOGIN -> GoogleAutoLoginView()
+                LoginPageViewModel.LoginState.GOOGLE_LOGIN -> GoogleLoginView {
+                    pageViewModel.loginGoogle()
+                }
+                LoginPageViewModel.LoginState.USOS_AUTO_LOGIN -> UsosAutoLoginView(pageViewModel)
+                LoginPageViewModel.LoginState.USOS_LOGIN -> UsosLoginView {
+                    coroutineScope.launch {
+                        pageViewModel.authorize(context)
+                    }
+                }
+                LoginPageViewModel.LoginState.USOS_RETREIVING_REQUEST_TOKEN -> UsosRequestTokenView()
+                LoginPageViewModel.LoginState.USOS_OAUTH_VERIFIER -> UsosOauthVerifierView(pageViewModel)
+                LoginPageViewModel.LoginState.SUCCESS -> SuccessView(screenManagerViewModel)
             }
         }
-        AnimatedVisibility(oAuthViewModel.authorized) {
+    }
+//    val oAuthViewModel: OAuthViewModel = viewModel<OAuthViewModel>()
+//    oAuthViewModel.context = context
+
+//    LaunchedEffect(Unit) {
+//        if (oAuthViewModel.tryAutoLogin()) {
+//            delay(1000)
+//            screenManagerViewModel.authorize()
+//        }
+//    }
+//
+//    Column(
+//        verticalArrangement = Arrangement.spacedBy(15.dp, Alignment.CenterVertically),
+//        horizontalAlignment = Alignment.CenterHorizontally,
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .padding(16.dp)
+//    ) {
+//        Text(
+//            text = "Mobilny USOS Enhanced",
+//            style = MaterialTheme.typography.headlineLarge,
+//            textAlign = TextAlign.Center,
+//            color = UISingleton.color4.primaryColor
+//        )
+//        AnimatedVisibility(oAuthViewModel.isCheckingConnection) {
+//            Column(
+//                verticalArrangement = Arrangement.Center,
+//                horizontalAlignment = Alignment.CenterHorizontally
+//            ) {
+//                Text(
+//                    text = "Sprawdzam połączenie...",
+//                    style = MaterialTheme.typography.titleLarge,
+//                    color = UISingleton.color3.primaryColor
+//                )
+//                CircularProgressIndicator(color = UISingleton.color3.primaryColor)
+//            }
+//        }
+//        AnimatedVisibility(oAuthViewModel.authorized) {
+//            Text(
+//                text = "Zalogowany",
+//                style = MaterialTheme.typography.titleLarge,
+//                color = UISingleton.color3.primaryColor
+//            )
+//        }
+//        AnimatedVisibility(!oAuthViewModel.authorized && !oAuthViewModel.isCheckingConnection) {
+//            Text(
+//                text = if (!oAuthViewModel.gotRequestToken) "Nie jesteś zalogowany" + oAuthViewModel.errorMessage else "Trwa logowanie",
+//                style = MaterialTheme.typography.titleLarge,
+//                color = UISingleton.color3.primaryColor
+//            )
+//        }
+//        AnimatedVisibility(!oAuthViewModel.gotRequestToken && !oAuthViewModel.isCheckingConnection && !oAuthViewModel.authorized) {
+//            Button(
+//                colors = ButtonDefaults.buttonColors(
+//                    contentColor = UISingleton.color3.primaryColor,
+//                    containerColor = UISingleton.color2.primaryColor,
+//                ),
+//                onClick = {
+//                    coroutineScope.launch {
+//                        oAuthViewModel.authorize()
+//                    }
+//                }
+//            ) {
+//                Row(
+//                    horizontalArrangement = Arrangement.spacedBy(5.dp, Alignment.CenterHorizontally),
+//                    verticalAlignment = Alignment.CenterVertically
+//                ) {
+//                    Text(
+//                        text = "Zaloguj się",
+//                        style = MaterialTheme.typography.headlineSmall
+//                    )
+//                    Icon(
+//                        imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
+//                        contentDescription = "Icon",
+//                    )
+//                }
+//            }
+//        }
+//        AnimatedVisibility(oAuthViewModel.gotRequestToken && !oAuthViewModel.authorized && !oAuthViewModel.isCheckingConnection) {
+//            Row(
+//                horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally)
+//            ) {
+//                TextField(
+//                    colors = TextFieldDefaults.colors(
+//                        focusedTextColor = UISingleton.color3.primaryColor,
+//                        unfocusedTextColor = UISingleton.color3.primaryColor,
+//                        focusedContainerColor = Color.Transparent,
+//                        unfocusedContainerColor = Color.Transparent,
+//                        cursorColor = UISingleton.color3.primaryColor,
+//                        focusedIndicatorColor = UISingleton.color2.primaryColor,
+//                        unfocusedIndicatorColor = UISingleton.color2.primaryColor
+//                    ),
+//                    value = oAuthViewModel.oauthVerifierPin,
+//                    leadingIcon = { Icon(imageVector = Icons.Rounded.Lock, contentDescription = "lockIcon", tint = UISingleton.color3.primaryColor) },
+//                    placeholder = { Text(text = "Wprowadź pin.") },
+//                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+//                    onValueChange = {
+//                        if (it.length <= 8 && it.all { char -> char.isDigit() }) {
+//                            oAuthViewModel.oauthVerifierPin = it
+//                        }
+//                    }
+//                )
+//                IconButton(
+//                    colors = IconButtonDefaults.iconButtonColors(
+//                        contentColor = UISingleton.color3.primaryColor,
+//                        containerColor = UISingleton.color2.primaryColor,
+//                    ),
+//                    onClick = {
+//                        if (oAuthViewModel.oauthVerifierPin.length == 8) {
+//                            coroutineScope.launch {
+//                                oAuthViewModel.getAccessToken(oAuthViewModel.oauthVerifierPin)
+//                                delay(1000)
+//                                screenManagerViewModel.authorize()
+//                            }
+//                        }
+//                    }
+//                ) {
+//                    Icon(
+//                        imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
+//                        contentDescription = "Authorize"
+//                    )
+//                }
+//            }
+//        }
+//    }
+}
+
+@Composable
+private fun GoogleAutoLoginView() {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Text(
+            text = "Sprawdzam połączenie z serwisami Google...",
+            textAlign = TextAlign.Center,
+            color = UISingleton.color4.primaryColor,
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.fillMaxWidth()
+        )
+        CircularProgressIndicator(color = UISingleton.color3.primaryColor)
+    }
+}
+
+@Composable
+private fun GoogleLoginView(onClick: () -> Unit) {
+    Button(
+        colors = ButtonDefaults.buttonColors(
+            contentColor = UISingleton.color3.primaryColor,
+            containerColor = UISingleton.color2.primaryColor,
+        ),
+        onClick = onClick
+    ) {
+        Text(
+            text = "Zaloguj się za pomocą Google"
+        )
+    }
+}
+
+@Composable
+private fun UsosAutoLoginView(viewModel: LoginPageViewModel) {
+    var tryingToLogin: Boolean by rememberSaveable { mutableStateOf(false) }
+    val context: Context = LocalContext.current
+    LaunchedEffect(Unit) {
+        if (tryingToLogin) {
+            return@LaunchedEffect
+        }
+        tryingToLogin = true
+        viewModel.tryAutoLogin(context)
+    }
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Text(
+            text = "Sprawdzam połączenie z serwisami USOS...",
+            textAlign = TextAlign.Center,
+            color = UISingleton.color4.primaryColor,
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.fillMaxWidth()
+        )
+        CircularProgressIndicator(color = UISingleton.color3.primaryColor)
+    }
+}
+
+@Composable
+private fun UsosLoginView(onClick: () -> Unit) {
+    Button(
+        colors = ButtonDefaults.buttonColors(
+            contentColor = UISingleton.color3.primaryColor,
+            containerColor = UISingleton.color2.primaryColor,
+        ),
+        onClick = onClick
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(5.dp, Alignment.CenterHorizontally),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Text(
-                text = "Zalogowany",
-                style = MaterialTheme.typography.titleLarge,
-                color = UISingleton.color3.primaryColor
+                text = "Zaloguj się",
+                style = MaterialTheme.typography.headlineSmall
+            )
+            Icon(
+                imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
+                contentDescription = "Icon",
             )
         }
-        AnimatedVisibility(!oAuthViewModel.authorized && !oAuthViewModel.isCheckingConnection) {
-            Text(
-                text = if (!oAuthViewModel.gotRequestToken) "Nie jesteś zalogowany" + oAuthViewModel.errorMessage else "Trwa logowanie",
-                style = MaterialTheme.typography.titleLarge,
-                color = UISingleton.color3.primaryColor
+    }
+}
+
+@Composable
+private fun UsosRequestTokenView() {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Text(
+            text = "Sprawdzam połączenie z serwisami USOS...",
+            textAlign = TextAlign.Center,
+            color = UISingleton.color4.primaryColor,
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.fillMaxWidth()
+        )
+        CircularProgressIndicator(color = UISingleton.color3.primaryColor)
+    }
+}
+
+@Composable
+private fun UsosOauthVerifierView(viewModel: LoginPageViewModel) {
+    val coroutineScope: CoroutineScope = rememberCoroutineScope()
+    val context: Context = LocalContext.current
+    var oauthPin: String by rememberSaveable { mutableStateOf("") }
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Text(
+            text = "Wprowadź PIN podany na stronie",
+            color = UISingleton.color4.primaryColor,
+            style = MaterialTheme.typography.titleLarge,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
+        )
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally)
+        ) {
+            TextField(
+                colors = TextFieldDefaults.colors(
+                    focusedTextColor = UISingleton.color3.primaryColor,
+                    unfocusedTextColor = UISingleton.color3.primaryColor,
+                    focusedContainerColor = Color(TRANSPARENT),
+                    unfocusedContainerColor = Color(TRANSPARENT),
+                    cursorColor = UISingleton.color3.primaryColor,
+                    focusedIndicatorColor = UISingleton.color2.primaryColor,
+                    unfocusedIndicatorColor = UISingleton.color2.primaryColor
+                ),
+                value = oauthPin,
+                leadingIcon = { Icon(imageVector = Icons.Rounded.Lock, contentDescription = "lockIcon", tint = UISingleton.color3.primaryColor) },
+                placeholder = { Text(text = "Wprowadź pin.") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                onValueChange = {
+                    if (it.length <= 8 && it.all { char -> char.isDigit() }) {
+                        oauthPin = it
+                    }
+                }
             )
-        }
-        AnimatedVisibility(!oAuthViewModel.gotRequestToken && !oAuthViewModel.isCheckingConnection && !oAuthViewModel.authorized) {
-            Button(
-                colors = ButtonDefaults.buttonColors(
+            IconButton(
+                colors = IconButtonDefaults.iconButtonColors(
                     contentColor = UISingleton.color3.primaryColor,
                     containerColor = UISingleton.color2.primaryColor,
                 ),
                 onClick = {
-                    coroutineScope.launch {
-                        oAuthViewModel.authorize()
-                    }
-                }
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(5.dp, Alignment.CenterHorizontally),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Zaloguj się",
-                        style = MaterialTheme.typography.headlineSmall
-                    )
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
-                        contentDescription = "Icon",
-                    )
-                }
-            }
-        }
-        AnimatedVisibility(oAuthViewModel.gotRequestToken && !oAuthViewModel.authorized && !oAuthViewModel.isCheckingConnection) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally)
-            ) {
-                TextField(
-                    colors = TextFieldDefaults.colors(
-                        focusedTextColor = UISingleton.color3.primaryColor,
-                        unfocusedTextColor = UISingleton.color3.primaryColor,
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
-                        cursorColor = UISingleton.color3.primaryColor,
-                        focusedIndicatorColor = UISingleton.color2.primaryColor,
-                        unfocusedIndicatorColor = UISingleton.color2.primaryColor
-                    ),
-                    value = oAuthViewModel.oauthVerifierPin,
-                    leadingIcon = { Icon(imageVector = Icons.Rounded.Lock, contentDescription = "lockIcon", tint = UISingleton.color3.primaryColor) },
-                    placeholder = { Text(text = "Wprowadź pin.") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    onValueChange = {
-                        if (it.length <= 8 && it.all { char -> char.isDigit() }) {
-                            oAuthViewModel.oauthVerifierPin = it
+                    if (oauthPin.length == 8) {
+                        coroutineScope.launch {
+                            viewModel.getAccessToken(oauthPin, context)
                         }
                     }
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
+                    contentDescription = "Authorize"
                 )
-                IconButton(
-                    colors = IconButtonDefaults.iconButtonColors(
-                        contentColor = UISingleton.color3.primaryColor,
-                        containerColor = UISingleton.color2.primaryColor,
-                    ),
-                    onClick = {
-                        if (oAuthViewModel.oauthVerifierPin.length == 8) {
-                            coroutineScope.launch {
-                                oAuthViewModel.getAccessToken(oAuthViewModel.oauthVerifierPin)
-                                delay(1000)
-                                screenManagerViewModel.authorize()
-                            }
-                        }
-                    }
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
-                        contentDescription = "Authorize"
-                    )
-                }
             }
         }
     }
+}
+
+@Composable
+private fun SuccessView(screenManagerViewModel: ScreenManagerViewModel) {
+    LaunchedEffect(Unit) {
+        Log.e("debug", "Storing data in database")
+        DatabaseSingleton.updateUserSession("212239")
+        delay(1000)
+        screenManagerViewModel.authorize()
+    }
+    Text(
+        text = "Zalogowany",
+        style = MaterialTheme.typography.titleLarge,
+        color = UISingleton.color3.primaryColor
+    )
 }
 
 @Preview(showBackground = true)

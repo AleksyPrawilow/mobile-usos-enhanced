@@ -67,11 +67,15 @@ object OAuthSingleton {
             val response: Map<String, String> = get("users/user")
             val parser = Json { ignoreUnknownKeys = true }
             if (response.containsKey("response") && response["response"] != null) {
-                val data: AccessTokenCheckClass = parser.decodeFromString<AccessTokenCheckClass>(response["response"]!!)
-                if (data.message != null) {
-                    // If there is an error message, the token is most likely expired, therefore return true
-                    println(data)
-                    return@withContext true
+                try {
+                    val data: AccessTokenCheckClass = parser.decodeFromString<AccessTokenCheckClass>(response["response"]!!)
+                    if (data.message != null) {
+                        // If there is an error message, the token is most likely expired, therefore return true
+                        println(data)
+                        return@withContext true
+                    }
+                } catch (e: Exception) {
+                    return@withContext true // Error while making request so manual log in
                 }
                 // No message = no error = token not expired
                 return@withContext false

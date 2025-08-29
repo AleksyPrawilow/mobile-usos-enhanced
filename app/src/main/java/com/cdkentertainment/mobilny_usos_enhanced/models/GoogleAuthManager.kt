@@ -77,7 +77,6 @@ class GoogleAuthManager(
                 .createFrom(result.credential.data)
 
             val googleIdToken = googleIdTokenCredential.idToken
-            println(googleIdToken)
 
             supabase.auth.signInWith(IDToken) {
                 idToken = googleIdToken

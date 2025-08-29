@@ -30,8 +30,6 @@ fun SupabaseTestPlayground() {
         functionText = DatabaseSingleton.client.postgrest.rpc("universities_list").data
         // .rpc to fukcje
         // .data to wynik
-        DatabaseSingleton.signInUser()
-        DatabaseSingleton.updateUserSession("212236", 1)
     }
 
     Box(

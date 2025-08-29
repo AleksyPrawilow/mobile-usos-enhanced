@@ -33,10 +33,6 @@ class OAuthViewModel(): ViewModel() {
     }
 
     suspend fun tryAutoLogin(): Boolean {
-        if (context == null) {
-            errorMessage = "Report to the developer: no value for 'context' was provided"
-            return false
-        }
         isCheckingConnection = true
         if (OAuthSingleton.checkIfAccessTokenExists(context!!)) {
             authorized = true
@@ -48,10 +44,6 @@ class OAuthViewModel(): ViewModel() {
     }
 
     suspend fun authorize() {
-        if (context == null) {
-            errorMessage = "Report to the developer: no value for 'context' was provided"
-            return
-        }
         requestToken = getRequestToken()
         if (requestToken == null) {
             errorMessage = "Something went wrong"
