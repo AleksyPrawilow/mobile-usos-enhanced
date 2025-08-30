@@ -13,7 +13,7 @@ class TestsPageModel {
     private val parser: Json = Json { ignoreUnknownKeys = true }
     private val allTestsUrl: String = "crstests/participant"
     private val singleSubjectFields: String
-    = "folder_node_details|grade_node_details[grade_type|students_grade]|task_node_details|subnodes|subnodes_deep"
+    = "name|description|id|students_points|grade_node_details[students_grade]|subnodes_deep"
     private val singleSubjectUrl: String = "crstests/node2"
     private fun parseAllTests(responseString: String): TestsContainer {
         val participantTests: TestsContainer = parser.decodeFromString<TestsContainer>(responseString)
@@ -62,11 +62,21 @@ data class Test (
 // --------------- subject info data classes -----------------
 @Serializable
 data class SubjectTestContainer (
+    val name: SharedDataClasses.LangDict,
+    val description: SharedDataClasses.LangDict,
+    val id: Int,
+    val students_points: StudentsPoints ?,
     val folder_node_details: FolderNodeDetails ?,
     val grade_node_details: GradeNodeDetails ?,
     val task_node_details: TaskNodeDetails ?,
-    val subnodes: List<SubnodeCardInfo ?>?,
     val subnodes_deep: List<SubjectTestContainer ?>?
+)
+@Serializable
+data class StudentsPoints (
+    val points: Float,
+    val comment: String ?,
+    val grader: SharedDataClasses.Human,
+    val last_changed: String?
 )
 @Serializable
 data class FolderNodeDetails (
@@ -84,7 +94,6 @@ data class TaskNodeDetails (
 )
 @Serializable
 data class GradeNodeDetails (
-    val grade_type: SharedDataClasses.IdAndName ?,
     val students_grade: StudentsGrade ?,
     //val all_students_grades: List<>
 )
@@ -100,13 +109,4 @@ data class GradeValue (
     val order_key: Int ?,
     val symbol: String ?,
     val name: SharedDataClasses.LangDict ?
-)
-@Serializable
-data class SubnodeCardInfo (
-    val id: Int ?,
-    val order: Int ?,
-    val name: SharedDataClasses.LangDict ?,
-    val description: SharedDataClasses.LangDict ?,
-    val visible_for_students: Boolean ?,
-    val type: String ?
 )
