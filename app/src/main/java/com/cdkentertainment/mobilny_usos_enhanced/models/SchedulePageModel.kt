@@ -64,6 +64,22 @@ class SchedulePageModel {
             }
         }
     }
+    public suspend fun getSingleDaySchedule(date: LocalDate = LocalDate.now()): Schedule {
+        return withContext(Dispatchers.IO) {
+            val dayString: String = getFormattedDateString(date)
+            val response: Map<String, String> = OAuthSingleton.get("$requestUrl?start=$dayString&days=1&fields=$fields")
+
+            if (response.containsKey("response") && response["response"] != null) {
+                val responseString: String = response["response"]!!
+                val parsedSchedule: Schedule = parseScheduleApiResponse(responseString)
+                mergeSchedule(parsedSchedule)
+                return@withContext parsedSchedule
+            } else {
+                throw(Exception("API ERROR"))
+            }
+        }
+    }
+}
     fun mergeSchedule(schedule: Schedule) {
         schedule.lessons = schedule.lessons.mapValues { (_, lessons) ->
             mergeLessonList(lessons)
@@ -83,22 +99,6 @@ class SchedulePageModel {
                 )
             }
     }
-    public suspend fun getSingleDaySchedule(date: LocalDate = LocalDate.now()): Schedule {
-        return withContext(Dispatchers.IO) {
-            val dayString: String = getFormattedDateString(date)
-            val response: Map<String, String> = OAuthSingleton.get("$requestUrl?start=$dayString&days=1&fields=$fields")
-
-            if (response.containsKey("response") && response["response"] != null) {
-                val responseString: String = response["response"]!!
-                val parsedSchedule: Schedule = parseScheduleApiResponse(responseString)
-
-                return@withContext parsedSchedule
-            } else {
-                throw(Exception("API ERROR"))
-            }
-        }
-    }
-}
 data class Schedule (
     var lessons: Map<Int, List<Lesson>>,
     var startDay: String? = null,
