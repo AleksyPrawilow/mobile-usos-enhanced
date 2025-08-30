@@ -31,8 +31,8 @@ object DatabaseSingleton {
     var selectedUniversity: Universities by mutableStateOf(Universities.UAM)
     var userInformation: BasicUserData? by mutableStateOf(null)
 
-    suspend fun updateUserSession(userId: String) {
-        withContext(Dispatchers.IO) {
+    suspend fun updateUserSession(userId: String): Boolean {
+        return withContext(Dispatchers.IO) {
             try {
                 val previousSessionString: String = client.postgrest.rpc("check_user_session", UserSessionData(userId, 1)).data
                 val parser: Json = Json { ignoreUnknownKeys = true }
@@ -47,13 +47,15 @@ object DatabaseSingleton {
                     val currentUser: String? = client.auth.currentUserOrNull()?.id
                     if (previousSession[0].user_session == currentUser) {
                         println("no update")
-                        return@withContext
+                        return@withContext true
                     }
                 }
                 val userSessionData = UserSessionData(userId, selectedUniversity.ordinal)
                 val res = client.postgrest.rpc("upsert_user_session_to_current", userSessionData)
+                return@withContext true
             } catch (e: Exception) {
                 e.printStackTrace()
+                return@withContext false
             }
         }
     }

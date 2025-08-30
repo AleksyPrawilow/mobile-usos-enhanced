@@ -9,6 +9,7 @@ import androidx.compose.runtime.setValue
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.cdkentertainment.mobilny_usos_enhanced.DatabaseSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton.service
 import com.cdkentertainment.mobilny_usos_enhanced.UserDataSingleton
@@ -29,6 +30,7 @@ class LoginPageViewModel: ViewModel() {
         USOS_LOGIN,
         USOS_RETREIVING_REQUEST_TOKEN,
         USOS_OAUTH_VERIFIER,
+        DATABASE_SAVING_SESSION,
         SUCCESS
     }
     var loginState: LoginState by mutableStateOf(LoginState.GOOGLE_AUTO_LOGIN)
@@ -61,13 +63,24 @@ class LoginPageViewModel: ViewModel() {
             ?.launchIn(viewModelScope)
     }
 
-    suspend fun tryAutoLogin(context: Context): Boolean {
+    suspend fun tryAutoLogin(context: Context) {
         if (OAuthSingleton.checkIfAccessTokenExists(context)) {
-            loginState = LoginState.SUCCESS
-            return true
+            loginState = LoginState.DATABASE_SAVING_SESSION
+        } else {
+            loginState = LoginState.USOS_LOGIN
         }
-        loginState = LoginState.USOS_LOGIN
-        return false
+    }
+
+    suspend fun saveUserSession() {
+        Log.e("debug", "Storing data in database")
+        if (DatabaseSingleton.updateUserSession(OAuthSingleton.userData!!.basicInfo.id)) {
+            Log.e("debug", "Data stored in database")
+            loginState = LoginState.SUCCESS
+        } else {
+            Log.e("debug", "Data not stored in database")
+            errorMessage = "Nie udało się zapisać danych o użytkowniku."
+            loginState = LoginState.USOS_LOGIN
+        }
     }
 
     suspend fun authorize(context: Context) {
@@ -92,7 +105,13 @@ class LoginPageViewModel: ViewModel() {
             val result = model.getAccessToken(pin, requestToken!!)
             if (result.containsKey("success")) {
                 UserDataSingleton.saveUserCredentials(context, OAuthSingleton.oAuth1AccessToken!!)
-                loginState = LoginState.SUCCESS
+                OAuthSingleton.userData = OAuthSingleton.getUserData()
+                if (OAuthSingleton.userData == null) {
+                    loginState = LoginState.USOS_LOGIN
+                    errorMessage = "Nie udało się pobrać dane o użytkowniku."
+                    return@withContext
+                }
+                loginState = LoginState.DATABASE_SAVING_SESSION
             } else {
                 loginState = LoginState.USOS_LOGIN
                 requestToken = null

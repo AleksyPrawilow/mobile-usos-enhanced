@@ -1,6 +1,12 @@
 package com.cdkentertainment.mobilny_usos_enhanced
 
 import android.content.Context
+import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import com.cdkentertainment.mobilny_usos_enhanced.models.HomePageModel
+import com.cdkentertainment.mobilny_usos_enhanced.models.UserInfoClass
 import com.cdkentertainment.mobilny_usos_enhanced.usos_installations.UsosAPI
 import com.github.scribejava.core.builder.ServiceBuilder
 import com.github.scribejava.core.exceptions.OAuthException
@@ -11,8 +17,6 @@ import com.github.scribejava.core.model.Verb
 import com.github.scribejava.core.oauth.OAuth10aService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
 import java.io.IOException
 import java.util.concurrent.ExecutionException
 
@@ -27,6 +31,7 @@ object OAuthSingleton {
         .apiSecret(apiSecret)
         .build(UsosAPI.instance())
     var oAuth1AccessToken: OAuth1AccessToken? = null
+    var userData: UserInfoClass? by mutableStateOf(null)
 
     fun setTestAccessToken() {
         if (BuildConfig.testAccessSecret != "" && BuildConfig.testAccessToken != "") {
@@ -62,26 +67,23 @@ object OAuthSingleton {
         }
     }
 
-    suspend fun checkIfTokenExpired(): Boolean {
+    suspend fun getUserData(): UserInfoClass? {
+        val homePageModel: HomePageModel = HomePageModel()
         return withContext(Dispatchers.IO) {
-            val response: Map<String, String> = get("users/user")
-            val parser = Json { ignoreUnknownKeys = true }
-            if (response.containsKey("response") && response["response"] != null) {
-                try {
-                    val data: AccessTokenCheckClass = parser.decodeFromString<AccessTokenCheckClass>(response["response"]!!)
-                    if (data.message != null) {
-                        // If there is an error message, the token is most likely expired, therefore return true
-                        println(data)
-                        return@withContext true
-                    }
-                } catch (e: Exception) {
-                    return@withContext true // Error while making request so manual log in
-                }
-                // No message = no error = token not expired
+            return@withContext homePageModel.fetchUserData()
+        }
+    }
+
+    suspend fun checkIfTokenExpired(): Boolean {
+        val homePageModel: HomePageModel = HomePageModel()
+        return withContext(Dispatchers.IO) {
+            userData = getUserData()
+            Log.d("OAUTH", userData.toString())
+            if (userData != null) {
                 return@withContext false
+            } else {
+                return@withContext true
             }
-            // If the call failed, let user try to log in, therefore true
-            return@withContext true
         }
     }
 
@@ -111,8 +113,3 @@ object OAuthSingleton {
         }
     }
 }
-
-@Serializable
-data class AccessTokenCheckClass(
-    val message: String? = null
-)

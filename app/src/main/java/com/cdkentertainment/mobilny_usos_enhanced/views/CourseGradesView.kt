@@ -78,9 +78,8 @@ fun CourseGradesView(
                     classtypeIdInfo?.get(unitClassType)?.name?.pl ?: "N/A",
                     if (condition) data.courseGrades.course_units_grades[courseUnit]!![0]["1"]!!.value_symbol else "-"
                 ) {
-                    println("Hello?")
                     showDetails = true
-                   // popupGrade = data.courseGrades.course_units_grades[courseUnit]!![0]["1"].
+                    popupGrade = data.courseGrades.course_units_grades[courseUnit]!![0]["1"]
                 }
             }
         }
