@@ -19,17 +19,14 @@ class SchedulePageModel {
     private fun getDayIndexFromDate(date: LocalDate): Int {
         return date.dayOfWeek.value - 1
     }
-
     private fun getLocalDateFromString(date: String, pattern: String = "yyyy-MM-dd"): LocalDate {
         val formatter = DateTimeFormatter.ofPattern(pattern)
         return LocalDate.parse(date, formatter)
     }
-
     private fun getFormattedDateString(date: LocalDate, format: String = "yyyy-MM-dd"): String {
         val formatter = DateTimeFormatter.ofPattern(format)
         return date.format(formatter)
     }
-
     private fun getDayOfWeekDate(
         fromDate: LocalDate = LocalDate.now(),
         first: Boolean = true
@@ -40,7 +37,6 @@ class SchedulePageModel {
             )
         return getFormattedDateString(dayOfWeek)
     }
-
     private fun parseScheduleApiResponse(response: String): Schedule {
         val lessons: MutableList<Lesson> = parser.decodeFromString<MutableList<Lesson>>(response)
         val lessonMap = lessons.groupBy { lesson ->
@@ -49,7 +45,6 @@ class SchedulePageModel {
         val schedule = Schedule(lessonMap)
         return schedule
     }
-
     public suspend fun getWeekSchedule(date: LocalDate = LocalDate.now()): Schedule {
         return withContext(Dispatchers.IO) {
             val firstDayOFWeekString = getDayOfWeekDate(date, true)
@@ -69,13 +64,11 @@ class SchedulePageModel {
             }
         }
     }
-
     fun mergeSchedule(schedule: Schedule) {
         schedule.lessons = schedule.lessons.mapValues { (_, lessons) ->
             mergeLessonList(lessons)
         }
     }
-
     fun mergeLessonList(lessons: List<Lesson>): List<Lesson> {
         return lessons
             .groupBy { Triple(it.start_time, it.end_time, it.course_name) }
@@ -90,9 +83,6 @@ class SchedulePageModel {
                 )
             }
     }
-
-
-
     public suspend fun getSingleDaySchedule(date: LocalDate = LocalDate.now()): Schedule {
         return withContext(Dispatchers.IO) {
             val dayString: String = getFormattedDateString(date)
@@ -109,13 +99,11 @@ class SchedulePageModel {
         }
     }
 }
-
 data class Schedule (
     var lessons: Map<Int, List<Lesson>>,
     var startDay: String? = null,
     var endDay: String? = null,
 )
-
 @Serializable
 data class Lesson(
     val start_time: String,
