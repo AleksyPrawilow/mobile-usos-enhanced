@@ -13,7 +13,7 @@ class TestsPageModel {
     private val parser: Json = Json { ignoreUnknownKeys = true }
     private val allTestsUrl: String = "crstests/participant"
     private val singleSubjectFields: String
-    = "name|description|id|students_points|grade_node_details[students_grade]|subnodes_deep"
+    = "name|description|id|students_points|grade_node_details[students_grade]|task_node_details|folder_node_details|subnodes_deep"
     private val singleSubjectUrl: String = "crstests/node2"
     private fun parseAllTests(responseString: String): TestsContainer {
         val participantTests: TestsContainer = parser.decodeFromString<TestsContainer>(responseString)
@@ -62,9 +62,9 @@ data class Test (
 // --------------- subject info data classes -----------------
 @Serializable
 data class SubjectTestContainer (
-    val name: SharedDataClasses.LangDict,
-    val description: SharedDataClasses.LangDict,
-    val id: Int,
+    val name: SharedDataClasses.LangDict ?,
+    val description: SharedDataClasses.LangDict ?,
+    val id: Int ?,
     val students_points: StudentsPoints ?,
     val folder_node_details: FolderNodeDetails ?,
     val grade_node_details: GradeNodeDetails ?,
@@ -73,9 +73,9 @@ data class SubjectTestContainer (
 )
 @Serializable
 data class StudentsPoints (
-    val points: Float,
+    val points: Float?,
     val comment: String ?,
-    val grader: SharedDataClasses.Human,
+    val grader: SharedDataClasses.Human?,
     val last_changed: String?
 )
 @Serializable
