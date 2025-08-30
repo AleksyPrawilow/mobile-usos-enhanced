@@ -45,6 +45,25 @@ class SchedulePageModel {
         val schedule = Schedule(lessonMap)
         return schedule
     }
+    private fun mergeSchedule(schedule: Schedule) {
+        schedule.lessons = schedule.lessons.mapValues { (_, lessons) ->
+            mergeLessonList(lessons)
+        }
+    }
+    private fun mergeLessonList(lessons: List<Lesson>): List<Lesson> {
+        return lessons
+            .groupBy { Triple(it.start_time, it.end_time, it.course_name) }
+            .map { (_, groupedLessons) ->
+                val first = groupedLessons.first()
+                first.copy(
+                    room_number = groupedLessons
+                        .flatMap { it.room_number.split(",") }
+                        .map { it.trim() }
+                        .distinct()
+                        .joinToString(", ")
+                )
+            }
+    }
     public suspend fun getWeekSchedule(date: LocalDate = LocalDate.now()): Schedule {
         return withContext(Dispatchers.IO) {
             val firstDayOFWeekString = getDayOfWeekDate(date, true)
@@ -80,25 +99,6 @@ class SchedulePageModel {
         }
     }
 }
-    fun mergeSchedule(schedule: Schedule) {
-        schedule.lessons = schedule.lessons.mapValues { (_, lessons) ->
-            mergeLessonList(lessons)
-        }
-    }
-    fun mergeLessonList(lessons: List<Lesson>): List<Lesson> {
-        return lessons
-            .groupBy { Triple(it.start_time, it.end_time, it.course_name) }
-            .map { (_, groupedLessons) ->
-                val first = groupedLessons.first()
-                first.copy(
-                    room_number = groupedLessons
-                        .flatMap { it.room_number.split(",") }
-                        .map { it.trim() }
-                        .distinct()
-                        .joinToString(", ")
-                )
-            }
-    }
 data class Schedule (
     var lessons: Map<Int, List<Lesson>>,
     var startDay: String? = null,
