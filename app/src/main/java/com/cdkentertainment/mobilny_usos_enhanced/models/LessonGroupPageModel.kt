@@ -5,37 +5,48 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-
 class LessonGroupPageModel {
     private val parser = Json {ignoreUnknownKeys = true}
     private val fields = "course_id|course_name|lecturers|group_number|course_unit_id|class_type_id"
     private val requestUrl = "groups/user"
     private val participantUrl = "groups/group"
     private val participantField = "participants"
-
-
-    private fun parseLessonGroupApiResponse(responseString: String): SeasonGroups {
+    @Serializable
+    private data class SeasonGroups (
+        val groups: Map<String, List<LessonGroup>>
+    )
+    private fun parseLessonGroupApiResponse(responseString: String): SeasonGroupsGroupedBySubject {
         val parsedSeasonGroups: SeasonGroups = parser.decodeFromString<SeasonGroups>(responseString)
-        return parsedSeasonGroups
+        val groupsGroupedBySubjects: SeasonGroupsGroupedBySubject =
+            SeasonGroupsGroupedBySubject(mutableMapOf<String, Map<String, List<LessonGroup>>>())
+        for (season in parsedSeasonGroups.groups.keys) {
+            val seasonGroups = parsedSeasonGroups.groups[season]
+            if (seasonGroups != null) {
+                val groupedBySubjects = seasonGroups.groupBy {
+                    group -> group.course_id
+                }
+                groupsGroupedBySubjects.groups.put(season, groupedBySubjects)
+            } else {
+                print("todo")
+            }
+        }
+        return groupsGroupedBySubjects
     }
-
     private fun parseParticipantsApiResponse(responseString: String): Participants {
         val parsedParticipants: Participants = parser.decodeFromString(responseString)
         return parsedParticipants
     }
-
-    public suspend fun getLessonGroups(): SeasonGroups {
+    public suspend fun getLessonGroups(): SeasonGroupsGroupedBySubject {
         return withContext(Dispatchers.IO) {
             val response: Map<String, String> = OAuthSingleton.get("$requestUrl?fields=$fields")
             if (response.containsKey("response") && response["response"] != null) {
-                val parsedLessonGroups: SeasonGroups = parseLessonGroupApiResponse(response["response"]!!)
+                val parsedLessonGroups: SeasonGroupsGroupedBySubject = parseLessonGroupApiResponse(response["response"]!!)
                 return@withContext parsedLessonGroups
             } else {
                 throw(Exception("API Error"))
             }
         }
     }
-
    public suspend fun getParticipantOfGivenGroup(groupNumber: String, courseUnitId: String): Participants {
        return withContext(Dispatchers.IO) {
            val apiRequest: String = "$participantUrl?course_unit_id=$courseUnitId&group_number=$groupNumber&fields=$participantField"
@@ -49,12 +60,10 @@ class LessonGroupPageModel {
        }
    }
 }
-
 @Serializable
-data class SeasonGroups (
-    val groups: Map<String, List<LessonGroup>>
+data class SeasonGroupsGroupedBySubject (
+    val groups: MutableMap<String, Map<String, List<LessonGroup>>>
 )
-
 @Serializable
 data class LessonGroup (
     val course_id: String,
@@ -64,8 +73,6 @@ data class LessonGroup (
     val lecturers: List<SharedDataClasses.Human>,
     val class_type_id: String
 )
-
-
 @Serializable
 data class Participants(
     val participants: List<SharedDataClasses.Human>
