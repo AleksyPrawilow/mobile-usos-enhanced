@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.models.LessonGroup
 
@@ -42,7 +43,7 @@ fun ClassGroupCardView(
             .padding(12.dp)
     ) {
         Text(
-            text = data.class_type_id,
+            text = UIHelper.classTypeIds[data.class_type_id]?.name?.pl ?: data.class_type_id,
             color = UISingleton.color4.primaryColor,
             style = MaterialTheme.typography.titleMedium,
             maxLines = 2,

@@ -6,11 +6,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
+import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.models.AttendancePageModel
-import com.cdkentertainment.mobilny_usos_enhanced.models.HomePageModel
+import com.cdkentertainment.mobilny_usos_enhanced.models.GradesPageModel
 import com.cdkentertainment.mobilny_usos_enhanced.models.LessonGroup
 import com.cdkentertainment.mobilny_usos_enhanced.models.LessonGroupPageModel
 import com.cdkentertainment.mobilny_usos_enhanced.models.SeasonGroupsGroupedBySubject
+import com.cdkentertainment.mobilny_usos_enhanced.models.SharedDataClasses
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -37,18 +39,22 @@ class AttendancePageViewModel: ViewModel() {
     private var userId: String? = null
 
     private val lessongGroupModel: LessonGroupPageModel = LessonGroupPageModel()
-    private val userInfoModel: HomePageModel = HomePageModel()
+    private val gradesPageModel: GradesPageModel = GradesPageModel()
+    var classtypeIdInfo: Map<String, SharedDataClasses.IdAndName>? by mutableStateOf(null)
 
     suspend fun fetchLessonGroups() {
         withContext(Dispatchers.IO) {
-            if (userId == null) {
+            if (UIHelper.classTypeIds.isEmpty()) {
                 try {
-                    userId = userInfoModel.fetchUserData()!!.basicInfo.id
+                    UIHelper.classTypeIds = gradesPageModel.fetchClasstypeIds()
+                    classtypeIdInfo = UIHelper.classTypeIds
                 } catch (e: Exception) {
-                    // TODO: Add error handling
-                    return@withContext
+                    println(e)
                 }
+            } else {
+                classtypeIdInfo = UIHelper.classTypeIds
             }
+            userId = OAuthSingleton.userData!!.basicInfo.id
             if (lessonGroups != null) {
                 return@withContext
             }

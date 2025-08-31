@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
+import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.models.CourseUnitIds
 import com.cdkentertainment.mobilny_usos_enhanced.models.GradesPageModel
 import com.cdkentertainment.mobilny_usos_enhanced.models.Season
@@ -31,12 +32,15 @@ class GradesPageViewModel: ViewModel() {
 
     suspend fun fetchUserGrades() {
         withContext(Dispatchers.IO) {
-            if (classtypeIdInfo == null) {
+            if (UIHelper.classTypeIds.isEmpty()) {
                 try {
-                    classtypeIdInfo = gradesPageModel.fetchClasstypeIds()
+                    UIHelper.classTypeIds = gradesPageModel.fetchClasstypeIds()
+                    classtypeIdInfo = UIHelper.classTypeIds
                 } catch (e: Exception) {
                     println(e)
                 }
+            } else {
+                classtypeIdInfo = UIHelper.classTypeIds
             }
             try {
                 val data:Pair<List<Season>, Map<String, CourseUnitIds>>? = gradesPageModel.fetchUserGrades()

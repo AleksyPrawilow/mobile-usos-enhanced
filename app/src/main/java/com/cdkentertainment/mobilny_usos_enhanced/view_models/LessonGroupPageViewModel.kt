@@ -5,10 +5,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
+import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
+import com.cdkentertainment.mobilny_usos_enhanced.models.GradesPageModel
 import com.cdkentertainment.mobilny_usos_enhanced.models.LessonGroup
 import com.cdkentertainment.mobilny_usos_enhanced.models.LessonGroupPageModel
 import com.cdkentertainment.mobilny_usos_enhanced.models.Participants
 import com.cdkentertainment.mobilny_usos_enhanced.models.SeasonGroupsGroupedBySubject
+import com.cdkentertainment.mobilny_usos_enhanced.models.SharedDataClasses
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -28,9 +31,21 @@ class LessonGroupPageViewModel: ViewModel() {
     var groupDetails = mutableMapOf<String, GroupDetails>()
 
     private val model: LessonGroupPageModel = LessonGroupPageModel()
+    private val gradesPageModel: GradesPageModel = GradesPageModel()
+    var classtypeIdInfo: Map<String, SharedDataClasses.IdAndName>? by mutableStateOf(null)
 
     suspend fun fetchLessonGroups() {
         withContext(Dispatchers.IO) {
+            if (UIHelper.classTypeIds.isEmpty()) {
+                try {
+                    UIHelper.classTypeIds = gradesPageModel.fetchClasstypeIds()
+                    classtypeIdInfo = UIHelper.classTypeIds
+                } catch (e: Exception) {
+                    println(e)
+                }
+            } else {
+                classtypeIdInfo = UIHelper.classTypeIds
+            }
             if (lessonGroups != null) {
                 return@withContext
             }
