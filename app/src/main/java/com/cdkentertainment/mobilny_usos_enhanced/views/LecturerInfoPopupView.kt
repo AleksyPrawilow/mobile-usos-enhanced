@@ -21,29 +21,21 @@ import androidx.compose.material.icons.rounded.Call
 import androidx.compose.material.icons.rounded.Email
 import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.material.icons.rounded.Person
-import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
@@ -224,94 +216,23 @@ fun LecturerInfoPopupView(
                             .background(UISingleton.color1.primaryColor, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
                             .padding(12.dp)
                     ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(
-                                text = "Ogólna ocena",
-                                style = MaterialTheme.typography.titleLarge,
-                                color = UISingleton.color4.primaryColor
-                            )
-                            Text(
-                                text = "4.5",
-                                fontSize = 72.sp,
-                                fontWeight = FontWeight.ExtraBold,
-                                color = UISingleton.color4.primaryColor
-                            )
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally)
-                            ) {
-                                val fractionFilled: Float = 0.5f
-                                val starBrush = Brush.horizontalGradient(
-                                    0f to UISingleton.color3.primaryColor,
-                                    fractionFilled to UISingleton.color3.primaryColor,
-                                    fractionFilled to UISingleton.color2.primaryColor,
-                                    1f to UISingleton.color2.primaryColor
-                                )
-                                repeat(5) { index ->
-                                    val starModifier: Modifier = if (index < 4) {
-                                        Modifier.size(32.dp)
-                                    } else {
-                                        Modifier
-                                            .size(32.dp)
-                                            .graphicsLayer {
-                                                compositingStrategy = CompositingStrategy.Offscreen
-                                            }
-                                            .drawWithContent {
-                                                drawContent()
-                                                drawRect(starBrush, size = this.size, blendMode = BlendMode.SrcAtop)
-                                            }
-                                    }
-                                    Icon(
-                                        imageVector = Icons.Rounded.Star,
-                                        contentDescription = "Star",
-                                        tint = if (index < 4) UISingleton.color3.primaryColor else Color.Unspecified,
-                                        modifier = starModifier
-                                    )
-                                }
-                            }
-                            Text(
-                                text = "Na podstawie 23 ocen",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Light,
-                                color = UISingleton.color4.primaryColor
-                            )
-                            Spacer(modifier = Modifier.height(12.dp))
+                        LecturerRateView()
+                    }
+                }
 
-                            val categories: Map<String, Float> = mapOf(
-                                "Jasność" to 4f,
-                                "Organizacja" to 4.5f,
-                                "Zaangażowanie" to 5f,
-                                "Komunikacja" to 4.9f,
-                                "Obiektywność" to 4.2f
-                            )
-
-                            for ((category, rating) in categories) {
-                                Row(
-                                    horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(vertical = 6.dp)
-                                ) {
-                                    Text(
-                                        text = category,
-                                        style = MaterialTheme.typography.titleSmall,
-                                        color = UISingleton.color4.primaryColor,
-                                        modifier = Modifier.weight(0.5f)
-                                    )
-                                    LinearProgressIndicator(
-                                        progress = { rating / 5f },
-                                        color = UISingleton.color3.primaryColor,
-                                        trackColor = UISingleton.color2.primaryColor,
-                                        drawStopIndicator = {},
-                                        modifier = Modifier
-                                            .weight(0.5f)
-                                    )
-                                }
-                            }
-                        }
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(12.dp)
+                            .background(UISingleton.color1.primaryColor, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
+                            .padding(12.dp)
+                    ) {
+                        LecturerRateView(
+                            title = "Twoja ocena",
+                            numberOfReviews = 0,
+                            showNumberOfReviews = false
+                        )
                     }
                 }
             }

@@ -1,6 +1,8 @@
 package com.cdkentertainment.mobilny_usos_enhanced.models
 
+import android.app.Activity
 import android.content.Context
+import android.content.ContextWrapper
 import android.util.Log
 import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
@@ -21,7 +23,7 @@ sealed interface AuthResponse {
 }
 
 class GoogleAuthManager(
-    private val context: Context
+    private val context: Context,
 ) {
 
     private val supabase = DatabaseSingleton.client
@@ -51,21 +53,21 @@ class GoogleAuthManager(
         }
     }
 
-    fun loginGoogleUser(): Flow<AuthResponse> = flow {
+    fun loginGoogleUser(activity: Activity): Flow<AuthResponse> = flow {
         val hashedNonce = createNonce()
 
         val googleIdOption = GetGoogleIdOption.Builder()
+            .setFilterByAuthorizedAccounts(false)
+            .setAutoSelectEnabled(false)
             .setServerClientId("96510249553-u074a5donhaf16700lr2bgjnapbkul13.apps.googleusercontent.com")
             .setNonce(hashedNonce)
-            .setAutoSelectEnabled(false)
-            .setFilterByAuthorizedAccounts(false)
             .build()
 
         val request = GetCredentialRequest.Builder()
             .addCredentialOption(googleIdOption)
             .build()
 
-        val credentialManager = CredentialManager.create(context)
+        val credentialManager = CredentialManager.create(activity)
 
         try {
             val result = credentialManager.getCredential(
@@ -90,4 +92,13 @@ class GoogleAuthManager(
             emit(AuthResponse.Error(e.localizedMessage))
         }
     }
+}
+
+fun Context.findActivity(): Activity? {
+    var ctx: Context? = this
+    while (ctx is ContextWrapper) {
+        if (ctx is Activity) return ctx
+        ctx = ctx.baseContext
+    }
+    return null
 }

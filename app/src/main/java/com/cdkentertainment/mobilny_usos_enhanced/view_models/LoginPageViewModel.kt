@@ -1,5 +1,6 @@
 package com.cdkentertainment.mobilny_usos_enhanced.view_models
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.util.Log
@@ -39,7 +40,7 @@ class LoginPageViewModel: ViewModel() {
     var requestToken: OAuth1RequestToken? = null
     val model: OAuthModel = OAuthModel()
 
-    suspend fun tryGoogleAutoLogIn(context: Context) {
+    suspend fun tryGoogleAutoLogIn(context: Context, activity: Activity) {
         googleAuthManager = GoogleAuthManager(context)
         val response = googleAuthManager?.sessionExists()
         if (response is AuthResponse.Success) {
@@ -50,8 +51,8 @@ class LoginPageViewModel: ViewModel() {
         }
     }
 
-    fun loginGoogle() {
-        googleAuthManager?.loginGoogleUser()
+    fun loginGoogle(activity: Activity) {
+        googleAuthManager?.loginGoogleUser(activity)
             ?.onEach { result ->
                 if (result is AuthResponse.Success) {
                     Log.d("auth", "Google Success")

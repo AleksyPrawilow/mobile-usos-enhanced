@@ -2,6 +2,8 @@ package com.cdkentertainment.mobilny_usos_enhanced.views
 
 import android.content.Context
 import android.graphics.Color.TRANSPARENT
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -34,6 +36,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -46,10 +49,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.cdkentertainment.mobilny_usos_enhanced.DatabaseSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
+import com.cdkentertainment.mobilny_usos_enhanced.models.findActivity
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.LoginPageViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.ScreenManagerViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.Screens
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import io.github.jan.supabase.auth.auth
+import io.github.jan.supabase.auth.providers.Google
+import io.github.jan.supabase.auth.providers.builtin.IDToken
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -60,9 +71,10 @@ fun LoginPageView(screenManagerViewModel: ScreenManagerViewModel = viewModel<Scr
     val context: Context = LocalContext.current
     val pageViewModel: LoginPageViewModel = viewModel<LoginPageViewModel>()
     val currentState: LoginPageViewModel.LoginState = pageViewModel.loginState
+    val activity = remember { context.findActivity() }
 
     LaunchedEffect(Unit) {
-        pageViewModel.tryGoogleAutoLogIn(context)
+        pageViewModel.tryGoogleAutoLogIn(context, activity!!)
     }
 
     Column(
@@ -83,8 +95,19 @@ fun LoginPageView(screenManagerViewModel: ScreenManagerViewModel = viewModel<Scr
         ) { state ->
             when (state) {
                 LoginPageViewModel.LoginState.GOOGLE_AUTO_LOGIN -> GoogleAutoLoginView()
-                LoginPageViewModel.LoginState.GOOGLE_LOGIN -> GoogleLoginView {
-                    pageViewModel.loginGoogle()
+                LoginPageViewModel.LoginState.GOOGLE_LOGIN -> GoogleLoginView { idToken ->
+                    coroutineScope.launch {
+                        try {
+                            DatabaseSingleton.client.auth.signInWith(IDToken) {
+                                this.idToken = idToken
+                                provider = Google
+                            }
+                            // success
+                        } catch (e: Exception) {
+                            // handle
+                        }
+                    }
+                    //pageViewModel.loginGoogle(activity!!)
                 }
                 LoginPageViewModel.LoginState.USOS_AUTO_LOGIN -> UsosAutoLoginView(pageViewModel)
                 LoginPageViewModel.LoginState.USOS_LOGIN -> UsosLoginView {
@@ -119,18 +142,55 @@ private fun GoogleAutoLoginView() {
 }
 
 @Composable
-private fun GoogleLoginView(onClick: () -> Unit) {
-    Button(
-        colors = ButtonDefaults.buttonColors(
-            contentColor = UISingleton.color3.primaryColor,
-            containerColor = UISingleton.color2.primaryColor,
-        ),
-        onClick = onClick
-    ) {
-        Text(
-            text = "Zaloguj się za pomocą Google"
-        )
+private fun GoogleLoginView(onIdToken: (String) -> Unit) {
+    val context = LocalContext.current
+    val activity = context.findActivity() // use the findActivity() extension you already have
+
+    // launcher
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        try {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+            val account = task.getResult(ApiException::class.java) // safe in callback
+            val idToken = account?.idToken
+            if (!idToken.isNullOrEmpty()) {
+                onIdToken(idToken)
+            } else {
+
+            }
+        } catch (e: ApiException) {
+
+        } catch (e: Exception) {
+
+        }
     }
+
+    Button(onClick = {
+        if (activity == null) {
+            return@Button
+        }
+
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken("96510249553-u074a5donhaf16700lr2bgjnapbkul13.apps.googleusercontent.com") // <-- MUST be web client id
+            .requestEmail()
+            .build()
+
+        val client = GoogleSignIn.getClient(activity, gso)
+        val intent = client.signInIntent
+        launcher.launch(intent)
+    }) {
+        Text("Sign in with Google")
+    }
+//    Button(
+//        colors = ButtonDefaults.buttonColors(
+//            contentColor = UISingleton.color3.primaryColor,
+//            containerColor = UISingleton.color2.primaryColor,
+//        ),
+//        onClick = onClick
+//    ) {
+//        Text(
+//            text = "Zaloguj się za pomocą Google"
+//        )
+//    }
 }
 
 @Composable
