@@ -102,6 +102,7 @@ fun LoginPageView(screenManagerViewModel: ScreenManagerViewModel = viewModel<Scr
                                 this.idToken = idToken
                                 provider = Google
                             }
+                            pageViewModel.loginState = LoginPageViewModel.LoginState.USOS_AUTO_LOGIN
                             // success
                         } catch (e: Exception) {
                             // handle

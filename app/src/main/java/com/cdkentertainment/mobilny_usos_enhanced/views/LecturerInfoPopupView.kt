@@ -224,7 +224,7 @@ fun LecturerInfoPopupView(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(12.dp)
+                            .padding(start = 12.dp, end = 12.dp, bottom = 12.dp)
                             .background(UISingleton.color1.primaryColor, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
                             .padding(12.dp)
                     ) {
