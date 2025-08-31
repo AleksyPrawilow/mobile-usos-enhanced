@@ -8,7 +8,7 @@ import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.models.LessonGroup
 import com.cdkentertainment.mobilny_usos_enhanced.models.LessonGroupPageModel
 import com.cdkentertainment.mobilny_usos_enhanced.models.Participants
-import com.cdkentertainment.mobilny_usos_enhanced.models.SeasonGroups
+import com.cdkentertainment.mobilny_usos_enhanced.models.SeasonGroupsGroupedBySubject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -23,7 +23,7 @@ fun main(): Unit = runBlocking {
 }
 
 class LessonGroupPageViewModel: ViewModel() {
-    var lessonGroups: SeasonGroups? by mutableStateOf(null)
+    var lessonGroups: SeasonGroupsGroupedBySubject? by mutableStateOf(null)
         private set
     var groupDetails = mutableMapOf<String, GroupDetails>()
 
@@ -37,10 +37,15 @@ class LessonGroupPageViewModel: ViewModel() {
             try {
                 lessonGroups = model.getLessonGroups()
                 for (seasonId in lessonGroups!!.groups.keys) {
-                    val season: List<LessonGroup>? = lessonGroups!!.groups[seasonId]
+                    val season: Map<String, List<LessonGroup>>? = lessonGroups!!.groups[seasonId]
                     if (season != null) {
-                        for (group in season) {
-                            groupDetails["${group.course_unit_id.toString()}-${group.group_number}"] = GroupDetails()
+                        for (subject in season.keys) {
+                            val courseUnit: List<LessonGroup>? = season[subject]
+                            if (courseUnit != null) {
+                                for (group in courseUnit) {
+                                    groupDetails["${group.course_unit_id.toString()}-${group.group_number}"] = GroupDetails()
+                                }
+                            }
                         }
                     }
                 }

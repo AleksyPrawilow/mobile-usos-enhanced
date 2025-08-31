@@ -10,7 +10,7 @@ import com.cdkentertainment.mobilny_usos_enhanced.models.AttendancePageModel
 import com.cdkentertainment.mobilny_usos_enhanced.models.HomePageModel
 import com.cdkentertainment.mobilny_usos_enhanced.models.LessonGroup
 import com.cdkentertainment.mobilny_usos_enhanced.models.LessonGroupPageModel
-import com.cdkentertainment.mobilny_usos_enhanced.models.SeasonGroups
+import com.cdkentertainment.mobilny_usos_enhanced.models.SeasonGroupsGroupedBySubject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -27,7 +27,7 @@ fun main(): Unit = runBlocking {
     }
 }
 class AttendancePageViewModel: ViewModel() {
-    var lessonGroups: SeasonGroups? by mutableStateOf(null)
+    var lessonGroups: SeasonGroupsGroupedBySubject? by mutableStateOf(null)
         private set
     var showPopup: Boolean by mutableStateOf(false)
         private set

@@ -30,15 +30,15 @@ fun ClassGroupCardView(
             .clickable(onClick = onClick)
     ) {
         Text(
-            text = data.course_name.pl,
+            text = "${data.class_type_id}, grupa ${data.group_number}",
             color = UISingleton.color4.primaryColor,
-            style = MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.titleMedium,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier
                 .fillMaxWidth()
                 .background(
-                    UISingleton.color2.primaryColor,
+                    UISingleton.color1.primaryColor,
                     RoundedCornerShape(
                         topStart = UISingleton.uiElementsCornerRadius.dp,
                         topEnd = UISingleton.uiElementsCornerRadius.dp,
@@ -47,25 +47,6 @@ fun ClassGroupCardView(
                     )
                 )
                 .padding(12.dp)
-        )
-        Text(
-            text = "${data.class_type_id}, grupa ${data.group_number}",
-            style = MaterialTheme.typography.titleMedium,
-            color = UISingleton.color1.primaryColor,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    UISingleton.color3.primaryColor,
-                    RoundedCornerShape(
-                        bottomStart = UISingleton.uiElementsCornerRadius.dp,
-                        bottomEnd = UISingleton.uiElementsCornerRadius.dp,
-                        topStart = 0.dp,
-                        topEnd = 0.dp
-                    )
-                )
-                .padding(horizontal = 12.dp, vertical = 6.dp)
         )
     }
 }

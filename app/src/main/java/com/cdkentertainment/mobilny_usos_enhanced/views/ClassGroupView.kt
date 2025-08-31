@@ -1,14 +1,15 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.models.LessonGroup
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.LessonGroupPageViewModel
 
 @Composable
 fun ClassGroupView(
     data: LessonGroup,
-    viewModel: LessonGroupPageViewModel
 ) {
+    val viewModel: LessonGroupPageViewModel = viewModel<LessonGroupPageViewModel>()
     val groupKey: String = "${data.course_unit_id}-${data.group_number}"
     val onClick: () -> Unit = {
         viewModel.groupDetails[groupKey]?.showDetails = true

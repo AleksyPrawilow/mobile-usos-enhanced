@@ -76,18 +76,24 @@ fun ClassGroupsPageView() {
                 }
             }
             for (seasonId in groupsPageViewModel.lessonGroups!!.groups.keys.reversed()) {
-                val season: List<LessonGroup>? = groupsPageViewModel.lessonGroups!!.groups[seasonId]
-                val groupCount: Int = season?.size ?: 0
+                val season: Map<String, List<LessonGroup>>? = groupsPageViewModel.lessonGroups!!.groups[seasonId]
+                var groupCount: Int = 0
+                val courses: List<List<LessonGroup>> = season?.values?.toList() ?: emptyList()
+                for (course in courses) {
+                    groupCount += course.size
+                }
                 stickyHeader {
                     AnimatedVisibility(showElements, enter = enterTransition(1)) {
                         SemesterCardView(seasonId)
                     }
                 }
                 if (season != null) {
-                    items(season.size) { groupIndex ->
-                        val group: LessonGroup = season[groupIndex]
-                        AnimatedVisibility(showElements, enter = enterTransition(2 + groupIndex)) {
-                            ClassGroupView(group, groupsPageViewModel)
+                    items(courses.size) { courseIndex ->
+                        val courseUnits: List<LessonGroup> = courses[courseIndex]
+                        AnimatedVisibility(showElements, enter = enterTransition(2 + courseIndex)) {
+                            CourseContainerView(courseUnits) { unit ->
+                                ClassGroupView(unit)
+                            }
                         }
                     }
                 } else {

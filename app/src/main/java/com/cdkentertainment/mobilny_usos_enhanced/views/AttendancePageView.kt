@@ -92,18 +92,24 @@ fun AttendancePageView() {
                 }
             }
             for (seasonId in attendancePageViewModel.lessonGroups!!.groups.keys.reversed()) {
-                val season: List<LessonGroup>? = attendancePageViewModel.lessonGroups!!.groups[seasonId]
-                val groupCount: Int = season?.size ?: 0
+                val season: Map<String, List<LessonGroup>>? = attendancePageViewModel.lessonGroups!!.groups[seasonId]
+                var groupCount: Int = 0
+                val courses: List<List<LessonGroup>> = season?.values?.toList() ?: emptyList()
+                for (course in courses) {
+                    groupCount += course.size
+                }
                 stickyHeader {
                     AnimatedVisibility(showElements, enter = enterTransition(1)) {
                         SemesterCardView(seasonId)
                     }
                 }
                 if (season != null) {
-                    items(season.size) { groupIndex ->
-                        val group: LessonGroup = season[groupIndex]
-                        AnimatedVisibility(showElements, enter = enterTransition(2 + groupIndex)) {
-                            AttendanceClassGroupView(data = group, viewModel = attendancePageViewModel)
+                    items(courses.size) { courseIndex ->
+                        val courseUnits: List<LessonGroup> = courses[courseIndex]
+                        AnimatedVisibility(showElements, enter = enterTransition(2 + courseIndex)) {
+                            CourseContainerView(courseUnits) { unit ->
+                                AttendanceClassGroupView(unit)
+                            }
                         }
                     }
                 } else {
