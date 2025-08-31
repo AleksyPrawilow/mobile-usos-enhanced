@@ -17,7 +17,8 @@ fun main(): Unit = runBlocking { //dla testów
     val model = TestsPageModel()
     launch {
         val test = model.getAllTests()
-        println(test)
+        println(model.getAllTests())
+        println(model.getSingleTestInfo(94530))
     }
 }
 
