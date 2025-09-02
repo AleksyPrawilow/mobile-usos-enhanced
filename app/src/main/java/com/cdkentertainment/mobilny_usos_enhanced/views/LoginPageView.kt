@@ -1,14 +1,16 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
 import android.content.Context
-import android.graphics.Color.TRANSPARENT
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -18,6 +20,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowForward
@@ -43,13 +48,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.DatabaseSingleton
+import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.models.findActivity
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.LoginPageViewModel
@@ -72,54 +81,70 @@ fun LoginPageView(screenManagerViewModel: ScreenManagerViewModel = viewModel<Scr
     val pageViewModel: LoginPageViewModel = viewModel<LoginPageViewModel>()
     val currentState: LoginPageViewModel.LoginState = pageViewModel.loginState
     val activity = remember { context.findActivity() }
+    var showLoginStuff: Boolean by rememberSaveable { mutableStateOf(false) }
+    val loginWeight: Float by animateFloatAsState(
+        targetValue = if (showLoginStuff) 0.3f else 0.01f,
+        spring(stiffness = Spring.StiffnessLow)
+    )
 
     LaunchedEffect(Unit) {
+        delay(3000)
+        showLoginStuff = true
         pageViewModel.tryGoogleAutoLogIn(context, activity!!)
     }
 
     Column(
-        verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
+        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxSize().padding(16.dp)
+        modifier = Modifier.fillMaxSize()
     ) {
-        Text(
-            text = "Mobilny USOS Enhanced",
-            style = MaterialTheme.typography.headlineLarge,
-            color = UISingleton.color4.primaryColor,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth()
+        SplashScreenView(
+            modifier = Modifier.weight(1f)
         )
-        AnimatedContent(
-            transitionSpec = { fadeIn() + scaleIn() togetherWith fadeOut() + slideOutHorizontally() },
-            targetState = currentState
-        ) { state ->
-            when (state) {
-                LoginPageViewModel.LoginState.GOOGLE_AUTO_LOGIN -> GoogleAutoLoginView()
-                LoginPageViewModel.LoginState.GOOGLE_LOGIN -> GoogleLoginView { idToken ->
-                    coroutineScope.launch {
-                        try {
-                            DatabaseSingleton.client.auth.signInWith(IDToken) {
-                                this.idToken = idToken
-                                provider = Google
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .weight(loginWeight)
+        ) {
+            androidx.compose.animation.AnimatedVisibility(
+                visible = showLoginStuff,
+                enter = expandVertically(spring(Spring.DampingRatioMediumBouncy), expandFrom = Alignment.Bottom),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                AnimatedContent(
+                    transitionSpec = { fadeIn() + slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Start) togetherWith fadeOut() + slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Start) },
+                    targetState = currentState,
+                    modifier = Modifier.fillMaxWidth()
+                ) { state ->
+                    when (state) {
+                        LoginPageViewModel.LoginState.GOOGLE_AUTO_LOGIN -> GoogleAutoLoginView()
+                        LoginPageViewModel.LoginState.GOOGLE_LOGIN -> GoogleLoginView { idToken ->
+                            coroutineScope.launch {
+                                pageViewModel.loginState = LoginPageViewModel.LoginState.GOOGLE_AUTO_LOGIN
+                                try {
+                                    DatabaseSingleton.client.auth.signInWith(IDToken) {
+                                        this.idToken = idToken
+                                        provider = Google
+                                    }
+                                    pageViewModel.loginState = LoginPageViewModel.LoginState.USOS_AUTO_LOGIN
+                                } catch (e: Exception) {
+                                    pageViewModel.loginState = LoginPageViewModel.LoginState.GOOGLE_LOGIN
+                                }
                             }
-                            pageViewModel.loginState = LoginPageViewModel.LoginState.USOS_AUTO_LOGIN
-                            // success
-                        } catch (e: Exception) {
-                            // handle
+                            //pageViewModel.loginGoogle(activity!!)
                         }
+                        LoginPageViewModel.LoginState.USOS_AUTO_LOGIN -> UsosAutoLoginView(pageViewModel)
+                        LoginPageViewModel.LoginState.USOS_LOGIN -> UsosLoginView {
+                            coroutineScope.launch {
+                                pageViewModel.authorize(context)
+                            }
+                        }
+                        LoginPageViewModel.LoginState.USOS_RETREIVING_REQUEST_TOKEN -> UsosRequestTokenView()
+                        LoginPageViewModel.LoginState.USOS_OAUTH_VERIFIER -> UsosOauthVerifierView(pageViewModel)
+                        LoginPageViewModel.LoginState.DATABASE_SAVING_SESSION -> DatabaseSavingSessionView(pageViewModel)
+                        LoginPageViewModel.LoginState.SUCCESS -> SuccessView(screenManagerViewModel)
                     }
-                    //pageViewModel.loginGoogle(activity!!)
                 }
-                LoginPageViewModel.LoginState.USOS_AUTO_LOGIN -> UsosAutoLoginView(pageViewModel)
-                LoginPageViewModel.LoginState.USOS_LOGIN -> UsosLoginView {
-                    coroutineScope.launch {
-                        pageViewModel.authorize(context)
-                    }
-                }
-                LoginPageViewModel.LoginState.USOS_RETREIVING_REQUEST_TOKEN -> UsosRequestTokenView()
-                LoginPageViewModel.LoginState.USOS_OAUTH_VERIFIER -> UsosOauthVerifierView(pageViewModel)
-                LoginPageViewModel.LoginState.DATABASE_SAVING_SESSION -> DatabaseSavingSessionView(pageViewModel)
-                LoginPageViewModel.LoginState.SUCCESS -> SuccessView(screenManagerViewModel)
             }
         }
     }
@@ -129,7 +154,8 @@ fun LoginPageView(screenManagerViewModel: ScreenManagerViewModel = viewModel<Scr
 private fun GoogleAutoLoginView() {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = Modifier.fillMaxWidth()
     ) {
         Text(
             text = "Sprawdzam połączenie z serwisami Google...",
@@ -145,13 +171,12 @@ private fun GoogleAutoLoginView() {
 @Composable
 private fun GoogleLoginView(onIdToken: (String) -> Unit) {
     val context = LocalContext.current
-    val activity = context.findActivity() // use the findActivity() extension you already have
+    val activity = context.findActivity()
 
-    // launcher
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         try {
             val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-            val account = task.getResult(ApiException::class.java) // safe in callback
+            val account = task.getResult(ApiException::class.java)
             val idToken = account?.idToken
             if (!idToken.isNullOrEmpty()) {
                 onIdToken(idToken)
@@ -165,21 +190,47 @@ private fun GoogleLoginView(onIdToken: (String) -> Unit) {
         }
     }
 
-    Button(onClick = {
-        if (activity == null) {
-            return@Button
+    Button(
+        colors = ButtonDefaults.buttonColors(
+            containerColor = UISingleton.color2.primaryColor,
+            contentColor = UISingleton.color4.primaryColor
+        ),
+        shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp),
+        onClick = {
+            if (activity == null) {
+                return@Button
+            }
+
+            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken("96510249553-u074a5donhaf16700lr2bgjnapbkul13.apps.googleusercontent.com") // <-- MUST be web client id
+                .requestEmail()
+                .build()
+
+            val client = GoogleSignIn.getClient(activity, gso)
+            val intent = client.signInIntent
+            launcher.launch(intent)
         }
-
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken("96510249553-u074a5donhaf16700lr2bgjnapbkul13.apps.googleusercontent.com") // <-- MUST be web client id
-            .requestEmail()
-            .build()
-
-        val client = GoogleSignIn.getClient(activity, gso)
-        val intent = client.signInIntent
-        launcher.launch(intent)
-    }) {
-        Text("Sign in with Google")
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth().padding(6.dp)
+        ) {
+            Text(
+                text = "Zaloguj przez Google",
+                style = MaterialTheme.typography.titleMedium,
+                color = UISingleton.color4.primaryColor,
+                modifier = Modifier.weight(1f)
+            )
+            Icon(
+                imageVector = ImageVector.vectorResource(R.drawable.ic_google),
+                contentDescription = null,
+                tint = UISingleton.color1.primaryColor,
+                modifier = Modifier
+                    .size(48.dp)
+                    .background(UISingleton.color3.primaryColor, CircleShape)
+                    .padding(8.dp)
+            )
+        }
     }
 //    Button(
 //        colors = ButtonDefaults.buttonColors(
@@ -207,7 +258,8 @@ private fun UsosAutoLoginView(viewModel: LoginPageViewModel) {
     }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = Modifier.fillMaxWidth()
     ) {
         Text(
             text = "Sprawdzam połączenie z serwisami USOS...",
@@ -224,22 +276,30 @@ private fun UsosAutoLoginView(viewModel: LoginPageViewModel) {
 private fun UsosLoginView(onClick: () -> Unit) {
     Button(
         colors = ButtonDefaults.buttonColors(
-            contentColor = UISingleton.color3.primaryColor,
+            contentColor = UISingleton.color4.primaryColor,
             containerColor = UISingleton.color2.primaryColor,
         ),
+        shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp),
         onClick = onClick
     ) {
         Row(
-            horizontalArrangement = Arrangement.spacedBy(5.dp, Alignment.CenterHorizontally),
-            verticalAlignment = Alignment.CenterVertically
+            horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth().padding(6.dp)
         ) {
             Text(
-                text = "Zaloguj się",
-                style = MaterialTheme.typography.headlineSmall
+                text = "Zaloguj się do konta USOS",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.weight(1f)
             )
             Icon(
                 imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
-                contentDescription = "Icon",
+                contentDescription = null,
+                tint = UISingleton.color1.primaryColor,
+                modifier = Modifier
+                    .size(48.dp)
+                    .background(UISingleton.color3.primaryColor, CircleShape)
+                    .padding(8.dp)
             )
         }
     }
@@ -249,7 +309,8 @@ private fun UsosLoginView(onClick: () -> Unit) {
 private fun UsosRequestTokenView() {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = Modifier.fillMaxWidth()
     ) {
         Text(
             text = "Sprawdzam połączenie z serwisami USOS...",
@@ -269,11 +330,9 @@ private fun UsosOauthVerifierView(viewModel: LoginPageViewModel) {
     var oauthPin: String by rememberSaveable { mutableStateOf("") }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier.fillMaxWidth()
     ) {
-        Text(
-            text = viewModel.errorMessage
-        )
         Text(
             text = "Wprowadź PIN podany na stronie",
             color = UISingleton.color4.primaryColor,
@@ -282,22 +341,37 @@ private fun UsosOauthVerifierView(viewModel: LoginPageViewModel) {
             modifier = Modifier.fillMaxWidth()
         )
         Row(
-            horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally)
+            horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally),
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(UISingleton.color2.primaryColor, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
+                .padding(12.dp)
         ) {
             TextField(
                 colors = TextFieldDefaults.colors(
-                    focusedTextColor = UISingleton.color3.primaryColor,
-                    unfocusedTextColor = UISingleton.color3.primaryColor,
-                    focusedContainerColor = Color(TRANSPARENT),
-                    unfocusedContainerColor = Color(TRANSPARENT),
-                    cursorColor = UISingleton.color3.primaryColor,
-                    focusedIndicatorColor = UISingleton.color2.primaryColor,
-                    unfocusedIndicatorColor = UISingleton.color2.primaryColor
+                    focusedTextColor = UISingleton.color4.primaryColor,
+                    unfocusedTextColor = UISingleton.color4.primaryColor,
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    cursorColor = UISingleton.color4.primaryColor,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent
                 ),
+                shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp),
+                textStyle = MaterialTheme.typography.titleMedium,
                 value = oauthPin,
                 leadingIcon = { Icon(imageVector = Icons.Rounded.Lock, contentDescription = "lockIcon", tint = UISingleton.color3.primaryColor) },
-                placeholder = { Text(text = "Wprowadź pin.") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                placeholder = {
+                    Text(
+                        text = "Wprowadź PIN",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = UISingleton.color3.primaryColor,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 onValueChange = {
                     if (it.length <= 8 && it.all { char -> char.isDigit() }) {
                         oauthPin = it
@@ -306,7 +380,7 @@ private fun UsosOauthVerifierView(viewModel: LoginPageViewModel) {
             )
             IconButton(
                 colors = IconButtonDefaults.iconButtonColors(
-                    contentColor = UISingleton.color3.primaryColor,
+                    contentColor = UISingleton.color4.primaryColor,
                     containerColor = UISingleton.color2.primaryColor,
                 ),
                 onClick = {
@@ -315,11 +389,17 @@ private fun UsosOauthVerifierView(viewModel: LoginPageViewModel) {
                             viewModel.getAccessToken(oauthPin, context)
                         }
                     }
-                }
+                },
+                modifier = Modifier.size(48.dp)
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
-                    contentDescription = "Authorize"
+                    contentDescription = "Authorize",
+                    tint = UISingleton.color1.primaryColor,
+                    modifier = Modifier
+                        .size(48.dp)
+                        .background(UISingleton.color3.primaryColor, CircleShape)
+                        .padding(8.dp)
                 )
             }
         }
@@ -339,7 +419,8 @@ private fun DatabaseSavingSessionView(viewModel: LoginPageViewModel) {
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = Modifier.fillMaxWidth()
     ) {
         Text(
             text = "Jeszcze chwilka...",
@@ -361,7 +442,9 @@ private fun SuccessView(screenManagerViewModel: ScreenManagerViewModel) {
     Text(
         text = "Zalogowany",
         style = MaterialTheme.typography.titleLarge,
-        color = UISingleton.color3.primaryColor
+        color = UISingleton.color4.primaryColor,
+        textAlign = TextAlign.Center,
+        modifier = Modifier.fillMaxWidth()
     )
 }
 
