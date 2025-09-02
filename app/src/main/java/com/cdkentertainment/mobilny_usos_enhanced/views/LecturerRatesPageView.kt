@@ -52,7 +52,7 @@ fun LecturerRatesPageView() {
     }
 
     if (showDetails) {
-        LecturerInfoPopupView(lecturerRatesPageViewModel.selectedLecturer!!, onPopupDismiss)
+        LecturerInfoPopupView(lecturerRatesPageViewModel.selectedLecturer!!, onDismissRequest = onPopupDismiss)
     }
 
     LazyColumn(

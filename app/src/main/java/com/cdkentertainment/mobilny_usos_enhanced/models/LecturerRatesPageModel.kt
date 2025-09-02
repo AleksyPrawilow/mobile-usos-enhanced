@@ -13,12 +13,3 @@ data class LecturerRate(
     val rate_4: Float = 0f,
     val rate_5: Float = 0f
 )
-
-@Serializable
-data class UserLecturerRate(
-    val rate_1: Int = 1,
-    val rate_2: Int = 1,
-    val rate_3: Int = 1,
-    val rate_4: Int = 1,
-    val rate_5: Int = 1
-)
