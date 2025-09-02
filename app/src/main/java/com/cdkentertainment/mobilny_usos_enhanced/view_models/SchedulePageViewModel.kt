@@ -21,6 +21,8 @@ fun main(): Unit = runBlocking {
     val boom = SchedulePageViewModel()
     launch {
         boom.fetchWeekData(LocalDate.of(2025, 5, 13))
+        val model = SchedulePageModel()
+        println(model.getWeekSchedule(LocalDate.of(2025, 5, 13)))
     }
 }
 

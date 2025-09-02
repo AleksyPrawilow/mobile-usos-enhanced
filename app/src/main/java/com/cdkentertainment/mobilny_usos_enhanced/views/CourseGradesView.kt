@@ -61,7 +61,7 @@ fun CourseGradesView(
                 .fillMaxWidth()
         ) {
             Text(
-                text = nameMap[data.userGrades.course_units_grades.keys.first()]?.course_name ?: "N/A",
+                text = nameMap[data.courseGrades.course_units_grades.keys.first()]?.course_name ?: "N/A",
                 color = UISingleton.color4.primaryColor,
                 style = MaterialTheme.typography.titleLarge
             )
@@ -71,16 +71,15 @@ fun CourseGradesView(
                 modifier = Modifier
                     .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
             )
-            for (courseUnit in data.userGrades.course_units_grades.keys) {
+            for (courseUnit in data.courseGrades.course_units_grades.keys) {
                 val unitClassType: String = nameMap[courseUnit]?.classtype_id ?: "N/A"
-                val condition: Boolean = data.userGrades.course_units_grades[courseUnit] != null && data.userGrades.course_units_grades[courseUnit]!![0]["1"] != null
+                val condition: Boolean = data.courseGrades.course_units_grades[courseUnit] != null && data.courseGrades.course_units_grades[courseUnit]!![0]["1"] != null
                 GradeCardView(
                     classtypeIdInfo?.get(unitClassType)?.name?.pl ?: "N/A",
-                    if (condition) data.userGrades.course_units_grades[courseUnit]!![0]["1"]!!.value_symbol else "-"
+                    if (condition) data.courseGrades.course_units_grades[courseUnit]!![0]["1"]!!.value_symbol else "-"
                 ) {
-                    println("Hello?")
                     showDetails = true
-                    popupGrade = data.userGrades.course_units_grades[courseUnit]!![0]["1"]
+                    popupGrade = data.courseGrades.course_units_grades[courseUnit]!![0]["1"]
                 }
             }
         }

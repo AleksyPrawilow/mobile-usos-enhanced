@@ -15,8 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -25,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,12 +39,18 @@ import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
+import kotlin.math.min
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScheduleDaySelectorView(schedulePageViewModel: SchedulePageViewModel) {
     val daysOfWeek: List<String> = listOf("pn", "wt", "śr", "cz", "pt")
     val datePickerState = rememberDatePickerState()
+
+    LaunchedEffect(Unit) {
+        schedulePageViewModel.selectDay(min(LocalDate.now().dayOfWeek.value - 1, 4))
+    }
+
     AnimatedVisibility(schedulePageViewModel.displayDateSelector) {
         DatePickerDialog(
 //            colors = DatePickerDefaults.colors(
@@ -108,36 +113,35 @@ fun ScheduleDaySelectorView(schedulePageViewModel: SchedulePageViewModel) {
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
+                horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
                 modifier = Modifier
                     .fillMaxHeight()
                     .horizontalScroll(rememberScrollState())
             ) {
                 for (weekOptionIndex in 0..1) {
-                    Button(
-                        colors = ButtonDefaults.buttonColors(
-                            contentColor = UISingleton.color4.primaryColor,
-                            containerColor = if (schedulePageViewModel.selectedWeekOption == weekOptionIndex) UISingleton.color1.primaryColor else Color(TRANSPARENT)
-                        ),
-                        onClick = {
-                            if (weekOptionIndex == 0) {
-                                if (schedulePageViewModel.selectedWeekOption != weekOptionIndex) {
-                                    schedulePageViewModel.resetSchedule()
-                                    CoroutineScope(Dispatchers.IO).launch {
-                                        schedulePageViewModel.fetchWeekData(LocalDate.of(2025, 5, 13))
+                    Text(
+                        text = if (weekOptionIndex == 0) "Aktualny tydzień" else "Inny tydzień",
+                        color = UISingleton.color4.primaryColor,
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier
+                            .background(if (schedulePageViewModel.selectedWeekOption == weekOptionIndex) UISingleton.color1.primaryColor else Color(TRANSPARENT), CircleShape)
+                            .clip(CircleShape)
+                            .clickable(onClick = {
+                                if (weekOptionIndex == 0) {
+                                    if (schedulePageViewModel.selectedWeekOption != weekOptionIndex) {
+                                        schedulePageViewModel.resetSchedule()
+                                        schedulePageViewModel.selectDay(min(LocalDate.now().dayOfWeek.value - 1, 4))
+                                        CoroutineScope(Dispatchers.IO).launch {
+                                            schedulePageViewModel.fetchWeekData(LocalDate.of(2025, 5, 13))
+                                        }
                                     }
+                                } else {
+                                    schedulePageViewModel.setDateSelectorVisibility(true)
                                 }
-                            } else {
-                                schedulePageViewModel.setDateSelectorVisibility(true)
-                            }
-                            schedulePageViewModel.selectWeekOption(weekOptionIndex)
-                        }
-                    ) {
-                        Text(
-                            text = if (weekOptionIndex == 0) "Aktualny tydzień" else "Inny tydzień",
-                            style = MaterialTheme.typography.titleLarge
-                        )
-                    }
+                                schedulePageViewModel.selectWeekOption(weekOptionIndex)
+                            })
+                            .padding(horizontal = 16.dp, 12.dp)
+                    )
                 }
             }
             Row(

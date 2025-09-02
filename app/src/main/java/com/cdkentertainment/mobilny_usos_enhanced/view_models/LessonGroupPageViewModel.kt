@@ -5,10 +5,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
+import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
+import com.cdkentertainment.mobilny_usos_enhanced.models.GradesPageModel
 import com.cdkentertainment.mobilny_usos_enhanced.models.LessonGroup
 import com.cdkentertainment.mobilny_usos_enhanced.models.LessonGroupPageModel
 import com.cdkentertainment.mobilny_usos_enhanced.models.Participants
-import com.cdkentertainment.mobilny_usos_enhanced.models.SeasonGroups
+import com.cdkentertainment.mobilny_usos_enhanced.models.SeasonGroupsGroupedBySubject
+import com.cdkentertainment.mobilny_usos_enhanced.models.SharedDataClasses
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -23,24 +26,41 @@ fun main(): Unit = runBlocking {
 }
 
 class LessonGroupPageViewModel: ViewModel() {
-    var lessonGroups: SeasonGroups? by mutableStateOf(null)
+    var lessonGroups: SeasonGroupsGroupedBySubject? by mutableStateOf(null)
         private set
     var groupDetails = mutableMapOf<String, GroupDetails>()
 
     private val model: LessonGroupPageModel = LessonGroupPageModel()
+    private val gradesPageModel: GradesPageModel = GradesPageModel()
+    var classtypeIdInfo: Map<String, SharedDataClasses.IdAndName>? by mutableStateOf(null)
 
     suspend fun fetchLessonGroups() {
         withContext(Dispatchers.IO) {
+            if (UIHelper.classTypeIds.isEmpty()) {
+                try {
+                    UIHelper.classTypeIds = gradesPageModel.fetchClasstypeIds()
+                    classtypeIdInfo = UIHelper.classTypeIds
+                } catch (e: Exception) {
+                    println(e)
+                }
+            } else {
+                classtypeIdInfo = UIHelper.classTypeIds
+            }
             if (lessonGroups != null) {
                 return@withContext
             }
             try {
                 lessonGroups = model.getLessonGroups()
                 for (seasonId in lessonGroups!!.groups.keys) {
-                    val season: List<LessonGroup>? = lessonGroups!!.groups[seasonId]
+                    val season: Map<String, List<LessonGroup>>? = lessonGroups!!.groups[seasonId]
                     if (season != null) {
-                        for (group in season) {
-                            groupDetails["${group.course_unit_id.toString()}-${group.group_number}"] = GroupDetails()
+                        for (subject in season.keys) {
+                            val courseUnit: List<LessonGroup>? = season[subject]
+                            if (courseUnit != null) {
+                                for (group in courseUnit) {
+                                    groupDetails["${group.course_unit_id.toString()}-${group.group_number}"] = GroupDetails()
+                                }
+                            }
                         }
                     }
                 }

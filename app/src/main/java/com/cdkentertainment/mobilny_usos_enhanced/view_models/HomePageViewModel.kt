@@ -27,10 +27,7 @@ class HomePageViewModel: ViewModel() {
 
     suspend fun fetchData() {
         withContext(Dispatchers.IO) {
-            if (userInfo != null) {
-                return@withContext
-            }
-            userInfo = model.fetchUserData()
+            userInfo = OAuthSingleton.userData
         }
     }
 }
