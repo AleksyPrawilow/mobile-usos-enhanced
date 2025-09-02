@@ -31,11 +31,15 @@ class TestsPageModel {
             }
         }
     }
-    public suspend fun getSingleTestInfo(nodeId: Int) {
+    public suspend fun getSingleTestInfo(nodeId: Int): SubjectTestContainer {
         return withContext(Dispatchers.IO) {
             val response: Map<String, String> = OAuthSingleton.get("$singleSubjectUrl?node_id=$nodeId&fields=$singleSubjectFields")
-            println(response["response"]!!)
-            val parsed = parser.decodeFromString<SubjectTestContainer>(response["response"]!!)
+            if (response.containsKey("response") && response["response"] != null) {
+                val parsedTests: SubjectTestContainer = parser.decodeFromString<SubjectTestContainer>(response["response"]!!)
+                return@withContext parsedTests
+            } else {
+                throw(Exception("API Error"))
+            }
         }
     }
 }

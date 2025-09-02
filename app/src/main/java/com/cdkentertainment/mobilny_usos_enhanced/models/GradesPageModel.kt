@@ -1,6 +1,7 @@
 package com.cdkentertainment.mobilny_usos_enhanced.models
 
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
+import com.cdkentertainment.mobilny_usos_enhanced.views.DismissPopupButtonView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
@@ -12,10 +13,12 @@ class GradesPageModel {
     private val userTermsFields: String = "terms[id]"
     private val gradesUrl: String = "grades/terms2"
     private val gradesFields: String =
-        "date_modified|modification_author|value_symbol|passes|value_description|exam_id|exam_session_number"
+        "date_modified|modification_author|value_symbol|passes|value_description|exam_id|exam_session_number|counts_into_average"
     private val courseIdsString: String = "courses/units"
     private val courseIdsFields: String = "course_name|classtype_id"
     private val classtypeUrl: String = "courses/classtypes_index"
+    private val examDistributionUrl: String = "examrep/exam"
+    private val distributionFields: String = "grades_distribution|type_description|description"
     @Serializable
     private data class TermIdObject (
         val terms: List<TermId>
@@ -77,7 +80,7 @@ class GradesPageModel {
                             for (i in 1..2) {
                                 if (currentCourseUnitObject["$i"] != null) {
                                     val valueGrade: Float? = currentCourseUnitObject["$i"]!!.value_symbol.replace(",", ".").toFloatOrNull()
-                                    if (valueGrade != null) {
+                                    if (valueGrade != null && currentCourseUnitObject["$i"]!!.counts_into_average == "T") {
                                         seasonAvgGrade += valueGrade
                                         seasonGeadesCount ++
                                     }
@@ -150,6 +153,18 @@ class GradesPageModel {
             return@withContext Pair<List<Season>, Map<String, CourseUnitIds>>(gradesObject, parsedcourseUnitObject)
         }
     }
+    public suspend fun getGivenExamGradesDistribution(examId: Int): GradesDistribution {
+        return withContext(Dispatchers.IO) {
+            val response: Map<String, String> = OAuthSingleton.get("$examDistributionUrl?id=$examId&fields=$distributionFields")
+            if (response.containsKey("response") && response["response"] != null) {
+                val responseString: String = response["response"]!!
+                val parsedExamDistribution: GradesDistribution = parser.decodeFromString<GradesDistribution>(responseString)
+                return@withContext parsedExamDistribution
+            } else {
+                throw(Exception("API Error"))
+            }
+        }
+    }
 }
 @Serializable
 data class CourseGrades (
@@ -180,5 +195,18 @@ data class TermGrade (
     val exam_session_number: Int,
     val grade_value: Float ? = null,
     val date_modified: String? = null,
-    val modification_author: SharedDataClasses.Human? = null
+    val modification_author: SharedDataClasses.Human? = null,
+    val counts_into_average: String
+)
+
+@Serializable
+data class GradesDistribution (
+    val grades_distribution: List<SingleGradeStatistic>,
+    val type_description: SharedDataClasses.LangDict,
+    val description: SharedDataClasses.LangDict
+)
+@Serializable
+data class SingleGradeStatistic (
+    val percentage: Int,
+    val grade_symbol: String
 )
