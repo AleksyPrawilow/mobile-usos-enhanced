@@ -53,6 +53,15 @@ fun GradeCardView(
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f).padding(end = 6.dp)
         )
+        if (showArrow) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
+                contentDescription = "More",
+                tint = UISingleton.color4.primaryColor,
+                modifier = Modifier
+                    .padding(12.dp)
+            )
+        }
         if (showGrade) {
             Box(
                 contentAlignment = Alignment.Center,
@@ -72,15 +81,6 @@ fun GradeCardView(
                         .align(Alignment.Center)
                 )
             }
-        }
-        if (showArrow) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
-                contentDescription = "More",
-                tint = UISingleton.color4.primaryColor,
-                modifier = Modifier
-                    .padding(12.dp)
-            )
         }
     }
 }
