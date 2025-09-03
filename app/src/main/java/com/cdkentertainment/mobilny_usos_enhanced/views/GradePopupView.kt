@@ -24,8 +24,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.models.TermGrade
+import com.cdkentertainment.mobilny_usos_enhanced.view_models.GradesPageViewModel
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberBottom
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberStart
@@ -55,6 +57,10 @@ private val BottomAxisValueFormatter = CartesianValueFormatter { context, x, _ -
 
 @Composable
 fun GradePopupView(grade: TermGrade, onDismiss: () -> Unit) {
+    val viewModel: GradesPageViewModel = viewModel<GradesPageViewModel>()
+    LaunchedEffect(Unit) {
+
+    }
     val gradeData = mapOf(
         "2" to 10,
         "3" to 15,
