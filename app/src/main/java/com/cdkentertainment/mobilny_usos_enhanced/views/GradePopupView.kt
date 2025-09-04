@@ -2,23 +2,36 @@ package com.cdkentertainment.mobilny_usos_enhanced.views
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Refresh
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -53,6 +66,8 @@ import com.patrykandpatrick.vico.core.common.Insets
 import com.patrykandpatrick.vico.core.common.component.TextComponent
 import com.patrykandpatrick.vico.core.common.data.ExtraStore
 import com.patrykandpatrick.vico.core.common.shape.CorneredShape
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 private val BottomAxisLabelKey = ExtraStore.Key<List<String>>()
 private val BottomAxisValueFormatter = CartesianValueFormatter { context, x, _ ->
@@ -64,17 +79,18 @@ fun GradePopupView(
     grade: TermGrade, onDismiss: () -> Unit
 ) {
     val viewModel: GradesPageViewModel = viewModel<GradesPageViewModel>()
-    LaunchedEffect(Unit) {
-        viewModel.fetchGradesDistribution(grade.exam_id)
+    var fetchingSuccess: Boolean by rememberSaveable { mutableStateOf(true) }
+    val coroutineScope: CoroutineScope = rememberCoroutineScope()
+    val fetchDetails: () -> Unit = {
+        if (viewModel.gradesDistribution.getOrDefault(grade.exam_id, null) == null) {
+            coroutineScope.launch {
+                fetchingSuccess = viewModel.fetchGradesDistribution(grade.exam_id)
+            }
+        }
     }
-    val gradeData = mapOf(
-        "2" to 10,
-        "3" to 15,
-        "3.5" to 10,
-        "4" to 25,
-        "4.5" to 30,
-        "5" to 10
-    )
+    LaunchedEffect(Unit) {
+        fetchDetails()
+    }
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(dismissOnBackPress = true)
@@ -158,11 +174,54 @@ fun GradePopupView(
                             color = UISingleton.color3.primaryColor,
                             modifier = Modifier.clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
                         )
-                        GradeChart(
-                            gradeData,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                        )
+                        if (viewModel.gradesDistribution.getOrDefault(grade.exam_id, null) != null)  {
+                            GradeChart(
+                                gradeData = viewModel.gradesDistribution[grade.exam_id]!!,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            )
+                        } else {
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                androidx.compose.animation.AnimatedVisibility(!fetchingSuccess) {
+                                    Row(
+                                        horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
+                                            .background(UISingleton.color2.primaryColor)
+                                            .clickable(onClick = {
+                                                fetchDetails()
+                                            })
+                                            .padding(12.dp)
+                                    ) {
+                                        Text(
+                                            text = "Nie udało się pobrać danych",
+                                            style = MaterialTheme.typography.titleMedium,
+                                            color = UISingleton.color4.primaryColor,
+                                            modifier = Modifier.weight(1f)
+                                        )
+                                        Icon(
+                                            imageVector = Icons.Rounded.Refresh,
+                                            contentDescription = null,
+                                            tint = UISingleton.color1.primaryColor,
+                                            modifier = Modifier
+                                                .size(48.dp)
+                                                .background(UISingleton.color3.primaryColor, CircleShape)
+                                                .padding(8.dp)
+                                        )
+                                    }
+                                }
+                                androidx.compose.animation.AnimatedVisibility(fetchingSuccess){
+                                    CircularProgressIndicator(
+                                        color = UISingleton.color3.primaryColor
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
             }

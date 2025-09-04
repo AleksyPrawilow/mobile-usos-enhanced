@@ -276,7 +276,7 @@ fun TestCardView(
                                             text = "Nie udało się pobrać danych",
                                             style = MaterialTheme.typography.titleMedium,
                                             color = UISingleton.color4.primaryColor,
-                                            modifier = Modifier
+                                            modifier = Modifier.weight(1f)
                                         )
                                         Icon(
                                             imageVector = Icons.Rounded.Refresh,

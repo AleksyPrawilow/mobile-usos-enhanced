@@ -26,7 +26,7 @@ fun main(): Unit = runBlocking {
 }
 
 class GradesPageViewModel: ViewModel() {
-    var gradesDistribution: MutableMap<Int, GradesDistribution> = mutableStateMapOf()
+    var gradesDistribution: MutableMap<Int, Map<String, Int>> = mutableStateMapOf()
     var userGrades: List<Season>? by mutableStateOf(null)
     var userSubjects: Map<String, CourseUnitIds>? by mutableStateOf(null)
     var classtypeIdInfo: Map<String, SharedDataClasses.IdAndName>? by mutableStateOf(null)
@@ -55,10 +55,12 @@ class GradesPageViewModel: ViewModel() {
         }
     }
 
-    suspend fun fetchGradesDistribution(courseId: Int): Boolean {
+    suspend fun fetchGradesDistribution(examId: Int): Boolean {
         return withContext(Dispatchers.IO) {
             try {
-                gradesDistribution[courseId] = gradesPageModel.getGivenExamGradesDistribution(courseId)
+                val distribution: GradesDistribution = gradesPageModel.getGivenExamGradesDistribution(examId)
+                val map: Map<String, Int> = distribution.grades_distribution.associate { it.grade_symbol to it.percentage }
+                gradesDistribution[examId] = map
                 return@withContext true
             } catch (e: Exception) {
                 println(e)
