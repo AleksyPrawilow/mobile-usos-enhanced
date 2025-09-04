@@ -43,6 +43,7 @@ fun LecturerRatesPageView() {
     var showDetails: Boolean by rememberSaveable { mutableStateOf(false) }
 
     val onPopupDismiss: () -> Unit = {
+        UISingleton.dropBlurContent()
         showDetails = false
     }
 
@@ -85,7 +86,7 @@ fun LecturerRatesPageView() {
                 )
                 AnimatedVisibility(showElements, enter = enterTransition(1 + index)) {
                     LecturerCardView(index, lecturer) {
-                        println("Clicked on lecturer $index")
+                        UISingleton.blurContent()
                         lecturerRatesPageViewModel.selectLecturer(lecturer)
                         showDetails = true
                     }

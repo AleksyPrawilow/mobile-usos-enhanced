@@ -38,6 +38,7 @@ fun CourseGradesView(
     //TODO: Transfer to the view model so it persists. rememberSaveable does not work here!!!
     if (showDetails && popupGrade != null) {
         GradePopupView(popupGrade!!) {
+            UISingleton.dropBlurContent()
             showDetails = false
             popupGrade = null
         }
@@ -78,6 +79,7 @@ fun CourseGradesView(
                     classtypeIdInfo?.get(unitClassType)?.name?.pl ?: "N/A",
                     if (condition) data.courseGrades.course_units_grades[courseUnit]!![0]["1"]!!.value_symbol else "-"
                 ) {
+                    UISingleton.blurContent()
                     showDetails = true
                     popupGrade = data.courseGrades.course_units_grades[courseUnit]!![0]["1"]
                 }

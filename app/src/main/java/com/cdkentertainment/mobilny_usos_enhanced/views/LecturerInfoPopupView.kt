@@ -68,6 +68,7 @@ fun LecturerInfoPopupView(
                 .fillMaxSize()
                 .shadow(10.dp, shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
                 .background(UISingleton.color2.primaryColor, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
+                .border(5.dp, UISingleton.color1.primaryColor, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
         ) {
             LazyColumn(
                 modifier = Modifier

@@ -77,6 +77,7 @@ fun ContentView() {
     )
     val bgOverlayColor: Color by animateColorAsState(targetValue = if (fabViewModel.expanded) Color(0x32000000) else Color(TRANSPARENT))
 
+//    val blurRadius: Dp by animateDpAsState(UISingleton.blurRadius)
     val color1: Color by animateColorAsState(UISingleton.color1.primaryColor)
     val color2: Color by animateColorAsState(UISingleton.color2.primaryColor)
     val color3: Color by animateColorAsState(UISingleton.color3.primaryColor)
@@ -86,6 +87,7 @@ fun ContentView() {
         modifier = Modifier
             .fillMaxSize()
             .background(color = color1)
+//            .blur(blurRadius)
             .padding(12.dp)
     ) {
         ScreenManager(screenManagerViewModel.selectedScreen, screenManagerViewModel)

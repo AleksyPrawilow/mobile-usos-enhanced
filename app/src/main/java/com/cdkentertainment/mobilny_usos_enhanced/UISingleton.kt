@@ -4,6 +4,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 
 object UISingleton {
     // Pallete taken from https://colorhunt.co/palette/1b3c53456882d2c1b6f9f3ef
@@ -19,6 +21,8 @@ object UISingleton {
         private set
     // Dark text colors
     var color4: ColorObject by mutableStateOf(ColorObject(Color(0xFF1B3C53), Color(0xFFF9F3EF)))
+        private set
+    var blurRadius: Dp by mutableStateOf(0.dp)
         private set
 
     private val lightTheme: Theme = Theme(
@@ -48,6 +52,14 @@ object UISingleton {
             color3 = lightTheme.color3
             color4 = lightTheme.color4
         }
+    }
+
+    fun blurContent() {
+        blurRadius = 1.dp
+    }
+
+    fun dropBlurContent() {
+        blurRadius = 0.dp
     }
 }
 
