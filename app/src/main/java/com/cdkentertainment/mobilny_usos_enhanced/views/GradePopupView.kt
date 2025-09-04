@@ -110,26 +110,31 @@ fun GradePopupView(
                     .padding(12.dp)
             ) {
                 Spacer(Modifier.height(24.dp))
-                if (grade.date_modified != null) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(UISingleton.color1.primaryColor, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
-                            .padding(12.dp)
-                    ){
-                        Column(
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            Text(
-                                text = "Informacja o ocenie",
-                                style = MaterialTheme.typography.titleLarge,
-                                color = UISingleton.color4.primaryColor
-                            )
-                            HorizontalDivider(
-                                thickness = 5.dp,
-                                color = UISingleton.color3.primaryColor,
-                                modifier = Modifier.clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
-                            )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(UISingleton.color1.primaryColor, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
+                        .padding(12.dp)
+                ){
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Text(
+                            text = "Informacja o ocenie",
+                            style = MaterialTheme.typography.titleLarge,
+                            color = UISingleton.color4.primaryColor
+                        )
+                        HorizontalDivider(
+                            thickness = 5.dp,
+                            color = UISingleton.color3.primaryColor,
+                            modifier = Modifier.clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
+                        )
+                        GradeCardView(
+                            courseName = "Twoja ocena",
+                            grade = grade.value_symbol,
+                            backgroundColor = UISingleton.color2.primaryColor
+                        )
+                        if (grade.date_modified != null) {
                             Text(
                                 text = "Data wprowadzenia: ${grade.date_modified}",
                                 style = MaterialTheme.typography.titleMedium,
@@ -140,18 +145,18 @@ fun GradePopupView(
                                     .background(UISingleton.color2.primaryColor, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
                                     .padding(12.dp)
                             )
-                            if (grade.modification_author != null) {
-                                Text(
-                                    text = "Wystawiający: ${grade.modification_author.first_name} ${grade.modification_author.last_name}",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    color = UISingleton.color4.primaryColor,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .defaultMinSize(minHeight = 48.dp)
-                                        .background(UISingleton.color2.primaryColor, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
-                                        .padding(12.dp)
-                                )
-                            }
+                        }
+                        if (grade.modification_author != null) {
+                            Text(
+                                text = "Wystawiający: ${grade.modification_author.first_name} ${grade.modification_author.last_name}",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = UISingleton.color4.primaryColor,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .defaultMinSize(minHeight = 48.dp)
+                                    .background(UISingleton.color2.primaryColor, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
+                                    .padding(12.dp)
+                            )
                         }
                     }
                 }

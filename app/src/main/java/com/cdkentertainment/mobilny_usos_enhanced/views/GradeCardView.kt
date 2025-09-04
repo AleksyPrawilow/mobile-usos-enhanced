@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -31,6 +32,7 @@ fun GradeCardView(
     grade: String = "5",
     showGrade: Boolean = true,
     showArrow: Boolean = false,
+    backgroundColor: Color = UISingleton.color1.primaryColor,
     onClick: () -> Unit = {}
 ) {
     Row(
@@ -40,7 +42,7 @@ fun GradeCardView(
             .fillMaxWidth()
             .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
             .background(
-                UISingleton.color1.primaryColor,
+                backgroundColor,
             )
             .clickable(onClick = onClick)
             .padding(12.dp)
