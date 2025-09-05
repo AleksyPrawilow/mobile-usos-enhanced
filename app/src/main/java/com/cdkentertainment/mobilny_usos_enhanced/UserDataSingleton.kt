@@ -1,8 +1,8 @@
 package com.cdkentertainment.mobilny_usos_enhanced
 
 import android.content.Context
-import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.github.scribejava.core.model.OAuth1AccessToken
@@ -15,7 +15,7 @@ val Context.dataStore by preferencesDataStore("user_settings")
 object UserDataSingleton {
     private val ACCESS_TOKEN_KEY = stringPreferencesKey("access_token_key")
     private val ACCESS_TOKEN_SECRET = stringPreferencesKey("access_token_secret")
-    private val DARK_THEME = booleanPreferencesKey("DARK_THEME")
+    private val SELECTED_THEME = intPreferencesKey("SELECTED_THEME")
 
     var currentSettings: SettingsObject = SettingsObject()
 
@@ -29,17 +29,20 @@ object UserDataSingleton {
     suspend fun saveUserSettings(context: Context) {
         println("Saving user settings...")
         context.dataStore.edit { settings ->
-            settings[DARK_THEME] = currentSettings.darkTheme
+            settings[SELECTED_THEME] = currentSettings.selectedTheme
         }
     }
 
     suspend fun readSettings(context: Context) {
         println("Reading user settings...")
-        val darkTheme = context.dataStore.data
-            .map { prefs -> prefs[DARK_THEME] ?: false }
+        val selectedTheme = context.dataStore.data
+            .map { prefs -> prefs[SELECTED_THEME] ?: 0 }
             .first()
-        UISingleton.changeTheme(darkTheme)
-        currentSettings = SettingsObject(darkTheme = darkTheme)
+        val theme: Theme? = UISingleton.themes[UISingleton.themes.keys.elementAt(selectedTheme)]
+        if (theme != null) {
+            UISingleton.changeTheme(theme)
+        }
+        currentSettings = SettingsObject(selectedTheme = selectedTheme)
     }
 
     fun readAccessTokenKey(context: Context): Flow<String> {
@@ -63,5 +66,5 @@ object UserDataSingleton {
 }
 
 data class SettingsObject(
-    var darkTheme: Boolean = false
+    var selectedTheme: Int = 0
 )

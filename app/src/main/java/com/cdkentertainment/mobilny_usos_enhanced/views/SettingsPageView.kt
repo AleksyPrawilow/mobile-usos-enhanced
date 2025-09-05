@@ -74,15 +74,8 @@ fun SettingsPageView() {
             }
         }
         item {
-            AnimatedVisibility(showElements, enter = enterTransition(1)) {
-                SwitchSettingView(
-                    color1, color2, color3, color4,
-                    text = "Ciemny motyw",
-                    checked = settingsPageViewModel.darkThemeChecked,
-                    onSwitchChange = {
-                        settingsPageViewModel.setDarkTheme(it)
-                    }
-                )
+            AnimatedVisibility(showElements, enter = enterTransition(1), modifier = Modifier.fillMaxWidth()) {
+                ThemeSelectionButtonView()
             }
         }
     }
