@@ -38,9 +38,13 @@ object UserDataSingleton {
         val selectedTheme = context.dataStore.data
             .map { prefs -> prefs[SELECTED_THEME] ?: 0 }
             .first()
-        val theme: Theme? = UISingleton.themes[UISingleton.themes.keys.elementAt(selectedTheme)]
-        if (theme != null) {
-            UISingleton.changeTheme(theme)
+        try {
+            val theme: Theme? = UISingleton.themes[UISingleton.themes.keys.elementAt(selectedTheme)]
+            if (theme != null) {
+                UISingleton.changeTheme(theme)
+            }
+        } catch (e: Exception) {
+            
         }
         currentSettings = SettingsObject(selectedTheme = selectedTheme)
     }
