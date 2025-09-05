@@ -54,8 +54,8 @@ fun ClassGroupPopupView(
             modifier = Modifier
                 .fillMaxSize()
                 .shadow(10.dp, shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
-                .background(UISingleton.color2.primaryColor, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
-                .border(5.dp, UISingleton.color1.primaryColor, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
+                .background(UISingleton.color2, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
+                .border(5.dp, UISingleton.color1, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
         ) {
             LazyColumn(
                 modifier = Modifier
@@ -68,7 +68,7 @@ fun ClassGroupPopupView(
                     Text(
                         text = "${data.course_name.pl} - ${data.class_type_id}",
                         style = MaterialTheme.typography.headlineMedium,
-                        color = UISingleton.color4.primaryColor,
+                        color = UISingleton.textColor1,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
                             .fillMaxWidth()
@@ -79,7 +79,7 @@ fun ClassGroupPopupView(
                     Text(
                         text = "Grupa ${data.group_number}",
                         style = MaterialTheme.typography.headlineSmall,
-                        color = UISingleton.color3.primaryColor,
+                        color = UISingleton.textColor2,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
                             .fillMaxWidth()
@@ -89,10 +89,10 @@ fun ClassGroupPopupView(
                 item {
                     Card(
                         colors = CardColors(
-                            contentColor = UISingleton.color4.primaryColor,
-                            containerColor = UISingleton.color1.primaryColor,
-                            disabledContainerColor = UISingleton.color1.primaryColor,
-                            disabledContentColor = UISingleton.color4.primaryColor
+                            contentColor = UISingleton.textColor1,
+                            containerColor = UISingleton.color1,
+                            disabledContainerColor = UISingleton.color1,
+                            disabledContentColor = UISingleton.textColor1
                         ),
                         shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp),
                         modifier = Modifier
@@ -107,12 +107,12 @@ fun ClassGroupPopupView(
                         ) {
                             Text(
                                 text = "Prowadzący",
-                                color = UISingleton.color4.primaryColor,
+                                color = UISingleton.textColor1,
                                 style = MaterialTheme.typography.titleLarge
                             )
                             HorizontalDivider(
                                 thickness = 5.dp,
-                                color = UISingleton.color3.primaryColor,
+                                color = UISingleton.textColor2,
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
                             )
@@ -124,14 +124,14 @@ fun ClassGroupPopupView(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .background(
-                                            UISingleton.color2.primaryColor,
+                                            UISingleton.color2,
                                             RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp)
                                         )
                                         .padding(12.dp)
                                 ) {
                                     Text(
                                         text = "${lecturer + 1}. ${data.lecturers[lecturer].first_name} ${data.lecturers[lecturer].last_name}",
-                                        color = UISingleton.color4.primaryColor,
+                                        color = UISingleton.textColor1,
                                         style = MaterialTheme.typography.titleMedium,
                                     )
                                 }
@@ -143,12 +143,12 @@ fun ClassGroupPopupView(
                     item {
                         Text(
                             text = "Uczestnicy",
-                            color = UISingleton.color4.primaryColor,
+                            color = UISingleton.textColor1,
                             style = MaterialTheme.typography.titleLarge,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 12.dp)
-                                .background(UISingleton.color1.primaryColor, RoundedCornerShape(topStart = UISingleton.uiElementsCornerRadius.dp, topEnd = UISingleton.uiElementsCornerRadius.dp, 0.dp, 0.dp))
+                                .background(UISingleton.color1, RoundedCornerShape(topStart = UISingleton.uiElementsCornerRadius.dp, topEnd = UISingleton.uiElementsCornerRadius.dp, 0.dp, 0.dp))
                                 .padding(12.dp)
                                 .animateItem()
                         )
@@ -156,10 +156,10 @@ fun ClassGroupPopupView(
                     item {
                         HorizontalDivider(
                             thickness = 5.dp,
-                            color = UISingleton.color3.primaryColor,
+                            color = UISingleton.textColor2,
                             modifier = Modifier
                                 .padding(horizontal = 12.dp)
-                                .background(UISingleton.color1.primaryColor)
+                                .background(UISingleton.color1)
                                 .padding(horizontal = 12.dp)
                                 .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
                         )
@@ -170,7 +170,7 @@ fun ClassGroupPopupView(
                                 .fillMaxWidth()
                                 .height(6.dp)
                                 .padding(horizontal = 12.dp)
-                                .background(UISingleton.color1.primaryColor)
+                                .background(UISingleton.color1)
                         )
                     }
 
@@ -191,7 +191,7 @@ fun ClassGroupPopupView(
                                 .fillMaxWidth()
                         ) {
                             CircularProgressIndicator(
-                                color = UISingleton.color3.primaryColor,
+                                color = UISingleton.textColor2,
                             )
                         }
                     }

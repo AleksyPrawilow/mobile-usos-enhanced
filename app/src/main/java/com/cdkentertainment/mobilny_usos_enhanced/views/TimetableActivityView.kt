@@ -74,9 +74,9 @@ fun TimetableActivityView(
             .shadow(5.dp, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
             .background(
                 brush = verticalGradient(
-                    0.0f to UISingleton.color2.primaryColor,
-                    0.5f to UISingleton.color2.primaryColor,
-                    0.5f to UISingleton.color1.primaryColor
+                    0.0f to UISingleton.color2,
+                    0.5f to UISingleton.color2,
+                    0.5f to UISingleton.color1
                 ),
                 shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp)
             )
@@ -96,7 +96,7 @@ fun TimetableActivityView(
             ) {
                 Text(
                     text = "$startTime - $endTime",
-                    color = UISingleton.color4.primaryColor,
+                    color = UISingleton.textColor1,
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier
                         .weight(1f)
@@ -104,7 +104,7 @@ fun TimetableActivityView(
                 Column {
                     Text(
                         text = data.classtype_id,
-                        color = UISingleton.color3.primaryColor,
+                        color = UISingleton.textColor2,
                         style = MaterialTheme.typography.bodyMedium,
                         textAlign = TextAlign.Right,
                         modifier = Modifier
@@ -112,7 +112,7 @@ fun TimetableActivityView(
                     )
                     Text(
                         text = "Sala: ${data.room_number}",
-                        color = UISingleton.color3.primaryColor,
+                        color = UISingleton.textColor2,
                         style = MaterialTheme.typography.bodyMedium,
                         textAlign = TextAlign.Right,
                         modifier = Modifier
@@ -126,7 +126,7 @@ fun TimetableActivityView(
             ) {
                 Text(
                     text = data.course_name.pl,
-                    color = UISingleton.color4.primaryColor,
+                    color = UISingleton.textColor1,
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,

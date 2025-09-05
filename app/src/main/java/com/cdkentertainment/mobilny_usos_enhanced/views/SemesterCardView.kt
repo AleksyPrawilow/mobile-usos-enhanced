@@ -17,20 +17,20 @@ import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 fun SemesterCardView(text: String) {
     Card(
         colors = CardColors(
-            contentColor = UISingleton.color4.primaryColor,
-            containerColor = UISingleton.color1.primaryColor,
-            disabledContainerColor = UISingleton.color1.primaryColor,
-            disabledContentColor = UISingleton.color4.primaryColor
+            contentColor = UISingleton.textColor1,
+            containerColor = UISingleton.color1,
+            disabledContainerColor = UISingleton.color1,
+            disabledContentColor = UISingleton.textColor1
         ),
         shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius),
         modifier = Modifier
-            .border(5.dp, UISingleton.color2.primaryColor, RoundedCornerShape(
+            .border(5.dp, UISingleton.color2, RoundedCornerShape(
                 UISingleton.uiElementsCornerRadius))
             .shadow(5.dp, RoundedCornerShape(UISingleton.uiElementsCornerRadius))
     ) {
         Text(
             text = text,
-            color = UISingleton.color4.primaryColor,
+            color = UISingleton.textColor1,
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier
                 .padding(12.dp)

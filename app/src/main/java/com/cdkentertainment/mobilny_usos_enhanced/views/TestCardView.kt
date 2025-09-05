@@ -119,7 +119,7 @@ fun TestCardView(
                     .fillMaxWidth()
                     .defaultMinSize(minHeight = 76.dp)
                     .background(
-                        UISingleton.color2.primaryColor,
+                        UISingleton.color2,
                         RoundedCornerShape(
                             topStart = UISingleton.uiElementsCornerRadius.dp,
                             topEnd = UISingleton.uiElementsCornerRadius.dp,
@@ -135,17 +135,17 @@ fun TestCardView(
                     Icon(
                         imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                         contentDescription = null,
-                        tint = UISingleton.color1.primaryColor,
+                        tint = UISingleton.textColor4,
                         modifier = Modifier
                             .padding(end = 6.dp)
                             .size(48.dp)
                             .clip(CircleShape)
-                            .background(UISingleton.color3.primaryColor, CircleShape)
+                            .background(UISingleton.color3, CircleShape)
                     )
                 }
                 Text(
                     text = data.course_edition?.course_name?.pl ?: "N/A",
-                    color = UISingleton.color4.primaryColor,
+                    color = UISingleton.textColor1,
                     style = MaterialTheme.typography.titleLarge,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
@@ -161,13 +161,13 @@ fun TestCardView(
                 Text(
                     text = "Wszyscy uczestnicy",
                     style = MaterialTheme.typography.titleMedium,
-                    color = UISingleton.color1.primaryColor,
+                    color = UISingleton.textColor4,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(
-                            UISingleton.color3.primaryColor,
+                            UISingleton.color3,
                             RoundedCornerShape(
                                 bottomStart = UISingleton.uiElementsCornerRadius.dp,
                                 bottomEnd = UISingleton.uiElementsCornerRadius.dp,
@@ -184,7 +184,7 @@ fun TestCardView(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(
-                        UISingleton.color2.primaryColor,
+                        UISingleton.color2,
                         RoundedCornerShape(
                             topStart = 0.dp,
                             topEnd = 0.dp,
@@ -266,7 +266,7 @@ fun TestCardView(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
-                                            .background(UISingleton.color1.primaryColor)
+                                            .background(UISingleton.color1)
                                             .clickable(onClick = {
                                                 fetchDetails()
                                             })
@@ -275,23 +275,23 @@ fun TestCardView(
                                         Text(
                                             text = "Nie udało się pobrać danych",
                                             style = MaterialTheme.typography.titleMedium,
-                                            color = UISingleton.color4.primaryColor,
+                                            color = UISingleton.textColor1,
                                             modifier = Modifier.weight(1f)
                                         )
                                         Icon(
                                             imageVector = Icons.Rounded.Refresh,
                                             contentDescription = null,
-                                            tint = UISingleton.color1.primaryColor,
+                                            tint = UISingleton.textColor4,
                                             modifier = Modifier
                                                 .size(48.dp)
-                                                .background(UISingleton.color3.primaryColor, CircleShape)
+                                                .background(UISingleton.color3, CircleShape)
                                                 .padding(8.dp)
                                         )
                                     }
                                 }
                                 androidx.compose.animation.AnimatedVisibility(fetchDetailsSuccess){
                                     CircularProgressIndicator(
-                                        color = UISingleton.color3.primaryColor
+                                        color = UISingleton.textColor2
                                     )
                                 }
                             }

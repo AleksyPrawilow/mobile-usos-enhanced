@@ -67,7 +67,7 @@ fun AttendancePageView() {
 
     if (attendancePageViewModel.lessonGroups == null) {
         Box(modifier = Modifier.fillMaxSize()) {
-            CircularProgressIndicator(color = UISingleton.color3.primaryColor, modifier = Modifier.align(Alignment.Center))
+            CircularProgressIndicator(color = UISingleton.textColor2, modifier = Modifier.align(Alignment.Center))
         }
     } else {
         LazyColumn(
@@ -84,7 +84,7 @@ fun AttendancePageView() {
                     Text(
                         text = "Obecność",
                         style = MaterialTheme.typography.headlineLarge,
-                        color = UISingleton.color4.primaryColor,
+                        color = UISingleton.textColor1,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
                             .fillMaxWidth()
@@ -118,7 +118,7 @@ fun AttendancePageView() {
                             Text(
                                 text = "Brak grup zajęciowych w tym semestrze",
                                 style = MaterialTheme.typography.titleLarge,
-                                color = UISingleton.color4.primaryColor,
+                                color = UISingleton.textColor1,
                             )
                         }
                     }
@@ -142,7 +142,7 @@ fun AttendancePagePreview() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(UISingleton.color1.primaryColor)
+            .background(UISingleton.color1)
             .padding(12.dp)
     ) {
         AnimatedContent(targetState = currentScreen) { target ->

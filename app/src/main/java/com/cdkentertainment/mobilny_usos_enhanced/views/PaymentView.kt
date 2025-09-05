@@ -30,17 +30,17 @@ fun PaymentView(
         modifier = Modifier
             .drawBehind {
                 drawRoundRect(
-                    UISingleton.color3.primaryColor,
+                    UISingleton.color3,
                     cornerRadius = CornerRadius(UISingleton.uiElementsCornerRadius.dp.toPx(), UISingleton.uiElementsCornerRadius.dp.toPx())
                 )
             }
     ) {
         Card(
             colors = CardDefaults.cardColors(
-                containerColor = UISingleton.color2.primaryColor,
-                disabledContainerColor = UISingleton.color2.primaryColor,
-                contentColor = UISingleton.color4.primaryColor,
-                disabledContentColor = UISingleton.color4.primaryColor
+                containerColor = UISingleton.color2,
+                disabledContainerColor = UISingleton.color2,
+                contentColor = UISingleton.textColor1,
+                disabledContentColor = UISingleton.textColor1
             ),
             shape = RoundedCornerShape(
                 bottomStart = 0.dp,
@@ -55,7 +55,7 @@ fun PaymentView(
             Text(
                 text = payment.description.pl,
                 style = MaterialTheme.typography.titleLarge,
-                color = UISingleton.color4.primaryColor,
+                color = UISingleton.textColor1,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.padding(12.dp)
@@ -67,10 +67,10 @@ fun PaymentView(
             Text(
                 text = payment.payment_deadline,
                 style = MaterialTheme.typography.titleMedium,
-                color = UISingleton.color1.primaryColor,
+                color = UISingleton.textColor4,
                 modifier = Modifier
                     .background(
-                        UISingleton.color4.primaryColor,
+                        UISingleton.color4,
                         RoundedCornerShape(
                             bottomStart = UISingleton.uiElementsCornerRadius.dp,
                             bottomEnd = UISingleton.uiElementsCornerRadius.dp,
@@ -87,12 +87,12 @@ fun PaymentView(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 fontWeight = FontWeight.ExtraBold,
-                color = UISingleton.color1.primaryColor,
+                color = UISingleton.textColor4,
                 modifier = Modifier
                     .offset(x = -UISingleton.uiElementsCornerRadius.dp)
                     .weight(1f)
                     .background(
-                        UISingleton.color3.primaryColor,
+                        UISingleton.color3,
                         RoundedCornerShape(
                             bottomStart = 0.dp,
                             bottomEnd = UISingleton.uiElementsCornerRadius.dp,

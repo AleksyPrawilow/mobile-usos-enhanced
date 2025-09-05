@@ -110,12 +110,12 @@ fun LecturerAddRateView(
                 text = "Podziel się swoją opinią!",
                 style = MaterialTheme.typography.titleLarge,
                 textAlign = TextAlign.Center,
-                color = UISingleton.color4.primaryColor,
+                color = UISingleton.textColor1,
                 modifier = Modifier.fillMaxWidth()
             )
             HorizontalDivider(
                 thickness = 5.dp,
-                color = UISingleton.color3.primaryColor,
+                color = UISingleton.textColor2,
                 modifier = Modifier.clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
             )
             AnimatedContent(
@@ -191,9 +191,9 @@ fun LecturerAddRateView(
                                     scaleX = if (ratingStage.ordinal == index) 1.15f else 0.85f,
                                     scaleY = if (ratingStage.ordinal == index) 1.15f else 0.85f
                                 )
-                                .background(UISingleton.color2.primaryColor, CircleShape)
+                                .background(UISingleton.color2, CircleShape)
                                 .padding(4.dp)
-                                .background(if (index < ratingStage.ordinal + 1) UISingleton.color1.primaryColor else UISingleton.color2.primaryColor, CircleShape)
+                                .background(if (index < ratingStage.ordinal + 1) UISingleton.color1 else UISingleton.color2, CircleShape)
                         )
                     }
                 }
@@ -214,7 +214,7 @@ fun LecturerAddRateView(
                             contentAlignment = Alignment.Center,
                             modifier = Modifier
                                 .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
-                                .background(UISingleton.color2.primaryColor)
+                                .background(UISingleton.color2)
                                 .clickable(onClick = {
                                     lastClickedBack = true
                                     when(ratingStage) {
@@ -231,7 +231,7 @@ fun LecturerAddRateView(
                             Icon(
                                 imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                                 contentDescription = "back",
-                                tint = UISingleton.color4.primaryColor
+                                tint = UISingleton.textColor1
                             )
                         }
                     }
@@ -241,7 +241,7 @@ fun LecturerAddRateView(
                             .weight(1f)
                             .padding(horizontal = 4.dp)
                             .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
-                            .background(UISingleton.color2.primaryColor)
+                            .background(UISingleton.color2)
                             .clickable(onClick = {
                                 lastClickedBack = false
                                 when(ratingStage) {
@@ -301,7 +301,7 @@ fun LecturerAddRateView(
                             Icon(
                                 imageVector = Icons.Rounded.Check,
                                 contentDescription = "Submit",
-                                tint = UISingleton.color4.primaryColor
+                                tint = UISingleton.textColor1
                             )
                         }
                         androidx.compose.animation.AnimatedVisibility(
@@ -310,7 +310,7 @@ fun LecturerAddRateView(
                             Icon(
                                 imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
                                 contentDescription = "back",
-                                tint = UISingleton.color4.primaryColor
+                                tint = UISingleton.textColor1
                             )
                         }
                     }

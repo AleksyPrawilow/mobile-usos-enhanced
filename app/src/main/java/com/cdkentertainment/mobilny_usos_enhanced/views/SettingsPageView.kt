@@ -40,10 +40,10 @@ fun SettingsPageView() {
     val enterTransition: (Int) -> EnterTransition = UIHelper.slideEnterTransition
     var showElements: Boolean by rememberSaveable { mutableStateOf(false) }
 
-    val color1: Color by animateColorAsState(UISingleton.color1.primaryColor)
-    val color2: Color by animateColorAsState(UISingleton.color2.primaryColor)
-    val color3: Color by animateColorAsState(UISingleton.color3.primaryColor)
-    val color4: Color by animateColorAsState(UISingleton.color4.primaryColor)
+    val color1: Color by animateColorAsState(UISingleton.color1)
+    val color2: Color by animateColorAsState(UISingleton.color2)
+    val color3: Color by animateColorAsState(UISingleton.color3)
+    val color4: Color by animateColorAsState(UISingleton.color4)
 
     val checkLambda: (Boolean) -> Unit
 
@@ -91,10 +91,10 @@ fun SettingsPageView() {
 @Preview(showBackground = true)
 @Composable
 fun SettingsPagePreview() {
-    val color1: Color by animateColorAsState(UISingleton.color1.primaryColor)
-    val color2: Color by animateColorAsState(UISingleton.color2.primaryColor)
-    val color3: Color by animateColorAsState(UISingleton.color3.primaryColor)
-    val color4: Color by animateColorAsState(UISingleton.color4.primaryColor)
+    val color1: Color by animateColorAsState(UISingleton.color1)
+    val color2: Color by animateColorAsState(UISingleton.color2)
+    val color3: Color by animateColorAsState(UISingleton.color3)
+    val color4: Color by animateColorAsState(UISingleton.color4)
     OAuthSingleton.setTestAccessToken()
     val currentScreen: Screens = Screens.HOME
     Box(

@@ -21,10 +21,10 @@ fun LecturerCardView(
 ) {
     Card(
         colors = CardColors(
-            contentColor = UISingleton.color4.primaryColor,
-            containerColor = UISingleton.color2.primaryColor,
-            disabledContainerColor = UISingleton.color2.primaryColor,
-            disabledContentColor = UISingleton.color4.primaryColor
+            contentColor = UISingleton.textColor1,
+            containerColor = UISingleton.color2,
+            disabledContainerColor = UISingleton.color2,
+            disabledContentColor = UISingleton.textColor1
         ),
         shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp),
         onClick = onClick,
@@ -33,7 +33,7 @@ fun LecturerCardView(
         Text(
             text = "${index + 1}. ${participant.first_name} ${participant.last_name}",
             style = MaterialTheme.typography.titleMedium,
-            color = UISingleton.color4.primaryColor,
+            color = UISingleton.textColor1,
             modifier = Modifier
                 .padding(12.dp)
         )

@@ -54,7 +54,7 @@ fun GradesPageView() {
 
     if (gradesPageViewModel.userGrades == null) {
         Box(modifier = Modifier.fillMaxSize()) {
-            CircularProgressIndicator(color = UISingleton.color3.primaryColor, modifier = Modifier.align(Alignment.Center))
+            CircularProgressIndicator(color = UISingleton.textColor2, modifier = Modifier.align(Alignment.Center))
         }
     } else {
         LazyColumn(
@@ -71,7 +71,7 @@ fun GradesPageView() {
                     Text(
                         text = "Oceny",
                         style = MaterialTheme.typography.headlineLarge,
-                        color = UISingleton.color4.primaryColor,
+                        color = UISingleton.textColor1,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
                             .fillMaxWidth()
@@ -118,7 +118,7 @@ fun GradesPagePreview() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(UISingleton.color1.primaryColor)
+            .background(UISingleton.color1)
             .padding(12.dp)
     ) {
         AnimatedContent(targetState = currentScreen) { target ->

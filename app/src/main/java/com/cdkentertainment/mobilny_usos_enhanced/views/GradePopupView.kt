@@ -99,8 +99,8 @@ fun GradePopupView(
             modifier = Modifier
                 .fillMaxWidth()
                 .shadow(10.dp, shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
-                .background(UISingleton.color2.primaryColor, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
-                .border(5.dp, UISingleton.color1.primaryColor, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
+                .background(UISingleton.color2, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
+                .border(5.dp, UISingleton.color1, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
         ) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -113,7 +113,7 @@ fun GradePopupView(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(UISingleton.color1.primaryColor, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
+                        .background(UISingleton.color1, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
                         .padding(12.dp)
                 ){
                     Column(
@@ -122,27 +122,27 @@ fun GradePopupView(
                         Text(
                             text = "Informacja o ocenie",
                             style = MaterialTheme.typography.titleLarge,
-                            color = UISingleton.color4.primaryColor
+                            color = UISingleton.textColor1
                         )
                         HorizontalDivider(
                             thickness = 5.dp,
-                            color = UISingleton.color3.primaryColor,
+                            color = UISingleton.textColor2,
                             modifier = Modifier.clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
                         )
                         GradeCardView(
                             courseName = "Twoja ocena",
                             grade = grade.value_symbol,
-                            backgroundColor = UISingleton.color2.primaryColor
+                            backgroundColor = UISingleton.color2
                         )
                         if (grade.date_modified != null) {
                             Text(
                                 text = "Data wprowadzenia: ${grade.date_modified}",
                                 style = MaterialTheme.typography.titleMedium,
-                                color = UISingleton.color4.primaryColor,
+                                color = UISingleton.textColor1,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .defaultMinSize(minHeight = 48.dp)
-                                    .background(UISingleton.color2.primaryColor, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
+                                    .background(UISingleton.color2, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
                                     .padding(12.dp)
                             )
                         }
@@ -150,11 +150,11 @@ fun GradePopupView(
                             Text(
                                 text = "Wystawiający: ${grade.modification_author.first_name} ${grade.modification_author.last_name}",
                                 style = MaterialTheme.typography.titleMedium,
-                                color = UISingleton.color4.primaryColor,
+                                color = UISingleton.textColor1,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .defaultMinSize(minHeight = 48.dp)
-                                    .background(UISingleton.color2.primaryColor, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
+                                    .background(UISingleton.color2, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
                                     .padding(12.dp)
                             )
                         }
@@ -163,7 +163,7 @@ fun GradePopupView(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(UISingleton.color1.primaryColor, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
+                        .background(UISingleton.color1, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
                         .padding(12.dp)
                 ) {
                     Column(
@@ -172,11 +172,11 @@ fun GradePopupView(
                         Text(
                             text = "Dystrybucja ocen",
                             style = MaterialTheme.typography.titleLarge,
-                            color = UISingleton.color4.primaryColor
+                            color = UISingleton.textColor1
                         )
                         HorizontalDivider(
                             thickness = 5.dp,
-                            color = UISingleton.color3.primaryColor,
+                            color = UISingleton.textColor2,
                             modifier = Modifier.clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
                         )
                         if (viewModel.gradesDistribution.getOrDefault(grade.exam_id, null) != null)  {
@@ -197,7 +197,7 @@ fun GradePopupView(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
-                                            .background(UISingleton.color2.primaryColor)
+                                            .background(UISingleton.color2)
                                             .clickable(onClick = {
                                                 fetchDetails()
                                             })
@@ -206,23 +206,23 @@ fun GradePopupView(
                                         Text(
                                             text = "Nie udało się pobrać danych",
                                             style = MaterialTheme.typography.titleMedium,
-                                            color = UISingleton.color4.primaryColor,
+                                            color = UISingleton.textColor1,
                                             modifier = Modifier.weight(1f)
                                         )
                                         Icon(
                                             imageVector = Icons.Rounded.Refresh,
                                             contentDescription = null,
-                                            tint = UISingleton.color1.primaryColor,
+                                            tint = UISingleton.textColor4,
                                             modifier = Modifier
                                                 .size(48.dp)
-                                                .background(UISingleton.color3.primaryColor, CircleShape)
+                                                .background(UISingleton.color3, CircleShape)
                                                 .padding(8.dp)
                                         )
                                     }
                                 }
                                 androidx.compose.animation.AnimatedVisibility(fetchingSuccess){
                                     CircularProgressIndicator(
-                                        color = UISingleton.color3.primaryColor
+                                        color = UISingleton.textColor2
                                     )
                                 }
                             }
@@ -246,7 +246,7 @@ fun GradeChart(gradeData: Map<String, Int>, modifier: Modifier = Modifier) {
     }
 
     val textComponent: TextComponent = rememberTextComponent(
-        color = UISingleton.color4.primaryColor,
+        color = UISingleton.textColor1,
         textSize = 12.sp,
         padding = Insets(3f)
     )
@@ -254,7 +254,7 @@ fun GradeChart(gradeData: Map<String, Int>, modifier: Modifier = Modifier) {
         rememberColumnCartesianLayer(
             columnProvider = ColumnCartesianLayer.ColumnProvider.series(
                 rememberLineComponent(
-                    fill = Fill(UISingleton.color3.primaryColor.toArgb()),
+                    fill = Fill(UISingleton.color3.toArgb()),
                     thickness = 12.dp,
                     shape = CorneredShape.rounded(topLeftPercent = UISingleton.uiElementsCornerRadius, topRightPercent = UISingleton.uiElementsCornerRadius),
                 )
@@ -268,13 +268,13 @@ fun GradeChart(gradeData: Map<String, Int>, modifier: Modifier = Modifier) {
         startAxis = VerticalAxis.rememberStart(
             itemPlacer = remember { VerticalAxis.ItemPlacer.count({ 6 }) },
             line = rememberLineComponent(
-                fill = Fill(UISingleton.color2.primaryColor.toArgb()),
+                fill = Fill(UISingleton.color2.toArgb()),
                 thickness = 5.dp,
                 shape = CorneredShape.rounded(topRightPercent = 50)
             ),
             label = textComponent,
             tick = rememberLineComponent(
-                fill = Fill(UISingleton.color2.primaryColor.toArgb()),
+                fill = Fill(UISingleton.color2.toArgb()),
                 thickness = 5.dp,
                 shape = CorneredShape.rounded(bottomLeftPercent = 50, topLeftPercent = 50)
             ),
@@ -282,20 +282,20 @@ fun GradeChart(gradeData: Map<String, Int>, modifier: Modifier = Modifier) {
                 "${value.toInt()}%"
             },
             guideline = rememberLineComponent(
-                fill = Fill(UISingleton.color2.primaryColor.toArgb()),
+                fill = Fill(UISingleton.color2.toArgb()),
                 thickness = 1.dp
             )
         ),
         bottomAxis = HorizontalAxis.rememberBottom(
             line = rememberLineComponent(
-                fill = Fill(UISingleton.color2.primaryColor.toArgb()),
+                fill = Fill(UISingleton.color2.toArgb()),
                 thickness = 5.dp,
                 shape = CorneredShape.rounded(bottomRightPercent = 50, topRightPercent = 50)
             ),
             label = textComponent,
             guideline = null,
             tick = rememberLineComponent(
-                fill = Fill(UISingleton.color2.primaryColor.toArgb()),
+                fill = Fill(UISingleton.color2.toArgb()),
                 thickness = 5.dp,
                 shape = CorneredShape.rounded(bottomLeftPercent = 50, bottomRightPercent = 50)
             ),

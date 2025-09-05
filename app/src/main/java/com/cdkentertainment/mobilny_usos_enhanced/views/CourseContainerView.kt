@@ -28,7 +28,7 @@ fun CourseContainerView(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(UISingleton.color2.primaryColor, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp)
+            .background(UISingleton.color2, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp)
             )
     ) {
         Column(
@@ -39,12 +39,12 @@ fun CourseContainerView(
         ) {
             Text(
                 text = courseUnits.first().course_name.pl,
-                color = UISingleton.color4.primaryColor,
+                color = UISingleton.textColor1,
                 style = MaterialTheme.typography.titleLarge
             )
             HorizontalDivider(
                 thickness = 5.dp,
-                color = UISingleton.color3.primaryColor,
+                color = UISingleton.textColor2,
                 modifier = Modifier
                     .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
             )

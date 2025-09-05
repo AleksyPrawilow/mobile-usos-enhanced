@@ -59,10 +59,10 @@ fun UserDataView(homePageViewModel: HomePageViewModel) {
 
     Card(
         colors = CardColors(
-            contentColor = UISingleton.color4.primaryColor,
-            containerColor = UISingleton.color2.primaryColor,
-            disabledContainerColor = UISingleton.color2.primaryColor,
-            disabledContentColor = UISingleton.color4.primaryColor
+            contentColor = UISingleton.textColor1,
+            containerColor = UISingleton.color2,
+            disabledContainerColor = UISingleton.color2,
+            disabledContentColor = UISingleton.textColor1
         ),
         shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp),
         onClick = {
@@ -79,15 +79,15 @@ fun UserDataView(homePageViewModel: HomePageViewModel) {
         ) {
             Card(
                 colors = CardColors(
-                    contentColor = UISingleton.color3.primaryColor,
-                    containerColor = UISingleton.color1.primaryColor,
-                    disabledContainerColor = UISingleton.color1.primaryColor,
-                    disabledContentColor = UISingleton.color3.primaryColor
+                    contentColor = UISingleton.textColor2,
+                    containerColor = UISingleton.color1,
+                    disabledContainerColor = UISingleton.color1,
+                    disabledContentColor = UISingleton.textColor2
                 ),
                 shape = RoundedCornerShape(50.dp),
                 modifier = Modifier
                     .size(72.dp)
-                    .border(5.dp, UISingleton.color1.primaryColor, shape = RoundedCornerShape(50.dp))
+                    .border(5.dp, UISingleton.color1, shape = RoundedCornerShape(50.dp))
             ) {
                 if (profilePicture != null) {
                     Icon(
@@ -105,7 +105,7 @@ fun UserDataView(homePageViewModel: HomePageViewModel) {
                     Icon(
                         imageVector = Icons.Rounded.Person,
                         contentDescription = "Person",
-                        tint = UISingleton.color4.primaryColor,
+                        tint = UISingleton.textColor1,
                         modifier = Modifier
                             .fillMaxSize()
                             .graphicsLayer(
@@ -119,29 +119,29 @@ fun UserDataView(homePageViewModel: HomePageViewModel) {
                 Text(
                     text = "${homePageViewModel.userInfo?.basicInfo?.first_name} ${homePageViewModel.userInfo?.basicInfo?.last_name}",
                     style = MaterialTheme.typography.titleLarge,
-                    color = UISingleton.color4.primaryColor
+                    color = UISingleton.textColor1
                 )
                 Text(
                     text = "Aktywny student",
                     style = MaterialTheme.typography.titleMedium,
-                    color = UISingleton.color3.primaryColor
+                    color = UISingleton.textColor2
                 )
                 AnimatedVisibility(expanded) {
                     Column {
                         Text(
                             text = "${homePageViewModel.userInfo?.programme[0]?.programme?.description?.pl}",
                             style = MaterialTheme.typography.titleMedium,
-                            color = UISingleton.color3.primaryColor
+                            color = UISingleton.textColor2
                         )
                         Text(
                             text = "${homePageViewModel.userInfo?.basicInfo?.email}",
                             style = MaterialTheme.typography.titleMedium,
-                            color = UISingleton.color3.primaryColor
+                            color = UISingleton.textColor2
                         )
                         Text(
                             text = homePageViewModel.userInfo?.basicInfo?.mobile_numbers[0] ?: "null",
                             style = MaterialTheme.typography.titleMedium,
-                            color = UISingleton.color3.primaryColor
+                            color = UISingleton.textColor2
                         )
                     }
                 }
@@ -162,7 +162,7 @@ fun UserDataPreview() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(UISingleton.color1.primaryColor)
+            .background(UISingleton.color1)
             .padding(12.dp)
     ) {
         UserDataView(homePageViewModel)

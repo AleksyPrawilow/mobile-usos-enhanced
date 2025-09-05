@@ -78,7 +78,7 @@ fun PaymentsPageView() {
                 Text(
                     text = "Płatności",
                     style = MaterialTheme.typography.headlineLarge,
-                    color = UISingleton.color4.primaryColor,
+                    color = UISingleton.textColor1,
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -92,16 +92,16 @@ fun PaymentsPageView() {
             AnimatedVisibility(showElements, enter = enterTransition(2)) {
                 Card(
                     colors = CardDefaults.cardColors(
-                        containerColor = UISingleton.color3.primaryColor,
-                        disabledContainerColor = UISingleton.color3.primaryColor,
-                        contentColor = UISingleton.color4.primaryColor,
-                        disabledContentColor = UISingleton.color4.primaryColor
+                        containerColor = UISingleton.color3,
+                        disabledContainerColor = UISingleton.color3,
+                        contentColor = UISingleton.textColor1,
+                        disabledContentColor = UISingleton.textColor1
                     ),
                     shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp),
                     modifier = Modifier
                         .fillMaxWidth()
                         .animateContentSize()
-                        .border(5.dp, UISingleton.color4.primaryColor, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
+                        .border(5.dp, UISingleton.color4, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
                 ) {
                     Column(
                         modifier = Modifier.padding(12.dp)
@@ -111,14 +111,14 @@ fun PaymentsPageView() {
                                 text = "${"%.2f".format(unpaidSum)} zł",
                                 style = MaterialTheme.typography.headlineMedium,
                                 fontWeight = FontWeight.ExtraBold,
-                                color = UISingleton.color1.primaryColor
+                                color = UISingleton.textColor4
                             )
                         }
                         AnimatedVisibility(showTexts, enter = enterTransition(3)) {
                             Text(
                                 text = "Do zapłaty",
                                 style = MaterialTheme.typography.titleMedium,
-                                color = UISingleton.color1.primaryColor
+                                color = UISingleton.textColor4
                             )
                         }
                     }
@@ -137,7 +137,7 @@ fun PaymentsPageView() {
                 Text(
                     text = "Nierozliczone płatności",
                     style = MaterialTheme.typography.headlineSmall,
-                    color = UISingleton.color4.primaryColor
+                    color = UISingleton.textColor1
                 )
             }
         }
@@ -145,7 +145,7 @@ fun PaymentsPageView() {
             AnimatedVisibility(showTexts, enter = enterTransition(5)) {
                 HorizontalDivider(
                     thickness = 5.dp,
-                    color = UISingleton.color3.primaryColor,
+                    color = UISingleton.textColor2,
                     modifier = Modifier
                         .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
                 )
@@ -163,7 +163,7 @@ fun PaymentsPageView() {
                     Text(
                         text = "Brak nierozliczonych płatności",
                         style = MaterialTheme.typography.titleLarge,
-                        color = UISingleton.color4.primaryColor
+                        color = UISingleton.textColor1
                     )
                 }
             }
@@ -176,7 +176,7 @@ fun PaymentsPageView() {
                 Text(
                     text = "Rozliczone płatności",
                     style = MaterialTheme.typography.headlineSmall,
-                    color = UISingleton.color4.primaryColor
+                    color = UISingleton.textColor1
                 )
             }
         }
@@ -184,7 +184,7 @@ fun PaymentsPageView() {
             AnimatedVisibility(showTexts, enter = enterTransition(9 + unpaidSize)) {
                 HorizontalDivider(
                     thickness = 5.dp,
-                    color = UISingleton.color3.primaryColor,
+                    color = UISingleton.textColor2,
                     modifier = Modifier
                         .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
                 )
@@ -202,7 +202,7 @@ fun PaymentsPageView() {
                     Text(
                         text = "Brak rozliczonych płatności",
                         style = MaterialTheme.typography.titleLarge,
-                        color = UISingleton.color4.primaryColor
+                        color = UISingleton.textColor1
                     )
                 }
             }
@@ -221,7 +221,7 @@ fun PaymentsPagePreview() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(UISingleton.color1.primaryColor)
+            .background(UISingleton.color1)
             .padding(12.dp)
     ) {
         AnimatedContent(targetState = currentScreen) { target ->

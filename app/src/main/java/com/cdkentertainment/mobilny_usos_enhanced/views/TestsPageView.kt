@@ -73,7 +73,7 @@ fun TestsPageView() {
                 Text(
                     text = "Sprawdziany",
                     style = MaterialTheme.typography.headlineLarge,
-                    color = UISingleton.color4.primaryColor,
+                    color = UISingleton.textColor1,
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -126,7 +126,7 @@ fun TestsPageView() {
                         .fillMaxWidth()
                         .height(128.dp)
                 ) {
-                    CircularProgressIndicator(color = UISingleton.color3.primaryColor)
+                    CircularProgressIndicator(color = UISingleton.textColor2)
                 }
             }
         }
@@ -141,7 +141,7 @@ fun TestsPagePreview() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(UISingleton.color1.primaryColor)
+            .background(UISingleton.color1)
             .padding(12.dp)
     ) {
         AnimatedContent(targetState = currentScreen) { target ->

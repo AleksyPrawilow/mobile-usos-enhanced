@@ -32,7 +32,7 @@ fun GradeCardView(
     grade: String = "5",
     showGrade: Boolean = true,
     showArrow: Boolean = false,
-    backgroundColor: Color = UISingleton.color1.primaryColor,
+    backgroundColor: Color = UISingleton.color1,
     onClick: () -> Unit = {}
 ) {
     Row(
@@ -49,7 +49,7 @@ fun GradeCardView(
     ) {
         Text(
             text = courseName,
-            color = UISingleton.color4.primaryColor,
+            color = UISingleton.textColor1,
             style = MaterialTheme.typography.titleMedium,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
@@ -59,7 +59,7 @@ fun GradeCardView(
             Icon(
                 imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
                 contentDescription = "More",
-                tint = UISingleton.color4.primaryColor,
+                tint = UISingleton.textColor1,
                 modifier = Modifier
                     .padding(12.dp)
             )
@@ -70,12 +70,12 @@ fun GradeCardView(
                 modifier = Modifier
                     .defaultMinSize(minWidth = 48.dp)
                     .height(48.dp)
-                    .background(UISingleton.color3.primaryColor, RoundedCornerShape(50.dp))
+                    .background(UISingleton.color3, RoundedCornerShape(50.dp))
                     .padding(horizontal = 6.dp)
             ) {
                 Text(
                     text = grade,
-                    color = UISingleton.color1.primaryColor,
+                    color = UISingleton.textColor4,
                     fontSize = 18.sp.scaleIndependent(),
                     fontWeight = FontWeight.ExtraBold,
                     maxLines = 1,

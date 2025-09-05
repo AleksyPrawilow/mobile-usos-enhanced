@@ -35,7 +35,7 @@ fun ClassGroupCardView(
         modifier = Modifier
             .fillMaxWidth()
             .background(
-                UISingleton.color1.primaryColor,
+                UISingleton.color1,
                 RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp)
             )
             .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
@@ -44,7 +44,7 @@ fun ClassGroupCardView(
     ) {
         Text(
             text = UIHelper.classTypeIds[data.class_type_id]?.name?.pl ?: data.class_type_id,
-            color = UISingleton.color4.primaryColor,
+            color = UISingleton.textColor1,
             style = MaterialTheme.typography.titleMedium,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
@@ -56,12 +56,12 @@ fun ClassGroupCardView(
             modifier = Modifier
                 .defaultMinSize(minWidth = 48.dp)
                 .height(48.dp)
-                .background(UISingleton.color3.primaryColor, RoundedCornerShape(50.dp))
+                .background(UISingleton.color3, RoundedCornerShape(50.dp))
                 .padding(horizontal = 6.dp)
         ) {
             Text(
                 text = "${data.group_number}",
-                color = UISingleton.color1.primaryColor,
+                color = UISingleton.textColor4,
                 fontSize = 18.sp.scaleIndependent(),
                 fontWeight = FontWeight.ExtraBold,
                 maxLines = 1,

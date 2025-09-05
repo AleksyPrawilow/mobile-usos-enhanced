@@ -48,7 +48,7 @@ fun RatingStageView(
         Text(
             text = headline,
             style = MaterialTheme.typography.titleMedium,
-            color = UISingleton.color4.primaryColor,
+            color = UISingleton.textColor1,
             fontWeight = FontWeight.Bold,
             modifier = Modifier
                 .fillMaxWidth()
@@ -62,7 +62,7 @@ fun RatingStageView(
             repeat(5) { index ->
                 IconButton(
                     colors = IconButtonDefaults.iconButtonColors(
-                        contentColor = if (index + 1 <= rating) UISingleton.color3.primaryColor else UISingleton.color2.primaryColor,
+                        contentColor = if (index + 1 <= rating) UISingleton.color3 else UISingleton.color2,
                         containerColor = Color.Transparent
                     ),
                     onClick = {
@@ -81,7 +81,7 @@ fun RatingStageView(
         Text(
             text = rateNames[rating],
             style = MaterialTheme.typography.titleLarge,
-            color = UISingleton.color4.primaryColor,
+            color = UISingleton.textColor1,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )

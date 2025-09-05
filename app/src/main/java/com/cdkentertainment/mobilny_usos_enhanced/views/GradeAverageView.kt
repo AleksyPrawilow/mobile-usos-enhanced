@@ -26,15 +26,15 @@ import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 fun GradeAverageView(gradeAverage: Float?) {
     Card(
         colors = CardColors(
-            contentColor = UISingleton.color4.primaryColor,
-            containerColor = UISingleton.color3.primaryColor,
-            disabledContainerColor = UISingleton.color3.primaryColor,
-            disabledContentColor = UISingleton.color4.primaryColor
+            contentColor = UISingleton.textColor1,
+            containerColor = UISingleton.color3,
+            disabledContainerColor = UISingleton.color3,
+            disabledContentColor = UISingleton.textColor1
         ),
         shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius),
         modifier = Modifier
             .fillMaxWidth()
-            .border(5.dp, UISingleton.color4.primaryColor, RoundedCornerShape(UISingleton.uiElementsCornerRadius))
+            .border(5.dp, UISingleton.color4, RoundedCornerShape(UISingleton.uiElementsCornerRadius))
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -43,7 +43,7 @@ fun GradeAverageView(gradeAverage: Float?) {
         ) {
             Text(
                 text = "Bieżąca średnia:",
-                color = UISingleton.color1.primaryColor,
+                color = UISingleton.textColor4,
                 style = MaterialTheme.typography.titleLarge
             )
             Spacer(modifier = Modifier.weight(1f))
@@ -52,12 +52,12 @@ fun GradeAverageView(gradeAverage: Float?) {
                 modifier = Modifier
                     .defaultMinSize(minWidth = 48.dp)
                     .height(48.dp)
-                    .background(UISingleton.color4.primaryColor, RoundedCornerShape(50.dp))
+                    .background(UISingleton.color2, RoundedCornerShape(50.dp))
                     .padding(horizontal = 6.dp)
             ) {
                 Text(
                     text = if (gradeAverage?.isNaN() ?: true) "-" else "%.2f".format(gradeAverage),
-                    color = UISingleton.color1.primaryColor,
+                    color = UISingleton.textColor1,
                     fontWeight = FontWeight.ExtraBold,
                     fontSize = 16.sp.scaleIndependent(),
                     modifier = Modifier

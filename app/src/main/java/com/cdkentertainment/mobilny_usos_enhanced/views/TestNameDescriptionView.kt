@@ -44,14 +44,14 @@ fun TestNameDescriptionView(name: String, description: String) {
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
-                .background(UISingleton.color1.primaryColor)
+                .background(UISingleton.color1)
                 .clickable(onClick = onClick)
                 .zIndex(1f)
         ) {
             Text(
                 name,
                 style = MaterialTheme.typography.titleMedium,
-                color = UISingleton.color4.primaryColor,
+                color = UISingleton.textColor1,
                 modifier = Modifier
                     .padding(12.dp)
                     .weight(1f)
@@ -59,7 +59,7 @@ fun TestNameDescriptionView(name: String, description: String) {
             Icon(
                 imageVector = Icons.Rounded.KeyboardArrowDown,
                 contentDescription = "More",
-                tint = UISingleton.color4.primaryColor,
+                tint = UISingleton.textColor1,
                 modifier = Modifier
                     .graphicsLayer(
                         rotationZ = arrowRotation
@@ -72,7 +72,7 @@ fun TestNameDescriptionView(name: String, description: String) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(
-                        UISingleton.color3.primaryColor,
+                        UISingleton.color3,
                         RoundedCornerShape(
                             topStart = 0.dp,
                             topEnd = 0.dp,
@@ -87,7 +87,7 @@ fun TestNameDescriptionView(name: String, description: String) {
                 Text(
                     description,
                     style = MaterialTheme.typography.titleMedium,
-                    color = UISingleton.color1.primaryColor
+                    color = UISingleton.textColor4
                 )
             }
         }

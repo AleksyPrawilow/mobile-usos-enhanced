@@ -67,8 +67,8 @@ fun LecturerInfoPopupView(
             modifier = Modifier
                 .fillMaxSize()
                 .shadow(10.dp, shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
-                .background(UISingleton.color2.primaryColor, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
-                .border(5.dp, UISingleton.color1.primaryColor, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
+                .background(UISingleton.color2, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
+                .border(5.dp, UISingleton.color1, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
         ) {
             LazyColumn(
                 modifier = Modifier
@@ -85,13 +85,13 @@ fun LecturerInfoPopupView(
                         Box(
                             modifier = Modifier
                                 .size(72.dp)
-                                .background(UISingleton.color2.primaryColor)
-                                .border(5.dp, UISingleton.color1.primaryColor, shape = RoundedCornerShape(50.dp))
+                                .background(UISingleton.color2)
+                                .border(5.dp, UISingleton.color1, shape = RoundedCornerShape(50.dp))
                         ) {
                             Icon(
                                 imageVector = Icons.Rounded.Person,
                                 contentDescription = "Person",
-                                tint = UISingleton.color4.primaryColor,
+                                tint = UISingleton.textColor1,
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .graphicsLayer(
@@ -106,7 +106,7 @@ fun LecturerInfoPopupView(
                     Text(
                         text = "${data.first_name} ${data.last_name}",
                         style = MaterialTheme.typography.headlineMedium,
-                        color = UISingleton.color4.primaryColor,
+                        color = UISingleton.textColor1,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
@@ -123,7 +123,7 @@ fun LecturerInfoPopupView(
                             .fillMaxWidth()
                             .padding(horizontal = 12.dp)
                             .background(
-                                UISingleton.color1.primaryColor,
+                                UISingleton.color1,
                                 RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp)
                             )
                             .padding(12.dp)
@@ -135,11 +135,11 @@ fun LecturerInfoPopupView(
                             Text(
                                 text = "Koordynowane przedmioty",
                                 style = MaterialTheme.typography.titleLarge,
-                                color = UISingleton.color4.primaryColor
+                                color = UISingleton.textColor1
                             )
                             HorizontalDivider(
                                 thickness = 5.dp,
-                                color = UISingleton.color3.primaryColor,
+                                color = UISingleton.textColor2,
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
                             )
@@ -148,7 +148,7 @@ fun LecturerInfoPopupView(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .background(
-                                            UISingleton.color2.primaryColor,
+                                            UISingleton.color2,
                                             RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp)
                                         )
                                         .padding(12.dp)
@@ -156,7 +156,7 @@ fun LecturerInfoPopupView(
                                     Text(
                                         text = "${index + 1}. Matematyka",
                                         style = MaterialTheme.typography.titleMedium,
-                                        color = UISingleton.color4.primaryColor
+                                        color = UISingleton.textColor1
                                     )
                                 }
                             }
@@ -172,7 +172,7 @@ fun LecturerInfoPopupView(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(12.dp)
-                            .background(UISingleton.color1.primaryColor, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
+                            .background(UISingleton.color1, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
                             .padding(12.dp)
                     ) {
                         LecturerRateView(
@@ -188,7 +188,7 @@ fun LecturerInfoPopupView(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(start = 12.dp, end = 12.dp, bottom = 12.dp)
-                            .background(UISingleton.color1.primaryColor, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
+                            .background(UISingleton.color1, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
                             .padding(12.dp)
                     ) {
                         AnimatedVisibility(

@@ -75,10 +75,10 @@ fun FloatingButtonView(
             easing = EaseOut
         )
     )
-    val color1: Color by animateColorAsState(UISingleton.color1.primaryColor)
-    val color2: Color by animateColorAsState(UISingleton.color2.primaryColor)
-    val color3: Color by animateColorAsState(UISingleton.color3.primaryColor)
-    val color4: Color by animateColorAsState(UISingleton.color4.primaryColor)
+    val color1: Color by animateColorAsState(UISingleton.color1)
+    val color2: Color by animateColorAsState(UISingleton.color2)
+    val color3: Color by animateColorAsState(UISingleton.color3)
+    val color4: Color by animateColorAsState(UISingleton.textColor1)
     val buttonScale: Float by animateFloatAsState(if (fabViewModel.expanded) 1.25f else 1.0f)
     val subButtonDelayNormal: Int = if (fabViewModel.expanded) 150 else 0
     val subButtonDelayIncrement: Int = 25
@@ -124,18 +124,18 @@ fun FloatingButtonView(
                 )
                 .size(subButtonSize.dp)
                 .shadow(5.dp, CircleShape, clip = true)
-                .background(UISingleton.color2.primaryColor, CircleShape)
+                .background(UISingleton.color2, CircleShape)
                 .clickable(onClick = {
                     fabViewModel.changeExpanded(false)
                     screenManagerViewModel.changeScreen(Screens.fromOrdinal(index + 1)!!, context)
                 })
-                .border(5.dp, UISingleton.color4.primaryColor, CircleShape)
+                .border(5.dp, UISingleton.textColor1, CircleShape)
                 .then(modifier)
         ) {
             Icon(
                 imageVector = image,
                 contentDescription = "Section ${index + 1}",
-                tint = UISingleton.color4.primaryColor,
+                tint = UISingleton.textColor1,
                 modifier = Modifier
                     .padding(16.dp)
                     .size((subButtonSize * 0.5).dp)
@@ -145,7 +145,7 @@ fun FloatingButtonView(
         Text(
             text = Screens.fromOrdinal(index + 1)?.pageName?.first ?: "N/A",
             fontWeight = if (screenManagerViewModel.selectedScreen.ordinal == index + 1) FontWeight.ExtraBold else FontWeight.SemiBold,
-            color = if (screenManagerViewModel.selectedScreen.ordinal == index + 1) UISingleton.color1.primaryColor else UISingleton.color2.primaryColor,
+            color = if (screenManagerViewModel.selectedScreen.ordinal == index + 1) UISingleton.textColor4 else UISingleton.textColor3,
             textAlign = TextAlign.Center,
             fontSize = 9.sp.scaleIndependent(),
             modifier = Modifier
@@ -157,7 +157,7 @@ fun FloatingButtonView(
                 )
                 .defaultMinSize(minWidth = subButtonSize.dp)
                 .height(20.dp)
-                .background(UISingleton.color4.primaryColor, RoundedCornerShape(50.dp))
+                .background(UISingleton.textColor1, RoundedCornerShape(50.dp))
                 .padding(horizontal = 4.dp)
                 .then(modifier)
         )
@@ -165,7 +165,7 @@ fun FloatingButtonView(
 
     IconButton(
         colors = IconButtonDefaults.iconButtonColors(
-            contentColor = color4,
+            contentColor = UISingleton.textColor1,
             containerColor = color2
         ),
         onClick = {

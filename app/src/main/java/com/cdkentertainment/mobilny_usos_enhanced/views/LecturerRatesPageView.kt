@@ -70,7 +70,7 @@ fun LecturerRatesPageView() {
                 Text(
                     text = "Prowadzący",
                     style = MaterialTheme.typography.headlineLarge,
-                    color = UISingleton.color4.primaryColor,
+                    color = UISingleton.textColor1,
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -108,7 +108,7 @@ fun LecturerRatesPagePreview() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(UISingleton.color1.primaryColor)
+            .background(UISingleton.color1)
             .padding(12.dp)
     ) {
         AnimatedContent(targetState = currentScreen) { target ->

@@ -30,10 +30,10 @@ fun ActivityView(
 ) {
     Card(
         colors = CardColors(
-            contentColor = UISingleton.color4.primaryColor,
-            containerColor = UISingleton.color2.primaryColor,
-            disabledContainerColor = UISingleton.color2.primaryColor,
-            disabledContentColor = UISingleton.color4.primaryColor
+            contentColor = UISingleton.textColor1,
+            containerColor = UISingleton.color2,
+            disabledContainerColor = UISingleton.color2,
+            disabledContentColor = UISingleton.textColor1
         ),
         shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp),
         modifier = Modifier
@@ -54,7 +54,7 @@ fun ActivityView(
             ) {
                 Text(
                     text = "${schedulePageViewModel.getTimeFromDate(activity.start_time)} - ${schedulePageViewModel.getTimeFromDate(activity.end_time)}",
-                    color = UISingleton.color4.primaryColor,
+                    color = UISingleton.textColor1,
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier
                         .weight(1f)
@@ -62,7 +62,7 @@ fun ActivityView(
                 Column {
                     Text(
                         text = activity.classtype_id,
-                        color = UISingleton.color3.primaryColor,
+                        color = UISingleton.textColor2,
                         style = MaterialTheme.typography.titleMedium,
                         textAlign = TextAlign.Right,
                         modifier = Modifier
@@ -70,7 +70,7 @@ fun ActivityView(
                     )
                     Text(
                         text = "Sala: ${activity.room_number}",
-                        color = UISingleton.color3.primaryColor,
+                        color = UISingleton.textColor2,
                         style = MaterialTheme.typography.titleMedium,
                         textAlign = TextAlign.Right,
                         modifier = Modifier
@@ -80,13 +80,13 @@ fun ActivityView(
             }
             HorizontalDivider(
                 thickness = 5.dp,
-                color = UISingleton.color3.primaryColor,
+                color = UISingleton.textColor2,
                 modifier = Modifier
                     .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
             )
             Text(
                 text = activity.course_name.pl,
-                color = UISingleton.color4.primaryColor,
+                color = UISingleton.textColor1,
                 style = MaterialTheme.typography.titleLarge,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis

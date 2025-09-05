@@ -19,15 +19,15 @@ fun LecturerAddRateSummaryView() {
         Text(
             text = "Dziękujemy za wypełnienie ankiety!",
             style = MaterialTheme.typography.titleLarge,
-            color = UISingleton.color4.primaryColor
+            color = UISingleton.textColor1
         )
         Text(
             text = "Wysyłam ocenę...",
             style = MaterialTheme.typography.titleMedium,
-            color = UISingleton.color4.primaryColor,
+            color = UISingleton.textColor1,
         )
         CircularProgressIndicator(
-            color = UISingleton.color3.primaryColor
+            color = UISingleton.textColor2
         )
     }
 }

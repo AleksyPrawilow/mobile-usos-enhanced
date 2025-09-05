@@ -67,10 +67,10 @@ fun AttendanceDateCardView(
 
     Card(
         colors = CardColors(
-            contentColor = UISingleton.color4.primaryColor,
-            containerColor = UISingleton.color2.primaryColor,
-            disabledContainerColor = UISingleton.color2.primaryColor,
-            disabledContentColor = UISingleton.color4.primaryColor
+            contentColor = UISingleton.textColor1,
+            containerColor = UISingleton.color2,
+            disabledContainerColor = UISingleton.color2,
+            disabledContentColor = UISingleton.textColor1
         ),
         onClick = {
             showTypeSelector = true
@@ -79,7 +79,7 @@ fun AttendanceDateCardView(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 12.dp)
-            .background(UISingleton.color1.primaryColor, shape)
+            .background(UISingleton.color1, shape)
             .padding(horizontal = 12.dp, vertical = 6.dp)
             .then(modifier)
     ) {
@@ -89,7 +89,7 @@ fun AttendanceDateCardView(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(
-                    UISingleton.color2.primaryColor,
+                    UISingleton.color2,
                     RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp)
                 )
                 .padding(12.dp)
@@ -97,7 +97,7 @@ fun AttendanceDateCardView(
             Text(
                 text = date,
                 style = MaterialTheme.typography.titleMedium,
-                color = UISingleton.color4.primaryColor,
+                color = UISingleton.textColor1,
                 textAlign = TextAlign.Start,
                 modifier = Modifier
                     .padding(12.dp)
@@ -106,10 +106,10 @@ fun AttendanceDateCardView(
             Icon(
                 imageVector = imageVectors[state.value],
                 contentDescription = "Icon",
-                tint = UISingleton.color1.primaryColor,
+                tint = UISingleton.textColor4,
                 modifier = Modifier
                     .size(48.dp)
-                    .background(UISingleton.color3.primaryColor, CircleShape)
+                    .background(UISingleton.color3, CircleShape)
                     .padding(8.dp)
             )
         }

@@ -58,7 +58,7 @@ fun HomePageView() {
             Text(
                 text = "Cześć, ${homePageViewModel.userInfo?.basicInfo?.first_name}!",
                 style = MaterialTheme.typography.headlineLarge,
-                color = UISingleton.color4.primaryColor,
+                color = UISingleton.textColor1,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -70,14 +70,14 @@ fun HomePageView() {
         AnimatedVisibility(showElements, enter = enterTransition(2)) {
             Text(
                 text = "Plan na dzisiaj:",
-                color = UISingleton.color4.primaryColor,
+                color = UISingleton.textColor1,
                 style = MaterialTheme.typography.headlineMedium
             )
         }
         AnimatedVisibility(showElements, enter = enterTransition(3)) {
             Text(
                 text = "Brak zajęć.",
-                color = UISingleton.color4.primaryColor,
+                color = UISingleton.textColor1,
                 style = MaterialTheme.typography.headlineSmall
             )
         }
@@ -92,7 +92,7 @@ fun HomePreview() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(UISingleton.color1.primaryColor)
+            .background(UISingleton.color1)
             .padding(12.dp)
     ) {
         AnimatedContent(targetState = currentScreen) { target ->

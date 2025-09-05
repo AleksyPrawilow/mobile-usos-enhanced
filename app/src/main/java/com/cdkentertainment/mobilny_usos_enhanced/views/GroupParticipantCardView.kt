@@ -31,23 +31,23 @@ fun GroupParticipantCardView(
     )
     Card(
         colors = CardColors(
-            contentColor = UISingleton.color4.primaryColor,
-            containerColor = UISingleton.color2.primaryColor,
-            disabledContainerColor = UISingleton.color2.primaryColor,
-            disabledContentColor = UISingleton.color4.primaryColor
+            contentColor = UISingleton.textColor1,
+            containerColor = UISingleton.color2,
+            disabledContainerColor = UISingleton.color2,
+            disabledContentColor = UISingleton.textColor1
         ),
         shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp),
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 12.dp)
-            .background(UISingleton.color1.primaryColor, shape)
+            .background(UISingleton.color1, shape)
             .padding(horizontal = 12.dp, vertical = 6.dp)
             .then(modifier)
     ) {
         Text(
             text = "${index + 1}. ${participant.first_name} ${participant.last_name}",
             style = MaterialTheme.typography.titleMedium,
-            color = UISingleton.color4.primaryColor,
+            color = UISingleton.textColor1,
             modifier = Modifier
                 .padding(12.dp)
         )

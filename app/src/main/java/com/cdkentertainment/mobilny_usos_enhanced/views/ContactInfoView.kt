@@ -36,7 +36,7 @@ fun ContactInfoView(
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 12.dp, end = 12.dp, top = 12.dp)
-            .background(UISingleton.color1.primaryColor, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
+            .background(UISingleton.color1, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
             .padding(12.dp)
     ) {
         Column(
@@ -45,11 +45,11 @@ fun ContactInfoView(
             Text(
                 text = "Kontakt",
                 style = MaterialTheme.typography.titleLarge,
-                color = UISingleton.color4.primaryColor
+                color = UISingleton.textColor1
             )
             HorizontalDivider(
                 thickness = 5.dp,
-                color = UISingleton.color3.primaryColor,
+                color = UISingleton.textColor2,
                 modifier = Modifier
                     .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
             )
@@ -65,22 +65,22 @@ fun ContactInfoView(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(UISingleton.color2.primaryColor, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
+                        .background(UISingleton.color2, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
                         .padding(12.dp)
                 ) {
                     Icon(
                         imageVector = iconAndText.first,
                         contentDescription = category,
-                        tint = UISingleton.color1.primaryColor,
+                        tint = UISingleton.textColor4,
                         modifier = Modifier
                             .size(48.dp)
-                            .background(UISingleton.color3.primaryColor, CircleShape)
+                            .background(UISingleton.color3, CircleShape)
                             .padding(12.dp)
                     )
                     Text(
                         text = iconAndText.second,
                         style = MaterialTheme.typography.titleMedium,
-                        color = UISingleton.color4.primaryColor
+                        color = UISingleton.textColor1
                     )
                 }
             }
