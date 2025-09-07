@@ -35,7 +35,6 @@ fun CourseGradesView(
     var showDetails: Boolean by remember { mutableStateOf(false) }
     var popupGrade: TermGrade? by remember { mutableStateOf(null) }
 
-    //TODO: Transfer to the view model so it persists. rememberSaveable does not work here!!!
     if (showDetails && popupGrade != null) {
         GradePopupView(popupGrade!!) {
             UISingleton.dropBlurContent()
@@ -77,7 +76,8 @@ fun CourseGradesView(
                 val condition: Boolean = data.courseGrades.course_units_grades[courseUnit] != null && data.courseGrades.course_units_grades[courseUnit]!![0]["1"] != null
                 GradeCardView(
                     classtypeIdInfo?.get(unitClassType)?.name?.pl ?: "N/A",
-                    if (condition) data.courseGrades.course_units_grades[courseUnit]!![0]["1"]!!.value_symbol else "-"
+                    if (condition) data.courseGrades.course_units_grades[courseUnit]!![0]["1"]!!.value_symbol else "-",
+                    showArrow = condition
                 ) {
                     UISingleton.blurContent()
                     showDetails = true

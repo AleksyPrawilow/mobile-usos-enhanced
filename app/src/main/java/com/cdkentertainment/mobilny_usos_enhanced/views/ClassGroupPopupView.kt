@@ -118,28 +118,14 @@ fun ClassGroupPopupView(
                             )
                             for (lecturer in 0 until data.lecturers.size) {
                                 //TODO: Can this be replaced with GroupParticipantCardView.kt?
-                                Row(
-                                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .background(
-                                            UISingleton.color2,
-                                            RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp)
-                                        )
-                                        .padding(12.dp)
-                                ) {
-                                    Text(
-                                        text = "${lecturer + 1}. ${data.lecturers[lecturer].first_name} ${data.lecturers[lecturer].last_name}",
-                                        color = UISingleton.textColor1,
-                                        style = MaterialTheme.typography.titleMedium,
-                                    )
-                                }
+                                //The answer is NO, it cannot!
+                                GroupLecturerCardView(data.lecturers[lecturer])
                             }
                         }
                     }
                 }
                 if (viewModel.groupDetails[groupKey]?.participants != null) {
+                    val participantsSize: Int = viewModel.groupDetails[groupKey]?.participants!!.participants.size
                     item {
                         Text(
                             text = "Uczestnicy",
@@ -174,12 +160,12 @@ fun ClassGroupPopupView(
                         )
                     }
 
-                    items(viewModel.groupDetails[groupKey]?.participants!!.participants.size, key = { index -> viewModel.groupDetails[groupKey]!!.participants!!.participants[index].id }) { index ->
+                    items(participantsSize, key = { index -> viewModel.groupDetails[groupKey]!!.participants!!.participants[index].id }) { index ->
                         GroupParticipantCardView(
                             index = index,
                             participant = viewModel.groupDetails[groupKey]!!.participants!!.participants[index],
                             viewModel = viewModel,
-                            groupKey = groupKey,
+                            participantsSize = participantsSize,
                             modifier = Modifier.animateItem()
                         )
                     }
