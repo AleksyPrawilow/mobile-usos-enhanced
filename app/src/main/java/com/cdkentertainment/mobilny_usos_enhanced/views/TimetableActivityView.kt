@@ -4,6 +4,7 @@ import androidx.compose.animation.core.EaseOutBack
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +24,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush.Companion.verticalGradient
 import androidx.compose.ui.graphics.graphicsLayer
@@ -46,11 +48,12 @@ fun TimetableActivityView(
     val startTime: String = viewModel!!.getTimeFromDate(data!!.start_time)
     val (hoursStr, minutesStr) = startTime.split(":")
     val startTimeMinutes: Int = hoursStr.toInt() * 60 + minutesStr.toInt()
-    val endTime: String = viewModel!!.getTimeFromDate(data!!.end_time)
+    val endTime: String = viewModel.getTimeFromDate(data.end_time)
     val (endHoursStr, endMinutesStr) = endTime.split(":")
     val endTimeMinutes: Int = endHoursStr.toInt() * 60 + endMinutesStr.toInt()
     val durationMinutes: Int = endTimeMinutes - startTimeMinutes
 
+    var showDetails: Boolean by rememberSaveable { mutableStateOf(false) }
     var show: Boolean by rememberSaveable { mutableStateOf(false) }
     val appearFactor: Float by animateFloatAsState(
         if (show) 1f else 0f,
@@ -61,6 +64,11 @@ fun TimetableActivityView(
         delay(20)
         show = true
     }
+
+    if (showDetails) {
+        ActivityInfoPopupView(data = data, onDismissRequest = { showDetails = false })
+    }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -72,14 +80,17 @@ fun TimetableActivityView(
                 alpha = appearFactor
             )
             .shadow(5.dp, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
+            .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
             .background(
                 brush = verticalGradient(
                     0.0f to UISingleton.color2,
                     0.5f to UISingleton.color2,
                     0.5f to UISingleton.color1
                 ),
-                shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp)
             )
+            .clickable(onClick = {
+                showDetails = true
+            })
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(0.dp, Alignment.CenterVertically),
