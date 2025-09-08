@@ -14,7 +14,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.runtime.Composable
@@ -88,7 +87,6 @@ fun ContentView() {
             .fillMaxSize()
             .background(color = color1)
 //            .blur(blurRadius)
-            .padding(12.dp)
     ) {
         ScreenManager(screenManagerViewModel.selectedScreen, screenManagerViewModel)
         if (fabViewModel.expanded) {

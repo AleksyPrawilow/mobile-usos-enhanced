@@ -67,8 +67,8 @@ object UISingleton {
         id = 1,
         color1 = Color(0xFF1B3C53),
         color2 = Color(0xFF456882),
-        color3 = Color(0xFFD2C1B6),
-        color4 = Color(0xFFF9F3EF),
+        color3 = Color(0xFFBDC3C7),
+        color4 = Color(0xFFECF0F1),
         textTheme = standardDarkTextTheme
     )
 
@@ -96,7 +96,9 @@ object UISingleton {
         "OLED" to oledTheme
     )
 
-    val uiElementsCornerRadius: Int = 24
+    val uiElementsCornerRadius: Int = 16
+    val horizontalPadding: Dp = 12.dp
+    val verticalPadding: Dp = 24.dp
 
     fun changeTheme(theme: Theme) {
         color1 = theme.color1

@@ -58,7 +58,7 @@ fun ClassGroupsPageView() {
             verticalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
+                .padding(horizontal = UISingleton.horizontalPadding, vertical = UISingleton.verticalPadding)
         ) {
             item {
                 Spacer(modifier = Modifier.height(16.dp))

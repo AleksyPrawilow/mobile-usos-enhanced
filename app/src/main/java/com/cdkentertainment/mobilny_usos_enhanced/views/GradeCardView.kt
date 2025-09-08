@@ -53,6 +53,7 @@ fun GradeCardView(
             style = MaterialTheme.typography.titleMedium,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
+            fontWeight = FontWeight.Medium,
             modifier = Modifier.weight(1f).padding(end = 6.dp)
         )
         if (showArrow) {
@@ -61,22 +62,22 @@ fun GradeCardView(
                 contentDescription = "More",
                 tint = UISingleton.textColor1,
                 modifier = Modifier
-                    .padding(12.dp)
+                    .padding(horizontal = 12.dp)
             )
         }
         if (showGrade) {
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
-                    .defaultMinSize(minWidth = 48.dp)
-                    .height(48.dp)
+                    .defaultMinSize(minWidth = 40.dp)
+                    .height(40.dp)
                     .background(UISingleton.color3, RoundedCornerShape(50.dp))
                     .padding(horizontal = 6.dp)
             ) {
                 Text(
                     text = grade,
                     color = UISingleton.textColor4,
-                    fontSize = 18.sp.scaleIndependent(),
+                    fontSize = 17.sp.scaleIndependent(),
                     fontWeight = FontWeight.ExtraBold,
                     maxLines = 1,
                     modifier = Modifier

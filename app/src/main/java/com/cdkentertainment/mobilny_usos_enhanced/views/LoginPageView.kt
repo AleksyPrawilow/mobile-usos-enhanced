@@ -105,6 +105,7 @@ fun LoginPageView(screenManagerViewModel: ScreenManagerViewModel = viewModel<Scr
             contentAlignment = Alignment.Center,
             modifier = Modifier
                 .weight(loginWeight)
+                .padding(horizontal = UISingleton.horizontalPadding, vertical = UISingleton.verticalPadding)
         ) {
             androidx.compose.animation.AnimatedVisibility(
                 visible = showLoginStuff,
