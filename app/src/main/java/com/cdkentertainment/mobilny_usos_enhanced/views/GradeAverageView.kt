@@ -28,8 +28,8 @@ fun GradeAverageView(gradeAverage: Float?) {
     Card(
         colors = CardColors(
             contentColor = UISingleton.textColor1,
-            containerColor = UISingleton.color1,
-            disabledContainerColor = UISingleton.color1,
+            containerColor = UISingleton.color2,
+            disabledContainerColor = UISingleton.color2,
             disabledContentColor = UISingleton.textColor1
         ),
         elevation = CardDefaults.cardElevation(3.dp),

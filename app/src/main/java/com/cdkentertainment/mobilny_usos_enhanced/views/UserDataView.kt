@@ -2,7 +2,6 @@ package com.cdkentertainment.mobilny_usos_enhanced.views
 
 import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -58,13 +58,14 @@ fun UserDataView() {
             disabledContainerColor = UISingleton.color2,
             disabledContentColor = UISingleton.textColor1
         ),
+        elevation = CardDefaults.cardElevation(3.dp),
         shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp),
         onClick = {
             expanded = !expanded
         },
         modifier = Modifier
             .fillMaxWidth()
-            .animateContentSize()
+            //.animateContentSize()
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(12.dp),

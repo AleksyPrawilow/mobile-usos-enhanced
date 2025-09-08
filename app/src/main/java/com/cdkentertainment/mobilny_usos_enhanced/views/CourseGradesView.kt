@@ -46,8 +46,8 @@ fun CourseGradesView(
     Card(
         colors = CardColors(
             contentColor = UISingleton.textColor1,
-            containerColor = UISingleton.color1,
-            disabledContainerColor = UISingleton.color1,
+            containerColor = UISingleton.color2,
+            disabledContainerColor = UISingleton.color2,
             disabledContentColor = UISingleton.textColor1
         ),
         elevation = CardDefaults.cardElevation(3.dp),
@@ -80,7 +80,7 @@ fun CourseGradesView(
                     classtypeIdInfo?.get(unitClassType)?.name?.pl ?: "N/A",
                     if (condition) data.courseGrades.course_units_grades[courseUnit]!![0]["1"]!!.value_symbol else "—",
                     showArrow = condition,
-                    backgroundColor = UISingleton.color2
+                    backgroundColor = UISingleton.color1
                 ) {
                     UISingleton.blurContent()
                     showDetails = true
