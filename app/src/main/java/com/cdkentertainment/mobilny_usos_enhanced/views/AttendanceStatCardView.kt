@@ -40,6 +40,7 @@ fun AttendanceStatCardView(
             text = statName,
             color = UISingleton.textColor1,
             style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Medium,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f)

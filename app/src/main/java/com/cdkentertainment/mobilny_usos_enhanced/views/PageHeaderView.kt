@@ -4,17 +4,21 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 
@@ -22,13 +26,17 @@ import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 fun PageHeaderView(
     text: String
 ) {
+    val density: Density = LocalDensity.current
+    val insets = WindowInsets.systemBars
+    val topInset = insets.getTop(density)
+    val bottomInset = insets.getBottom(density)
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
             .fillMaxWidth()
             .shadow(4.dp)
             .background(UISingleton.color1)
-            .padding(horizontal = 12.dp, vertical = 32.dp)
+            .padding(start = 12.dp, end = 12.dp, top = 12.dp, bottom = 12.dp + with(LocalDensity.current) { topInset.toDp() })
     ) {
         Column {
             Spacer(Modifier.height(16.dp))

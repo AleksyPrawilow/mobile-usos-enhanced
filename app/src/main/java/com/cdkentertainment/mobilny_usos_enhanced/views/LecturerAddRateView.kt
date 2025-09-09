@@ -27,7 +27,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.ArrowForward
 import androidx.compose.material.icons.rounded.Check
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -113,11 +112,11 @@ fun LecturerAddRateView(
                 color = UISingleton.textColor1,
                 modifier = Modifier.fillMaxWidth()
             )
-            HorizontalDivider(
-                thickness = 5.dp,
-                color = UISingleton.textColor2,
-                modifier = Modifier.clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
-            )
+//            HorizontalDivider(
+//                thickness = 5.dp,
+//                color = UISingleton.textColor2,
+//                modifier = Modifier.clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
+//            )
             AnimatedContent(
                 ratingStage,
                 transitionSpec = {

@@ -20,7 +20,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -107,124 +106,93 @@ fun GradePopupView(
                 modifier = Modifier
                     .fillMaxWidth()
                     .verticalScroll(rememberScrollState())
-                    .padding(12.dp)
             ) {
-                Spacer(Modifier.height(24.dp))
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(UISingleton.color1, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
-                        .padding(12.dp)
-                ){
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
+                Spacer(Modifier.height(36.dp))
+                GroupedContentContainerView(
+                    title = "Informacja o ocenie",
+                    backgroundColor = UISingleton.color1,
+                    modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 12.dp)
+                ) {
+                    GradeCardView(
+                        courseName = "Twoja ocena",
+                        grade = grade.value_symbol,
+                        backgroundColor = UISingleton.color2
+                    )
+                    if (grade.date_modified != null) {
                         Text(
-                            text = "Informacja o ocenie",
-                            style = MaterialTheme.typography.titleLarge,
-                            color = UISingleton.textColor1
+                            text = "Data wprowadzenia: ${grade.date_modified}",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = UISingleton.textColor1,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .defaultMinSize(minHeight = 48.dp)
+                                .background(UISingleton.color2, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
+                                .padding(12.dp)
                         )
-                        HorizontalDivider(
-                            thickness = 5.dp,
-                            color = UISingleton.textColor2,
-                            modifier = Modifier.clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
+                    }
+                    if (grade.modification_author != null) {
+                        Text(
+                            text = "Wystawiający: ${grade.modification_author.first_name} ${grade.modification_author.last_name}",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = UISingleton.textColor1,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .defaultMinSize(minHeight = 48.dp)
+                                .background(UISingleton.color2, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
+                                .padding(12.dp)
                         )
-                        GradeCardView(
-                            courseName = "Twoja ocena",
-                            grade = grade.value_symbol,
-                            backgroundColor = UISingleton.color2
-                        )
-                        if (grade.date_modified != null) {
-                            Text(
-                                text = "Data wprowadzenia: ${grade.date_modified}",
-                                style = MaterialTheme.typography.titleMedium,
-                                color = UISingleton.textColor1,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .defaultMinSize(minHeight = 48.dp)
-                                    .background(UISingleton.color2, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
-                                    .padding(12.dp)
-                            )
-                        }
-                        if (grade.modification_author != null) {
-                            Text(
-                                text = "Wystawiający: ${grade.modification_author.first_name} ${grade.modification_author.last_name}",
-                                style = MaterialTheme.typography.titleMedium,
-                                color = UISingleton.textColor1,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .defaultMinSize(minHeight = 48.dp)
-                                    .background(UISingleton.color2, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
-                                    .padding(12.dp)
-                            )
-                        }
                     }
                 }
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(UISingleton.color1, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
-                        .padding(12.dp)
+                GroupedContentContainerView(
+                    title = "Dystrybucja ocen",
+                    backgroundColor = UISingleton.color1,
+                    modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 12.dp)
                 ) {
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        Text(
-                            text = "Dystrybucja ocen",
-                            style = MaterialTheme.typography.titleLarge,
-                            color = UISingleton.textColor1
+                    if (viewModel.gradesDistribution.getOrDefault(grade.exam_id, null) != null)  {
+                        GradeChart(
+                            gradeData = viewModel.gradesDistribution[grade.exam_id]!!,
+                            modifier = Modifier
+                                .fillMaxWidth()
                         )
-                        HorizontalDivider(
-                            thickness = 5.dp,
-                            color = UISingleton.textColor2,
-                            modifier = Modifier.clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
-                        )
-                        if (viewModel.gradesDistribution.getOrDefault(grade.exam_id, null) != null)  {
-                            GradeChart(
-                                gradeData = viewModel.gradesDistribution[grade.exam_id]!!,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                            )
-                        } else {
-                            Box(
-                                contentAlignment = Alignment.Center,
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                androidx.compose.animation.AnimatedVisibility(!fetchingSuccess) {
-                                    Row(
-                                        horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
-                                        verticalAlignment = Alignment.CenterVertically,
+                    } else {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            androidx.compose.animation.AnimatedVisibility(!fetchingSuccess) {
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
+                                        .background(UISingleton.color2)
+                                        .clickable(onClick = {
+                                            fetchDetails()
+                                        })
+                                        .padding(12.dp)
+                                ) {
+                                    Text(
+                                        text = "Nie udało się pobrać danych",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        color = UISingleton.textColor1,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                    Icon(
+                                        imageVector = Icons.Rounded.Refresh,
+                                        contentDescription = null,
+                                        tint = UISingleton.textColor4,
                                         modifier = Modifier
-                                            .fillMaxWidth()
-                                            .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
-                                            .background(UISingleton.color2)
-                                            .clickable(onClick = {
-                                                fetchDetails()
-                                            })
-                                            .padding(12.dp)
-                                    ) {
-                                        Text(
-                                            text = "Nie udało się pobrać danych",
-                                            style = MaterialTheme.typography.titleMedium,
-                                            color = UISingleton.textColor1,
-                                            modifier = Modifier.weight(1f)
-                                        )
-                                        Icon(
-                                            imageVector = Icons.Rounded.Refresh,
-                                            contentDescription = null,
-                                            tint = UISingleton.textColor4,
-                                            modifier = Modifier
-                                                .size(48.dp)
-                                                .background(UISingleton.color3, CircleShape)
-                                                .padding(8.dp)
-                                        )
-                                    }
-                                }
-                                androidx.compose.animation.AnimatedVisibility(fetchingSuccess){
-                                    CircularProgressIndicator(
-                                        color = UISingleton.textColor2
+                                            .size(48.dp)
+                                            .background(UISingleton.color3, CircleShape)
+                                            .padding(8.dp)
                                     )
                                 }
+                            }
+                            androidx.compose.animation.AnimatedVisibility(fetchingSuccess){
+                                CircularProgressIndicator(
+                                    color = UISingleton.textColor2
+                                )
                             }
                         }
                     }

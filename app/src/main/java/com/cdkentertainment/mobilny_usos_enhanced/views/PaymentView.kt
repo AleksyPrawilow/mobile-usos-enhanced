@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -49,6 +50,7 @@ fun PaymentView(
                     cornerRadius = CornerRadius(UISingleton.uiElementsCornerRadius.dp.toPx(), UISingleton.uiElementsCornerRadius.dp.toPx())
                 )
             }
+            .shadow(3.dp, shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
             .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
             .clickable(onClick = {
                 showDetails = true
@@ -61,6 +63,7 @@ fun PaymentView(
                 contentColor = UISingleton.textColor1,
                 disabledContentColor = UISingleton.textColor1
             ),
+            //elevation = CardDefaults.cardElevation(3.dp),
             shape = RoundedCornerShape(
                 bottomStart = 0.dp,
                 topEnd = UISingleton.uiElementsCornerRadius.dp,

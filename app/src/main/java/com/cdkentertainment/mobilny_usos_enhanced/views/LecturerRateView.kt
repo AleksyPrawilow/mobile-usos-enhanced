@@ -128,7 +128,7 @@ fun LecturerRateView(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 6.dp)
+                        .padding(vertical = 8.dp)
                 ) {
                     Text(
                         text = category,

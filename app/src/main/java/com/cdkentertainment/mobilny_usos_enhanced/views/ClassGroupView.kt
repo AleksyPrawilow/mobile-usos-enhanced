@@ -2,6 +2,7 @@ package com.cdkentertainment.mobilny_usos_enhanced.views
 
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.models.LessonGroup
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.LessonGroupPageViewModel
 
@@ -25,8 +26,10 @@ fun ClassGroupView(
             onDismissRequest = onDismissRequest
         )
     }
-    ClassGroupCardView(
-        data = data,
+    GradeCardView(
+        courseName = UIHelper.classTypeIds[data.class_type_id]?.name?.pl ?: data.class_type_id,
+        grade = data.group_number.toString(),
+        showArrow = true,
         onClick = onClick
     )
 }

@@ -20,16 +20,16 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.models.SharedDataClasses
-import com.cdkentertainment.mobilny_usos_enhanced.view_models.LessonGroupPageViewModel
 
 @Composable
 fun GroupParticipantCardView(
     index: Int,
     participant: SharedDataClasses.Human,
-    viewModel: LessonGroupPageViewModel,
     participantsSize: Int,
     modifier: Modifier = Modifier,
 ) {
@@ -57,6 +57,7 @@ fun GroupParticipantCardView(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 12.dp)
+            .shadow(3.dp, shape)
             .background(UISingleton.color1, shape)
             .padding(horizontal = 12.dp, vertical = 6.dp)
             .then(modifier)
@@ -71,6 +72,7 @@ fun GroupParticipantCardView(
             Text(
                 text = "${index + 1}. ${participant.first_name} ${participant.last_name}",
                 style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Medium,
                 color = UISingleton.textColor1,
                 modifier = Modifier
                     .weight(1f)

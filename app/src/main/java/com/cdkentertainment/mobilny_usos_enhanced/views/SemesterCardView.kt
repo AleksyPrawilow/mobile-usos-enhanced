@@ -1,5 +1,6 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -24,6 +25,7 @@ fun SemesterCardView(text: String) {
         ),
         elevation = CardDefaults.cardElevation(5.dp),
         shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp),
+        modifier = Modifier.fillMaxWidth().padding(top = 4.dp)
     ) {
         Text(
             text = text,

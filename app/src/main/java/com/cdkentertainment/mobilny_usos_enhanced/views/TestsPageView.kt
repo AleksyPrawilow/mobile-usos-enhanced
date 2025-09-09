@@ -8,16 +8,16 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -28,7 +28,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
@@ -58,30 +57,32 @@ fun TestsPageView() {
         showElements = true
     }
 
+    val insets = WindowInsets.systemBars
+    val topInset = insets.getTop(density)
+    val bottomInset = insets.getBottom(density)
+    val topPadding = with(LocalDensity.current) { topInset.toDp() }
+    val bottomPadding = with(LocalDensity.current) { bottomInset.toDp() }
+    val paddingModifier: Modifier = Modifier.padding(horizontal = UISingleton.horizontalPadding)
+
     LazyColumn(
         state = listState,
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = UISingleton.horizontalPadding, vertical = UISingleton.verticalPadding)
+            .padding(
+                top = topPadding,
+                bottom = bottomPadding
+            )
     ) {
         item {
-            Spacer(modifier = Modifier.height(16.dp))
+            PageHeaderView("Sprawdziany")
         }
         item {
-            AnimatedVisibility(showElements, enter = enterTransition(0)) {
-                Text(
-                    text = "Sprawdziany",
-                    style = MaterialTheme.typography.headlineLarge,
-                    color = UISingleton.textColor1,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
+            AnimatedVisibility(testsPageViewModel.tests == null, modifier = paddingModifier) {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    CircularProgressIndicator(color = UISingleton.textColor2, modifier = Modifier.align(Alignment.Center))
+                }
             }
-        }
-        item {
-            Spacer(Modifier.height(16.dp))
         }
         var currentIndex: Int = 2
         if (testsPageViewModel.tests != null) {
@@ -89,7 +90,11 @@ fun TestsPageView() {
                 currentIndex++
                 val semesterTests: Map<String, Test>? = testsPageViewModel.tests!!.tests[semester]
                 stickyHeader {
-                    AnimatedVisibility(showElements, enter = enterTransition(1)) {
+                    AnimatedVisibility(
+                        showElements,
+                        enter = enterTransition(1),
+                        modifier = paddingModifier.then(Modifier.fillMaxWidth())
+                    ) {
                         SemesterCardView(semester)
                     }
                 }
@@ -97,15 +102,13 @@ fun TestsPageView() {
                     val keys: List<String> = semesterTests.keys.toList()
                     for (index in 0 until semesterTests.keys.size) {
                         currentIndex++
-                        println("index: $currentIndex")
                         val captureIndex: Int = currentIndex
                         val test: Test? = semesterTests[keys[index]]
                         if (test != null) {
                             item {
-                                AnimatedVisibility(showElements, enter = enterTransition(2 + index)) {
+                                AnimatedVisibility(showElements, enter = enterTransition(2 + index), modifier = paddingModifier) {
                                     TestCardView(semesterTests[keys[index]]!!) {
                                         coroutineScope.launch {
-                                            // Animate scroll to the 10th item
                                             listState.animateScrollToItem(index = captureIndex, with(density) { -96.dp.toPx() }.toInt())
                                         }
                                     }
@@ -114,21 +117,13 @@ fun TestsPageView() {
                         }
                     }
                 }
-            }
-            item {
-                Spacer(modifier = Modifier.height(64.dp))
-            }
-        } else {
-            item {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(128.dp)
-                ) {
-                    CircularProgressIndicator(color = UISingleton.textColor2)
+                item {
+                    Spacer(modifier = Modifier.height(24.dp))
                 }
             }
+        }
+        item {
+            Spacer(modifier = Modifier.height(64.dp))
         }
     }
 }

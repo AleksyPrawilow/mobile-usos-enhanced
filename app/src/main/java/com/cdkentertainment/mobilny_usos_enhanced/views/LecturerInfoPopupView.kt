@@ -4,9 +4,7 @@ import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,7 +15,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Person
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -29,7 +26,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
@@ -118,47 +114,26 @@ fun LecturerInfoPopupView(
                     Spacer(modifier = Modifier.height(24.dp))
                 }
                 item {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 12.dp)
-                            .background(
-                                UISingleton.color1,
-                                RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp)
-                            )
-                            .padding(12.dp)
+                    GroupedContentContainerView(
+                        title = "Koordynowane przedmioty",
+                        backgroundColor = UISingleton.color1,
+                        modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 12.dp)
                     ) {
-                        Column(
-                            verticalArrangement = Arrangement.spacedBy(12.dp),
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(
-                                text = "Koordynowane przedmioty",
-                                style = MaterialTheme.typography.titleLarge,
-                                color = UISingleton.textColor1
-                            )
-                            HorizontalDivider(
-                                thickness = 5.dp,
-                                color = UISingleton.textColor2,
+                        repeat(2) { index ->
+                            Box(
                                 modifier = Modifier
-                                    .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
-                            )
-                            repeat(2) { index ->
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .background(
-                                            UISingleton.color2,
-                                            RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp)
-                                        )
-                                        .padding(12.dp)
-                                ) {
-                                    Text(
-                                        text = "${index + 1}. Matematyka",
-                                        style = MaterialTheme.typography.titleMedium,
-                                        color = UISingleton.textColor1
+                                    .fillMaxWidth()
+                                    .background(
+                                        UISingleton.color2,
+                                        RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp)
                                     )
-                                }
+                                    .padding(12.dp)
+                            ) {
+                                Text(
+                                    text = "${index + 1}. Matematyka",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = UISingleton.textColor1
+                                )
                             }
                         }
                     }
@@ -172,6 +147,7 @@ fun LecturerInfoPopupView(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(12.dp)
+                            .shadow(3.dp, shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
                             .background(UISingleton.color1, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
                             .padding(12.dp)
                     ) {
@@ -188,6 +164,7 @@ fun LecturerInfoPopupView(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(start = 12.dp, end = 12.dp, bottom = 12.dp)
+                            .shadow(3.dp, shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
                             .background(UISingleton.color1, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
                             .padding(12.dp)
                     ) {

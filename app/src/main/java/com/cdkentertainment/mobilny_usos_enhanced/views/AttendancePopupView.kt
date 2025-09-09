@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,17 +12,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -78,38 +74,13 @@ fun AttendancePopupView(
                     )
                 }
                 item {
-                    Card(
-                        colors = CardColors(
-                            contentColor = UISingleton.textColor1,
-                            containerColor = UISingleton.color1,
-                            disabledContainerColor = UISingleton.color1,
-                            disabledContentColor = UISingleton.textColor1
-                        ),
-                        shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(12.dp)
+                    GroupedContentContainerView(
+                        title = "Obecność",
+                        backgroundColor = UISingleton.color1,
+                        modifier = Modifier.padding(12.dp)
                     ) {
-                        Column(
-                            verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically),
-                            modifier = Modifier
-                                .padding(12.dp)
-                                .fillMaxWidth()
-                        ) {
-                            Text(
-                                text = "Obecność",
-                                color = UISingleton.textColor1,
-                                style = MaterialTheme.typography.titleLarge
-                            )
-                            HorizontalDivider(
-                                thickness = 5.dp,
-                                color = UISingleton.textColor2,
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
-                            )
-                            AttendanceStatCardView("Frekwencja", "100%")
-                            AttendanceStatCardView("Nieuspr. nieobecności", "0")
-                        }
+                        AttendanceStatCardView("Frekwencja", "100%")
+                        AttendanceStatCardView("Nieuspr. nieobecności", "0")
                     }
                 }
                 if (true) {
@@ -118,32 +89,14 @@ fun AttendancePopupView(
                             text = "Spotkania",
                             color = UISingleton.textColor1,
                             style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 12.dp)
+                                .shadow(3.dp, RoundedCornerShape(topStart = UISingleton.uiElementsCornerRadius.dp, topEnd = UISingleton.uiElementsCornerRadius.dp, 0.dp, 0.dp))
                                 .background(UISingleton.color1, RoundedCornerShape(topStart = UISingleton.uiElementsCornerRadius.dp, topEnd = UISingleton.uiElementsCornerRadius.dp, 0.dp, 0.dp))
                                 .padding(12.dp)
                                 .animateItem()
-                        )
-                    }
-                    item {
-                        HorizontalDivider(
-                            thickness = 5.dp,
-                            color = UISingleton.textColor2,
-                            modifier = Modifier
-                                .padding(horizontal = 12.dp)
-                                .background(UISingleton.color1)
-                                .padding(horizontal = 12.dp)
-                                .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
-                        )
-                    }
-                    item {
-                        Spacer(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(6.dp)
-                                .padding(horizontal = 12.dp)
-                                .background(UISingleton.color1)
                         )
                     }
 

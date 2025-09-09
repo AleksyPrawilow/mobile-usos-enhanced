@@ -13,10 +13,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -32,9 +34,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
@@ -55,6 +58,13 @@ fun PaymentsPageView() {
         targetValue = if (showTexts) paymentsPageViewModel.unpaidSum else 0f,
         animationSpec = tween(2000, 0, EaseOutQuad)
     )
+    val density: Density = LocalDensity.current
+    val insets = WindowInsets.systemBars
+    val topInset = insets.getTop(density)
+    val bottomInset = insets.getBottom(density)
+    val topPadding = with(LocalDensity.current) { topInset.toDp() }
+    val bottomPadding = with(LocalDensity.current) { bottomInset.toDp() }
+    val paddingModifier: Modifier = Modifier.padding(horizontal = UISingleton.horizontalPadding)
 
     LaunchedEffect(Unit) {
         paymentsPageViewModel.fetchPayments()
@@ -68,28 +78,16 @@ fun PaymentsPageView() {
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = UISingleton.horizontalPadding, vertical = UISingleton.verticalPadding)
+            .padding(top = topPadding, bottom = bottomPadding)
     ) {
         item {
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-        item {
-            AnimatedVisibility(showElements, enter = enterTransition(0)) {
-                Text(
-                    text = "Płatności",
-                    style = MaterialTheme.typography.headlineLarge,
-                    color = UISingleton.textColor1,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
-            }
+            PageHeaderView("Płatności")
         }
         item {
             Spacer(Modifier.height(16.dp))
         }
         item {
-            AnimatedVisibility(showElements, enter = enterTransition(2)) {
+            AnimatedVisibility(showElements, enter = enterTransition(2), modifier = paddingModifier) {
                 Card(
                     colors = CardDefaults.cardColors(
                         containerColor = UISingleton.color3,
@@ -133,7 +131,7 @@ fun PaymentsPageView() {
         val unpaidSize: Int = unpaidPayments?.size ?: 0
         val paidSize: Int = paidPayments?.size ?: 0
         item {
-            AnimatedVisibility(showTexts, enter = enterTransition(4)) {
+            AnimatedVisibility(showTexts, enter = enterTransition(4), modifier = paddingModifier) {
                 Text(
                     text = "Nierozliczone płatności",
                     style = MaterialTheme.typography.headlineSmall,
@@ -142,7 +140,7 @@ fun PaymentsPageView() {
             }
         }
         item {
-            AnimatedVisibility(showTexts, enter = enterTransition(5)) {
+            AnimatedVisibility(showTexts, enter = enterTransition(5), modifier = paddingModifier) {
                 HorizontalDivider(
                     thickness = 5.dp,
                     color = UISingleton.textColor2,
@@ -153,13 +151,13 @@ fun PaymentsPageView() {
         }
         if (!unpaidPayments.isNullOrEmpty()) {
             items(unpaidPayments.size, key = { paymentIndex -> unpaidPayments[paymentIndex].id }) { paymentIndex ->
-                AnimatedVisibility(showTexts, enter = enterTransition(6 + paymentIndex)) {
+                AnimatedVisibility(showTexts, enter = enterTransition(6 + paymentIndex), modifier = paddingModifier) {
                     PaymentView(unpaidPayments[paymentIndex])
                 }
             }
         } else {
             item {
-                AnimatedVisibility(showTexts, enter = enterTransition(7 + unpaidSize)) {
+                AnimatedVisibility(showTexts, enter = enterTransition(7 + unpaidSize), modifier = paddingModifier) {
                     Text(
                         text = "Brak nierozliczonych płatności",
                         style = MaterialTheme.typography.titleLarge,
@@ -172,7 +170,7 @@ fun PaymentsPageView() {
             Spacer(Modifier.height(16.dp))
         }
         item {
-            AnimatedVisibility(showTexts, enter = enterTransition(8 + unpaidSize)) {
+            AnimatedVisibility(showTexts, enter = enterTransition(8 + unpaidSize), modifier = paddingModifier) {
                 Text(
                     text = "Rozliczone płatności",
                     style = MaterialTheme.typography.headlineSmall,
@@ -181,7 +179,7 @@ fun PaymentsPageView() {
             }
         }
         item {
-            AnimatedVisibility(showTexts, enter = enterTransition(9 + unpaidSize)) {
+            AnimatedVisibility(showTexts, enter = enterTransition(9 + unpaidSize), modifier = paddingModifier) {
                 HorizontalDivider(
                     thickness = 5.dp,
                     color = UISingleton.textColor2,
@@ -192,13 +190,13 @@ fun PaymentsPageView() {
         }
         if (!paidPayments.isNullOrEmpty()) {
             items(paidPayments.size, key = { paymentIndex -> paidPayments[paymentIndex].id }) { paymentIndex ->
-                AnimatedVisibility(showTexts, enter = enterTransition(10 + unpaidSize + paymentIndex)) {
+                AnimatedVisibility(showTexts, enter = enterTransition(10 + unpaidSize + paymentIndex), modifier = paddingModifier) {
                     PaymentView(paidPayments[paymentIndex])
                 }
             }
         } else {
             item {
-                AnimatedVisibility(showTexts, enter = enterTransition(11 + unpaidSize + paidSize)) {
+                AnimatedVisibility(showTexts, enter = enterTransition(11 + unpaidSize + paidSize), modifier = paddingModifier) {
                     Text(
                         text = "Brak rozliczonych płatności",
                         style = MaterialTheme.typography.titleLarge,

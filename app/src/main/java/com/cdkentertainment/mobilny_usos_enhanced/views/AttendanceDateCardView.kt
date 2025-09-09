@@ -26,7 +26,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
@@ -79,6 +81,7 @@ fun AttendanceDateCardView(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 12.dp)
+            .shadow(3.dp, shape)
             .background(UISingleton.color1, shape)
             .padding(horizontal = 12.dp, vertical = 6.dp)
             .then(modifier)
@@ -99,8 +102,8 @@ fun AttendanceDateCardView(
                 style = MaterialTheme.typography.titleMedium,
                 color = UISingleton.textColor1,
                 textAlign = TextAlign.Start,
+                fontWeight = FontWeight.Medium,
                 modifier = Modifier
-                    .padding(12.dp)
                     .weight(1f)
             )
             Icon(
