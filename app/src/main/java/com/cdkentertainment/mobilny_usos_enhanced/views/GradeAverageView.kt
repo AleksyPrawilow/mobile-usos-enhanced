@@ -1,7 +1,6 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,9 +8,11 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,15 +27,15 @@ import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 fun GradeAverageView(gradeAverage: Float?) {
     Card(
         colors = CardColors(
-            contentColor = UISingleton.color4.primaryColor,
-            containerColor = UISingleton.color3.primaryColor,
-            disabledContainerColor = UISingleton.color3.primaryColor,
-            disabledContentColor = UISingleton.color4.primaryColor
+            contentColor = UISingleton.textColor1,
+            containerColor = UISingleton.color2,
+            disabledContainerColor = UISingleton.color2,
+            disabledContentColor = UISingleton.textColor1
         ),
+        elevation = CardDefaults.cardElevation(3.dp),
         shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius),
         modifier = Modifier
             .fillMaxWidth()
-            .border(5.dp, UISingleton.color4.primaryColor, RoundedCornerShape(UISingleton.uiElementsCornerRadius))
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -42,9 +43,10 @@ fun GradeAverageView(gradeAverage: Float?) {
                 .padding(12.dp)
         ) {
             Text(
-                text = "Bieżąca średnia:",
-                color = UISingleton.color1.primaryColor,
-                style = MaterialTheme.typography.titleLarge
+                text = "Bieżąca średnia",
+                color = UISingleton.textColor1,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.weight(1f))
             Box(
@@ -52,12 +54,12 @@ fun GradeAverageView(gradeAverage: Float?) {
                 modifier = Modifier
                     .defaultMinSize(minWidth = 48.dp)
                     .height(48.dp)
-                    .background(UISingleton.color4.primaryColor, RoundedCornerShape(50.dp))
+                    .background(UISingleton.color3, CircleShape)
                     .padding(horizontal = 6.dp)
             ) {
                 Text(
-                    text = if (gradeAverage?.isNaN() ?: true) "-" else "%.2f".format(gradeAverage),
-                    color = UISingleton.color1.primaryColor,
+                    text = if (gradeAverage?.isNaN() ?: true) "—" else "%.2f".format(gradeAverage),
+                    color = UISingleton.textColor4,
                     fontWeight = FontWeight.ExtraBold,
                     fontSize = 16.sp.scaleIndependent(),
                     modifier = Modifier

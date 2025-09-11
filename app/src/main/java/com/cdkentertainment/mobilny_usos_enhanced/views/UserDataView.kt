@@ -2,11 +2,8 @@ package com.cdkentertainment.mobilny_usos_enhanced.views
 
 import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,11 +15,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -32,24 +29,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size.Companion.ORIGINAL
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
-import com.cdkentertainment.mobilny_usos_enhanced.view_models.HomePageViewModel
+import com.cdkentertainment.mobilny_usos_enhanced.getLocalized
 
 @Composable
-fun UserDataView(homePageViewModel: HomePageViewModel) {
+fun UserDataView() {
     var expanded: Boolean by rememberSaveable { mutableStateOf(false) }
     val paddingSize: Int = 12
     val context: Context = LocalContext.current
-    val profilePicture: Painter? = if (homePageViewModel.userInfo != null) rememberAsyncImagePainter(
+    val profilePicture: Painter? = if (OAuthSingleton.userData != null) rememberAsyncImagePainter(
         ImageRequest.Builder(context)
-            .data(homePageViewModel.userInfo?.basicInfo?.photo_urls["100x100"])
+            .data(OAuthSingleton.userData?.basicInfo?.photo_urls["100x100"])
             .size(ORIGINAL)
             .crossfade(true)
             .placeholder(android.R.drawable.ic_menu_help)
@@ -59,18 +54,19 @@ fun UserDataView(homePageViewModel: HomePageViewModel) {
 
     Card(
         colors = CardColors(
-            contentColor = UISingleton.color4.primaryColor,
-            containerColor = UISingleton.color2.primaryColor,
-            disabledContainerColor = UISingleton.color2.primaryColor,
-            disabledContentColor = UISingleton.color4.primaryColor
+            contentColor = UISingleton.textColor1,
+            containerColor = UISingleton.color2,
+            disabledContainerColor = UISingleton.color2,
+            disabledContentColor = UISingleton.textColor1
         ),
+        elevation = CardDefaults.cardElevation(3.dp),
         shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp),
         onClick = {
             expanded = !expanded
         },
         modifier = Modifier
             .fillMaxWidth()
-            .animateContentSize()
+            //.animateContentSize()
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -79,15 +75,15 @@ fun UserDataView(homePageViewModel: HomePageViewModel) {
         ) {
             Card(
                 colors = CardColors(
-                    contentColor = UISingleton.color3.primaryColor,
-                    containerColor = UISingleton.color1.primaryColor,
-                    disabledContainerColor = UISingleton.color1.primaryColor,
-                    disabledContentColor = UISingleton.color3.primaryColor
+                    contentColor = UISingleton.textColor2,
+                    containerColor = UISingleton.color1,
+                    disabledContainerColor = UISingleton.color1,
+                    disabledContentColor = UISingleton.textColor2
                 ),
                 shape = RoundedCornerShape(50.dp),
                 modifier = Modifier
                     .size(72.dp)
-                    .border(5.dp, UISingleton.color1.primaryColor, shape = RoundedCornerShape(50.dp))
+                    .border(5.dp, UISingleton.color1, shape = RoundedCornerShape(50.dp))
             ) {
                 if (profilePicture != null) {
                     Icon(
@@ -105,7 +101,7 @@ fun UserDataView(homePageViewModel: HomePageViewModel) {
                     Icon(
                         imageVector = Icons.Rounded.Person,
                         contentDescription = "Person",
-                        tint = UISingleton.color4.primaryColor,
+                        tint = UISingleton.textColor1,
                         modifier = Modifier
                             .fillMaxSize()
                             .graphicsLayer(
@@ -117,54 +113,35 @@ fun UserDataView(homePageViewModel: HomePageViewModel) {
             } // User photo card
             Column {
                 Text(
-                    text = "${homePageViewModel.userInfo?.basicInfo?.first_name} ${homePageViewModel.userInfo?.basicInfo?.last_name}",
+                    text = "${OAuthSingleton.userData?.basicInfo?.first_name} ${OAuthSingleton.userData?.basicInfo?.last_name}",
                     style = MaterialTheme.typography.titleLarge,
-                    color = UISingleton.color4.primaryColor
+                    color = UISingleton.textColor1
                 )
                 Text(
                     text = "Aktywny student",
                     style = MaterialTheme.typography.titleMedium,
-                    color = UISingleton.color3.primaryColor
+                    color = UISingleton.textColor2
                 )
                 AnimatedVisibility(expanded) {
                     Column {
                         Text(
-                            text = "${homePageViewModel.userInfo?.programme[0]?.programme?.description?.pl}",
+                            text = "${OAuthSingleton.userData?.programme[0]?.programme?.description?.getLocalized(context)}",
                             style = MaterialTheme.typography.titleMedium,
-                            color = UISingleton.color3.primaryColor
+                            color = UISingleton.textColor2
                         )
                         Text(
-                            text = "${homePageViewModel.userInfo?.basicInfo?.email}",
+                            text = "${OAuthSingleton.userData?.basicInfo?.email}",
                             style = MaterialTheme.typography.titleMedium,
-                            color = UISingleton.color3.primaryColor
+                            color = UISingleton.textColor2
                         )
                         Text(
-                            text = homePageViewModel.userInfo?.basicInfo?.mobile_numbers[0] ?: "null",
+                            text = OAuthSingleton.userData?.basicInfo?.mobile_numbers[0] ?: "null",
                             style = MaterialTheme.typography.titleMedium,
-                            color = UISingleton.color3.primaryColor
+                            color = UISingleton.textColor2
                         )
                     }
                 }
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun UserDataPreview() {
-    OAuthSingleton.setTestAccessToken()
-    val homePageViewModel: HomePageViewModel = viewModel<HomePageViewModel>()
-    LaunchedEffect(Unit) {
-        homePageViewModel.fetchData()
-    }
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(UISingleton.color1.primaryColor)
-            .padding(12.dp)
-    ) {
-        UserDataView(homePageViewModel)
     }
 }

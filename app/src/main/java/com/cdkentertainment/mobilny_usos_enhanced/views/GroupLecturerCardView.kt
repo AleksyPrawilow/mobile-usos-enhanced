@@ -1,6 +1,5 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
-import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -10,51 +9,58 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
+import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
-import com.cdkentertainment.mobilny_usos_enhanced.getLocalized
-import com.cdkentertainment.mobilny_usos_enhanced.models.LessonGroup
+import com.cdkentertainment.mobilny_usos_enhanced.models.LecturerRate
+import com.cdkentertainment.mobilny_usos_enhanced.models.SharedDataClasses
+import com.cdkentertainment.mobilny_usos_enhanced.view_models.LecturerRatesPageViewModel
 
 @Composable
-fun ClassGroupCardView(
-    data: LessonGroup,
-    onClick: () -> Unit = {}
+fun GroupLecturerCardView(
+    lecturer: SharedDataClasses.Human,
 ) {
-    val context: Context = LocalContext.current
+    val lecturerRatesPageViewModel: LecturerRatesPageViewModel = viewModel<LecturerRatesPageViewModel>()
+    val lecturerRate: LecturerRate = lecturerRatesPageViewModel.lecturerRates.getOrDefault(lecturer.id, LecturerRate())
+    val rateAverage: Float = (lecturerRate.rate_1 + lecturerRate.rate_2 + lecturerRate.rate_3 + lecturerRate.rate_4 + lecturerRate.rate_5) / 5f
+    var showDetails: Boolean by rememberSaveable { mutableStateOf(false) }
+    if (showDetails) {
+        LecturerInfoPopupView(data = lecturer, onDismissRequest = { showDetails = false })
+    }
     Row(
         horizontalArrangement = Arrangement.spacedBy(0.dp),
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .background(
-                UISingleton.color1,
-                RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp)
-            )
             .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
-            .clickable(onClick = onClick)
+            .background(UISingleton.color2)
+            .clickable(onClick = {
+                showDetails = true
+            })
             .padding(12.dp)
     ) {
         Text(
-            text = UIHelper.classTypeIds[data.class_type_id]?.name?.getLocalized(context) ?: data.class_type_id,
+            text = "${lecturer.first_name} ${lecturer.last_name}",
             color = UISingleton.textColor1,
             style = MaterialTheme.typography.titleMedium,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
             modifier = Modifier
                 .weight(1f)
                 .padding(end = 6.dp)
@@ -64,7 +70,7 @@ fun ClassGroupCardView(
             contentDescription = "More",
             tint = UISingleton.textColor1,
             modifier = Modifier
-                .padding(12.dp)
+                .padding(4.dp)
         )
         Box(
             contentAlignment = Alignment.Center,
@@ -74,15 +80,24 @@ fun ClassGroupCardView(
                 .background(UISingleton.color3, RoundedCornerShape(50.dp))
                 .padding(horizontal = 6.dp)
         ) {
-            Text(
-                text = "${data.group_number}",
-                color = UISingleton.textColor4,
-                fontSize = 18.sp.scaleIndependent(),
-                fontWeight = FontWeight.ExtraBold,
-                maxLines = 1,
-                modifier = Modifier
-                    .align(Alignment.Center)
-            )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(0.dp, alignment = Alignment.CenterHorizontally),
+                verticalAlignment = Alignment.CenterVertically
+            ){
+                Text(
+                    text = "%.1f".format(rateAverage),
+                    color = UISingleton.textColor4,
+                    fontSize = 14.sp.scaleIndependent(),
+                    fontWeight = FontWeight.ExtraBold,
+                    maxLines = 1,
+                )
+                Icon(
+                    imageVector = Icons.Rounded.Star,
+                    contentDescription = "Rate",
+                    tint = UISingleton.textColor4,
+                    modifier = Modifier.size(14.dp)
+                )
+            }
         }
     }
 }

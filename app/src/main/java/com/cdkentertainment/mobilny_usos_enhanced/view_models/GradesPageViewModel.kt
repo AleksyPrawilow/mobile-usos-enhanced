@@ -1,12 +1,14 @@
 package com.cdkentertainment.mobilny_usos_enhanced.view_models
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.models.CourseUnitIds
+import com.cdkentertainment.mobilny_usos_enhanced.models.GradesDistribution
 import com.cdkentertainment.mobilny_usos_enhanced.models.GradesPageModel
 import com.cdkentertainment.mobilny_usos_enhanced.models.Season
 import com.cdkentertainment.mobilny_usos_enhanced.models.SharedDataClasses
@@ -24,7 +26,7 @@ fun main(): Unit = runBlocking {
 }
 
 class GradesPageViewModel: ViewModel() {
-
+    var gradesDistribution: MutableMap<Int, Map<String, Int>> = mutableStateMapOf()
     var userGrades: List<Season>? by mutableStateOf(null)
     var userSubjects: Map<String, CourseUnitIds>? by mutableStateOf(null)
     var classtypeIdInfo: Map<String, SharedDataClasses.IdAndName>? by mutableStateOf(null)
@@ -49,6 +51,20 @@ class GradesPageViewModel: ViewModel() {
             } catch (e: Exception) {
                 println(e)
                 //return@withContext //ogarnij coś tutaj @aleksy
+            }
+        }
+    }
+
+    suspend fun fetchGradesDistribution(examId: Int): Boolean {
+        return withContext(Dispatchers.IO) {
+            try {
+                val distribution: GradesDistribution = gradesPageModel.getGivenExamGradesDistribution(examId)
+                val map: Map<String, Int> = distribution.grades_distribution.associate { it.grade_symbol to it.percentage }
+                gradesDistribution[examId] = map
+                return@withContext true
+            } catch (e: Exception) {
+                println(e)
+                return@withContext false
             }
         }
     }

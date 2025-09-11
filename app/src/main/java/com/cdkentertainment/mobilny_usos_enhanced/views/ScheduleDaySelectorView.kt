@@ -97,9 +97,9 @@ fun ScheduleDaySelectorView(schedulePageViewModel: SchedulePageViewModel) {
             .shadow(5.dp, RoundedCornerShape(UISingleton.uiElementsCornerRadius))
             .background(
                 brush = verticalGradient(
-                    0.0f to UISingleton.color2.primaryColor,
-                    0.5f to UISingleton.color2.primaryColor,
-                    0.5f to UISingleton.color2.oppositeColor
+                    0.0f to UISingleton.color2,
+                    0.5f to UISingleton.color2,
+                    0.5f to UISingleton.color3
                 ),
                 shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius)
             )
@@ -121,10 +121,10 @@ fun ScheduleDaySelectorView(schedulePageViewModel: SchedulePageViewModel) {
                 for (weekOptionIndex in 0..1) {
                     Text(
                         text = if (weekOptionIndex == 0) "Aktualny tydzień" else "Inny tydzień",
-                        color = UISingleton.color4.primaryColor,
+                        color = UISingleton.textColor1,
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier
-                            .background(if (schedulePageViewModel.selectedWeekOption == weekOptionIndex) UISingleton.color1.primaryColor else Color(TRANSPARENT), CircleShape)
+                            .background(if (schedulePageViewModel.selectedWeekOption == weekOptionIndex) UISingleton.color1 else Color(TRANSPARENT), CircleShape)
                             .clip(CircleShape)
                             .clickable(onClick = {
                                 if (weekOptionIndex == 0) {
@@ -155,9 +155,9 @@ fun ScheduleDaySelectorView(schedulePageViewModel: SchedulePageViewModel) {
                     Text(
                         text = daysOfWeek[dayIndex],
                         style = MaterialTheme.typography.titleMedium,
-                        color = UISingleton.color4.oppositeColor,
+                        color = UISingleton.textColor4,
                         modifier = Modifier
-                            .background(if (schedulePageViewModel.selectedDay == dayIndex) UISingleton.color1.oppositeColor else Color(TRANSPARENT), CircleShape)
+                            .background(if (schedulePageViewModel.selectedDay == dayIndex) UISingleton.color4 else Color(TRANSPARENT), CircleShape)
                             .clip(CircleShape)
                             .clickable(
                                 onClick = {
@@ -166,20 +166,6 @@ fun ScheduleDaySelectorView(schedulePageViewModel: SchedulePageViewModel) {
                             )
                             .padding(horizontal = 16.dp, 12.dp)
                     )
-//                    Button(
-//                        colors = ButtonDefaults.buttonColors(
-//                            contentColor = UISingleton.color4.oppositeColor,
-//                            containerColor = if (schedulePageViewModel.selectedDay == dayIndex) UISingleton.color1.oppositeColor else Color(TRANSPARENT)
-//                        ),
-//                        onClick = {
-//                            schedulePageViewModel.selectDay(dayIndex)
-//                        }
-//                    ) {
-//                        Text(
-//                            text = daysOfWeek[dayIndex],
-//                            style = MaterialTheme.typography.titleMedium
-//                        )
-//                    }
                 }
             }
         }

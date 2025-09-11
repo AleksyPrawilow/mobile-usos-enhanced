@@ -1,31 +1,49 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Refresh
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.models.TermGrade
+import com.cdkentertainment.mobilny_usos_enhanced.view_models.GradesPageViewModel
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberBottom
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberStart
@@ -47,6 +65,8 @@ import com.patrykandpatrick.vico.core.common.Insets
 import com.patrykandpatrick.vico.core.common.component.TextComponent
 import com.patrykandpatrick.vico.core.common.data.ExtraStore
 import com.patrykandpatrick.vico.core.common.shape.CorneredShape
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 private val BottomAxisLabelKey = ExtraStore.Key<List<String>>()
 private val BottomAxisValueFormatter = CartesianValueFormatter { context, x, _ ->
@@ -54,15 +74,22 @@ private val BottomAxisValueFormatter = CartesianValueFormatter { context, x, _ -
 }
 
 @Composable
-fun GradePopupView(grade: TermGrade, onDismiss: () -> Unit) {
-    val gradeData = mapOf(
-        "2" to 10,
-        "3" to 15,
-        "3.5" to 10,
-        "4" to 25,
-        "4.5" to 30,
-        "5" to 10
-    )
+fun GradePopupView(
+    grade: TermGrade, onDismiss: () -> Unit
+) {
+    val viewModel: GradesPageViewModel = viewModel<GradesPageViewModel>()
+    var fetchingSuccess: Boolean by rememberSaveable { mutableStateOf(true) }
+    val coroutineScope: CoroutineScope = rememberCoroutineScope()
+    val fetchDetails: () -> Unit = {
+        if (viewModel.gradesDistribution.getOrDefault(grade.exam_id, null) == null) {
+            coroutineScope.launch {
+                fetchingSuccess = viewModel.fetchGradesDistribution(grade.exam_id)
+            }
+        }
+    }
+    LaunchedEffect(Unit) {
+        fetchDetails()
+    }
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(dismissOnBackPress = true)
@@ -71,55 +98,105 @@ fun GradePopupView(grade: TermGrade, onDismiss: () -> Unit) {
             modifier = Modifier
                 .fillMaxWidth()
                 .shadow(10.dp, shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
-                .background(UISingleton.color2.primaryColor, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
-                .verticalScroll(rememberScrollState())
+                .background(UISingleton.color2, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
+                .border(5.dp, UISingleton.color1, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
         ) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(12.dp)
+                    .verticalScroll(rememberScrollState())
             ) {
-                Spacer(Modifier.height(24.dp))
-                if (grade.date_modified != null) {
-                    Text(
-                        text = "Informacja o ocenie",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = UISingleton.color4.primaryColor
+                Spacer(Modifier.height(36.dp))
+                GroupedContentContainerView(
+                    title = "Informacja o ocenie",
+                    backgroundColor = UISingleton.color1,
+                    modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 12.dp)
+                ) {
+                    GradeCardView(
+                        courseName = "Twoja ocena",
+                        grade = grade.value_symbol,
+                        backgroundColor = UISingleton.color2
                     )
-                    Text(
-                        text = "Data wprowadzenia: ${grade.date_modified}",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = UISingleton.color4.primaryColor,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(UISingleton.color1.primaryColor, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
-                            .padding(12.dp)
-                    )
+                    if (grade.date_modified != null) {
+                        Text(
+                            text = "Data wprowadzenia: ${grade.date_modified}",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = UISingleton.textColor1,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .defaultMinSize(minHeight = 48.dp)
+                                .background(UISingleton.color2, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
+                                .padding(12.dp)
+                        )
+                    }
+                    if (grade.modification_author != null) {
+                        Text(
+                            text = "Wystawiający: ${grade.modification_author.first_name} ${grade.modification_author.last_name}",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = UISingleton.textColor1,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .defaultMinSize(minHeight = 48.dp)
+                                .background(UISingleton.color2, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
+                                .padding(12.dp)
+                        )
+                    }
                 }
-                if (grade.modification_author != null) {
-                    Text(
-                        text = "Wystawiający: ${grade.modification_author.first_name} ${grade.modification_author.last_name}",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = UISingleton.color4.primaryColor,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(UISingleton.color1.primaryColor, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
-                            .padding(12.dp)
-                    )
+                GroupedContentContainerView(
+                    title = "Dystrybucja ocen",
+                    backgroundColor = UISingleton.color1,
+                    modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 12.dp)
+                ) {
+                    if (viewModel.gradesDistribution.getOrDefault(grade.exam_id, null) != null)  {
+                        GradeChart(
+                            gradeData = viewModel.gradesDistribution[grade.exam_id]!!,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                        )
+                    } else {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            androidx.compose.animation.AnimatedVisibility(!fetchingSuccess) {
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
+                                        .background(UISingleton.color2)
+                                        .clickable(onClick = {
+                                            fetchDetails()
+                                        })
+                                        .padding(12.dp)
+                                ) {
+                                    Text(
+                                        text = "Nie udało się pobrać danych",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        color = UISingleton.textColor1,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                    Icon(
+                                        imageVector = Icons.Rounded.Refresh,
+                                        contentDescription = null,
+                                        tint = UISingleton.textColor4,
+                                        modifier = Modifier
+                                            .size(48.dp)
+                                            .background(UISingleton.color3, CircleShape)
+                                            .padding(8.dp)
+                                    )
+                                }
+                            }
+                            androidx.compose.animation.AnimatedVisibility(fetchingSuccess){
+                                CircularProgressIndicator(
+                                    color = UISingleton.textColor2
+                                )
+                            }
+                        }
+                    }
                 }
-                Text(
-                    text = "Dystrybucja ocen",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = UISingleton.color4.primaryColor
-                )
-                GradeChart(
-                    gradeData,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(UISingleton.color1.primaryColor, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
-                        .padding(12.dp)
-                )
             }
             DismissPopupButtonView(onDismiss, Modifier.align(Alignment.TopEnd))
         }
@@ -137,7 +214,7 @@ fun GradeChart(gradeData: Map<String, Int>, modifier: Modifier = Modifier) {
     }
 
     val textComponent: TextComponent = rememberTextComponent(
-        color = UISingleton.color4.primaryColor,
+        color = UISingleton.textColor1,
         textSize = 12.sp,
         padding = Insets(3f)
     )
@@ -145,7 +222,7 @@ fun GradeChart(gradeData: Map<String, Int>, modifier: Modifier = Modifier) {
         rememberColumnCartesianLayer(
             columnProvider = ColumnCartesianLayer.ColumnProvider.series(
                 rememberLineComponent(
-                    fill = Fill(UISingleton.color3.primaryColor.toArgb()),
+                    fill = Fill(UISingleton.color3.toArgb()),
                     thickness = 12.dp,
                     shape = CorneredShape.rounded(topLeftPercent = UISingleton.uiElementsCornerRadius, topRightPercent = UISingleton.uiElementsCornerRadius),
                 )
@@ -159,13 +236,13 @@ fun GradeChart(gradeData: Map<String, Int>, modifier: Modifier = Modifier) {
         startAxis = VerticalAxis.rememberStart(
             itemPlacer = remember { VerticalAxis.ItemPlacer.count({ 6 }) },
             line = rememberLineComponent(
-                fill = Fill(UISingleton.color2.primaryColor.toArgb()),
+                fill = Fill(UISingleton.color2.toArgb()),
                 thickness = 5.dp,
                 shape = CorneredShape.rounded(topRightPercent = 50)
             ),
             label = textComponent,
             tick = rememberLineComponent(
-                fill = Fill(UISingleton.color2.primaryColor.toArgb()),
+                fill = Fill(UISingleton.color2.toArgb()),
                 thickness = 5.dp,
                 shape = CorneredShape.rounded(bottomLeftPercent = 50, topLeftPercent = 50)
             ),
@@ -173,20 +250,20 @@ fun GradeChart(gradeData: Map<String, Int>, modifier: Modifier = Modifier) {
                 "${value.toInt()}%"
             },
             guideline = rememberLineComponent(
-                fill = Fill(UISingleton.color2.primaryColor.toArgb()),
+                fill = Fill(UISingleton.color2.toArgb()),
                 thickness = 1.dp
             )
         ),
         bottomAxis = HorizontalAxis.rememberBottom(
             line = rememberLineComponent(
-                fill = Fill(UISingleton.color2.primaryColor.toArgb()),
+                fill = Fill(UISingleton.color2.toArgb()),
                 thickness = 5.dp,
                 shape = CorneredShape.rounded(bottomRightPercent = 50, topRightPercent = 50)
             ),
             label = textComponent,
             guideline = null,
             tick = rememberLineComponent(
-                fill = Fill(UISingleton.color2.primaryColor.toArgb()),
+                fill = Fill(UISingleton.color2.toArgb()),
                 thickness = 5.dp,
                 shape = CorneredShape.rounded(bottomLeftPercent = 50, bottomRightPercent = 50)
             ),

@@ -65,13 +65,13 @@ fun LecturerRateView(
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleLarge,
-                color = UISingleton.color4.primaryColor
+                color = UISingleton.textColor1
             )
             Text(
                 text = "%.1f".format(rateAverage),
                 fontSize = 72.sp,
                 fontWeight = FontWeight.ExtraBold,
-                color = UISingleton.color4.primaryColor
+                color = UISingleton.textColor1
             )
             Row(
                 horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally)
@@ -79,10 +79,10 @@ fun LecturerRateView(
                 repeat(5) { index ->
                     val fractionFilled: Float = min(rateAverage - index, 1f)
                     val starBrush = Brush.horizontalGradient(
-                        0f to UISingleton.color3.primaryColor,
-                        fractionFilled to UISingleton.color3.primaryColor,
-                        fractionFilled to UISingleton.color2.primaryColor,
-                        1f to UISingleton.color2.primaryColor
+                        0f to UISingleton.color3,
+                        fractionFilled to UISingleton.color3,
+                        fractionFilled to UISingleton.color2,
+                        1f to UISingleton.color2
                     )
                     val starModifier: Modifier = Modifier
                         .size(32.dp)
@@ -110,7 +110,7 @@ fun LecturerRateView(
                     text = "Na podstawie $numberOfReviews $reviewTextSuffix",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Light,
-                    color = UISingleton.color4.primaryColor
+                    color = UISingleton.textColor1
                 )
             }
             Spacer(modifier = Modifier.height(12.dp))
@@ -128,18 +128,18 @@ fun LecturerRateView(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 6.dp)
+                        .padding(vertical = 8.dp)
                 ) {
                     Text(
                         text = category,
                         style = MaterialTheme.typography.titleSmall,
-                        color = UISingleton.color4.primaryColor,
+                        color = UISingleton.textColor1,
                         modifier = Modifier.weight(0.5f)
                     )
                     LinearProgressIndicator(
                         progress = { rating / 5f },
-                        color = UISingleton.color3.primaryColor,
-                        trackColor = UISingleton.color2.primaryColor,
+                        color = UISingleton.color3,
+                        trackColor = UISingleton.color2,
                         drawStopIndicator = {},
                         modifier = Modifier
                             .weight(0.5f)
@@ -159,23 +159,23 @@ fun LecturerRateView(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
-                        .background(UISingleton.color2.primaryColor)
+                        .background(UISingleton.color2)
                         .clickable(onClick = onEditRate)
                         .padding(12.dp)
                 ) {
                     Text(
                         text = "Zmień swoją ocenę",
                         style = MaterialTheme.typography.titleMedium,
-                        color = UISingleton.color4.primaryColor,
+                        color = UISingleton.textColor1,
                         modifier = Modifier.weight(1f)
                     )
                     Icon(
                         imageVector = Icons.Rounded.Edit,
                         contentDescription = "Edit",
-                        tint = UISingleton.color1.primaryColor,
+                        tint = UISingleton.textColor4,
                         modifier = Modifier
                             .size(48.dp)
-                            .background(UISingleton.color3.primaryColor, CircleShape)
+                            .background(UISingleton.color3, CircleShape)
                             .padding(8.dp)
                     )
                 }
@@ -186,23 +186,23 @@ fun LecturerRateView(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
-                        .background(UISingleton.color2.primaryColor)
+                        .background(UISingleton.color2)
                         .clickable(onClick = { showDeleteDialog = true })
                         .padding(12.dp)
                 ) {
                     Text(
                         text = "Usuń swoją ocenę",
                         style = MaterialTheme.typography.titleMedium,
-                        color = UISingleton.color4.primaryColor,
+                        color = UISingleton.textColor1,
                         modifier = Modifier.weight(1f)
                     )
                     Icon(
                         imageVector = Icons.Rounded.Delete,
                         contentDescription = "Delete",
-                        tint = UISingleton.color1.primaryColor,
+                        tint = UISingleton.textColor4,
                         modifier = Modifier
                             .size(48.dp)
-                            .background(UISingleton.color3.primaryColor, CircleShape)
+                            .background(UISingleton.color3, CircleShape)
                             .padding(8.dp)
                     )
                 }

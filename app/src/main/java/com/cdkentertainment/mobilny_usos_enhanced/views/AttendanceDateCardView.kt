@@ -26,7 +26,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
@@ -67,10 +69,10 @@ fun AttendanceDateCardView(
 
     Card(
         colors = CardColors(
-            contentColor = UISingleton.color4.primaryColor,
-            containerColor = UISingleton.color2.primaryColor,
-            disabledContainerColor = UISingleton.color2.primaryColor,
-            disabledContentColor = UISingleton.color4.primaryColor
+            contentColor = UISingleton.textColor1,
+            containerColor = UISingleton.color2,
+            disabledContainerColor = UISingleton.color2,
+            disabledContentColor = UISingleton.textColor1
         ),
         onClick = {
             showTypeSelector = true
@@ -79,7 +81,8 @@ fun AttendanceDateCardView(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 12.dp)
-            .background(UISingleton.color1.primaryColor, shape)
+            .shadow(3.dp, shape)
+            .background(UISingleton.color1, shape)
             .padding(horizontal = 12.dp, vertical = 6.dp)
             .then(modifier)
     ) {
@@ -89,7 +92,7 @@ fun AttendanceDateCardView(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(
-                    UISingleton.color2.primaryColor,
+                    UISingleton.color2,
                     RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp)
                 )
                 .padding(12.dp)
@@ -97,19 +100,19 @@ fun AttendanceDateCardView(
             Text(
                 text = date,
                 style = MaterialTheme.typography.titleMedium,
-                color = UISingleton.color4.primaryColor,
+                color = UISingleton.textColor1,
                 textAlign = TextAlign.Start,
+                fontWeight = FontWeight.Medium,
                 modifier = Modifier
-                    .padding(12.dp)
                     .weight(1f)
             )
             Icon(
                 imageVector = imageVectors[state.value],
                 contentDescription = "Icon",
-                tint = UISingleton.color1.primaryColor,
+                tint = UISingleton.textColor4,
                 modifier = Modifier
                     .size(48.dp)
-                    .background(UISingleton.color3.primaryColor, CircleShape)
+                    .background(UISingleton.color3, CircleShape)
                     .padding(8.dp)
             )
         }

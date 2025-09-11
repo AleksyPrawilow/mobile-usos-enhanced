@@ -63,7 +63,7 @@ fun SplashScreenView(modifier: Modifier) {
     val appName: String = "Mobilny\nUSOS"
     val titleStyle: TextStyle = TextStyle(
         fontSize = 48.sp.scaleIndependent(),
-        color = UISingleton.color4.primaryColor,
+        color = UISingleton.textColor1,
         fontWeight = FontWeight.ExtraBold,
         textAlign = TextAlign.Start
     )
@@ -124,12 +124,12 @@ fun SplashScreenView(modifier: Modifier) {
                             rotationZ = (1f - iconOffset) * 360,
                             alpha = 1f - iconOffset
                         )
-                        .background(UISingleton.color4.primaryColor, CircleShape)
+                        .background(UISingleton.color4, CircleShape)
                 ) {
                     Icon(
                         imageVector = ImageVector.vectorResource(R.drawable.rounded_school_24),
                         contentDescription = null,
-                        tint = UISingleton.color1.primaryColor,
+                        tint = UISingleton.textColor4,
                         modifier = Modifier
                             .width(iconWidth)
                             .height(iconSize)
@@ -138,7 +138,7 @@ fun SplashScreenView(modifier: Modifier) {
                                 scaleX = 1f - iconRotation,
                                 scaleY = 1f - iconRotation
                             )
-                            .background(UISingleton.color4.primaryColor, CircleShape)
+                            .background(UISingleton.color4, CircleShape)
                             .padding(6.dp)
                     )
                 }
@@ -167,7 +167,7 @@ fun SplashScreenView(modifier: Modifier) {
                         Text(
                             text = "Enhanced",
                             fontSize = 24.sp.scaleIndependent(),
-                            color = UISingleton.color3.primaryColor,
+                            color = UISingleton.textColor2,
                             fontWeight = FontWeight.Bold,
                             textAlign = TextAlign.Right,
                             modifier = Modifier
@@ -186,7 +186,7 @@ fun SplashScreenPreview() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(UISingleton.color1.primaryColor)
+            .background(UISingleton.color1)
     ) {
         SplashScreenView(modifier = Modifier.weight(1f))
     }

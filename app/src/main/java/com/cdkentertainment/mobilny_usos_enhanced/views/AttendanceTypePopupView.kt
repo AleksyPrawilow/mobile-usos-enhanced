@@ -63,8 +63,8 @@ fun AttendanceTypePopupView(
             contentAlignment = Alignment.TopCenter,
             modifier = Modifier
                 .shadow(10.dp, shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
-                .background(UISingleton.color2.primaryColor, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
-                .border(5.dp, UISingleton.color1.primaryColor, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
+                .background(UISingleton.color2, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
+                .border(5.dp, UISingleton.color1, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
         ) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -75,17 +75,17 @@ fun AttendanceTypePopupView(
                 Text(
                     text = "Zaznacz obecność",
                     style = MaterialTheme.typography.headlineMedium,
-                    color = UISingleton.color4.primaryColor,
+                    color = UISingleton.textColor1,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth()
                 )
-                HorizontalDivider(thickness = 5.dp, color = UISingleton.color3.primaryColor, modifier = Modifier.clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp)))
+                HorizontalDivider(thickness = 5.dp, color = UISingleton.textColor2, modifier = Modifier.clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp)))
                 Card(
                     colors = CardDefaults.cardColors(
-                        containerColor = UISingleton.color1.primaryColor,
-                        disabledContainerColor = UISingleton.color1.primaryColor,
-                        contentColor = UISingleton.color4.primaryColor,
-                        disabledContentColor = UISingleton.color4.primaryColor
+                        containerColor = UISingleton.color1,
+                        disabledContainerColor = UISingleton.color1,
+                        contentColor = UISingleton.textColor1,
+                        disabledContentColor = UISingleton.textColor1
                     ),
                     shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp)
                 ) {
@@ -95,10 +95,10 @@ fun AttendanceTypePopupView(
                             .padding(12.dp)
                     ) {
                         SwitchSettingView(
-                            color1 = UISingleton.color1.oppositeColor,
-                            color2 = UISingleton.color2.oppositeColor,
-                            color3 = UISingleton.color3.oppositeColor,
-                            color4 = UISingleton.color3.oppositeColor,
+                            color1 = UISingleton.color4,
+                            color2 = UISingleton.color3,
+                            color3 = UISingleton.color2,
+                            color4 = UISingleton.color2,
                             checked = wasPresent,
                             text = if (sex == 0) "Obecny" else "Obecna",
                             onSwitchChange = {
@@ -108,10 +108,10 @@ fun AttendanceTypePopupView(
                         )
                         if (!wasPresent) {
                             SwitchSettingView(
-                                color1 = UISingleton.color1.oppositeColor,
-                                color2 = UISingleton.color2.oppositeColor,
-                                color3 = UISingleton.color3.oppositeColor,
-                                color4 = UISingleton.color3.oppositeColor,
+                                color1 = UISingleton.color4,
+                                color2 = UISingleton.color3,
+                                color3 = UISingleton.color2,
+                                color4 = UISingleton.color2,
                                 checked = absenceJustified,
                                 text = "Usprawiedliwiona",
                                 onSwitchChange = {
@@ -123,10 +123,10 @@ fun AttendanceTypePopupView(
                 }
                 Button(
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = UISingleton.color1.primaryColor,
-                        contentColor = UISingleton.color4.primaryColor,
-                        disabledContainerColor = UISingleton.color1.primaryColor,
-                        disabledContentColor = UISingleton.color4.primaryColor
+                        containerColor = UISingleton.color1,
+                        contentColor = UISingleton.textColor1,
+                        disabledContainerColor = UISingleton.color1,
+                        disabledContentColor = UISingleton.textColor1
                     ),
                     onClick = {
                         onDismiss()
@@ -139,7 +139,7 @@ fun AttendanceTypePopupView(
                     Text(
                         text = "Zatwierdź",
                         style = MaterialTheme.typography.titleLarge,
-                        color = UISingleton.color4.primaryColor
+                        color = UISingleton.textColor1
                     )
                 }
             }

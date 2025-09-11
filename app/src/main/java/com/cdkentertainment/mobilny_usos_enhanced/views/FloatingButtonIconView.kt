@@ -115,9 +115,9 @@ fun FloatingButtonIconPreview() {
         contentAlignment = Alignment.Center,
         modifier = Modifier
             .fillMaxSize()
-            .background(UISingleton.color1.primaryColor)
+            .background(UISingleton.color1)
     ) {
-        FloatingButtonIconView(viewModel, UISingleton.color4.primaryColor)
+        FloatingButtonIconView(viewModel, UISingleton.textColor1)
         Button(
             onClick = {
                 viewModel.changeExpanded(!viewModel.expanded)

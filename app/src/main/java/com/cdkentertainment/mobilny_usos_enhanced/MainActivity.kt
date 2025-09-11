@@ -14,7 +14,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.runtime.Composable
@@ -77,16 +76,17 @@ fun ContentView() {
     )
     val bgOverlayColor: Color by animateColorAsState(targetValue = if (fabViewModel.expanded) Color(0x32000000) else Color(TRANSPARENT))
 
-    val color1: Color by animateColorAsState(UISingleton.color1.primaryColor)
-    val color2: Color by animateColorAsState(UISingleton.color2.primaryColor)
-    val color3: Color by animateColorAsState(UISingleton.color3.primaryColor)
-    val color4: Color by animateColorAsState(UISingleton.color4.primaryColor)
+//    val blurRadius: Dp by animateDpAsState(UISingleton.blurRadius)
+    val color1: Color by animateColorAsState(UISingleton.color1)
+    val color2: Color by animateColorAsState(UISingleton.color2)
+    val color3: Color by animateColorAsState(UISingleton.color3)
+    val color4: Color by animateColorAsState(UISingleton.color4)
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(color = color1)
-            .padding(12.dp)
+//            .blur(blurRadius)
     ) {
         ScreenManager(screenManagerViewModel.selectedScreen, screenManagerViewModel)
         if (fabViewModel.expanded) {

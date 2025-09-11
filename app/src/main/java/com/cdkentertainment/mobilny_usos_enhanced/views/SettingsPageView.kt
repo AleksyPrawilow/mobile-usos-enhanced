@@ -23,11 +23,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
+import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.Screens
@@ -40,10 +42,10 @@ fun SettingsPageView() {
     val enterTransition: (Int) -> EnterTransition = UIHelper.slideEnterTransition
     var showElements: Boolean by rememberSaveable { mutableStateOf(false) }
 
-    val color1: Color by animateColorAsState(UISingleton.color1.primaryColor)
-    val color2: Color by animateColorAsState(UISingleton.color2.primaryColor)
-    val color3: Color by animateColorAsState(UISingleton.color3.primaryColor)
-    val color4: Color by animateColorAsState(UISingleton.color4.primaryColor)
+    val color1: Color by animateColorAsState(UISingleton.color1)
+    val color2: Color by animateColorAsState(UISingleton.color2)
+    val color3: Color by animateColorAsState(UISingleton.color3)
+    val color4: Color by animateColorAsState(UISingleton.color4)
 
     val checkLambda: (Boolean) -> Unit
 
@@ -56,7 +58,7 @@ fun SettingsPageView() {
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(horizontal = UISingleton.horizontalPadding, vertical = UISingleton.verticalPadding)
     ) {
         item {
             Spacer(modifier = Modifier.height(16.dp))
@@ -64,7 +66,7 @@ fun SettingsPageView() {
         item {
             AnimatedVisibility(showElements, enter = enterTransition(0)) {
                 Text(
-                    text = "Ustawienia",
+                    text = stringResource(R.string.settings_page),
                     style = MaterialTheme.typography.headlineLarge,
                     color = color4,
                     textAlign = TextAlign.Center,
@@ -74,15 +76,8 @@ fun SettingsPageView() {
             }
         }
         item {
-            AnimatedVisibility(showElements, enter = enterTransition(1)) {
-                SwitchSettingView(
-                    color1, color2, color3, color4,
-                    text = "Ciemny motyw",
-                    checked = settingsPageViewModel.darkThemeChecked,
-                    onSwitchChange = {
-                        settingsPageViewModel.setDarkTheme(it)
-                    }
-                )
+            AnimatedVisibility(showElements, enter = enterTransition(1), modifier = Modifier.fillMaxWidth()) {
+                ThemeSelectionButtonView()
             }
         }
     }
@@ -91,10 +86,10 @@ fun SettingsPageView() {
 @Preview(showBackground = true)
 @Composable
 fun SettingsPagePreview() {
-    val color1: Color by animateColorAsState(UISingleton.color1.primaryColor)
-    val color2: Color by animateColorAsState(UISingleton.color2.primaryColor)
-    val color3: Color by animateColorAsState(UISingleton.color3.primaryColor)
-    val color4: Color by animateColorAsState(UISingleton.color4.primaryColor)
+    val color1: Color by animateColorAsState(UISingleton.color1)
+    val color2: Color by animateColorAsState(UISingleton.color2)
+    val color3: Color by animateColorAsState(UISingleton.color3)
+    val color4: Color by animateColorAsState(UISingleton.color4)
     OAuthSingleton.setTestAccessToken()
     val currentScreen: Screens = Screens.HOME
     Box(

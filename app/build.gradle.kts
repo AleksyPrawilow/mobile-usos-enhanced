@@ -23,6 +23,10 @@ android {
     namespace = "com.cdkentertainment.mobilny_usos_enhanced"
     compileSdk = 36
 
+    androidResources{
+        generateLocaleConfig = true
+    }
+
     defaultConfig {
         applicationId = "com.cdkentertainment.mobilny_usos_enhanced"
         minSdk = 30
@@ -107,8 +111,8 @@ dependencies {
     implementation("androidx.datastore:datastore-preferences-rxjava2:1.1.7")
     implementation("androidx.datastore:datastore-preferences-rxjava3:1.1.7")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2")
-    implementation("androidx.compose.ui:ui:latest_version")
-    implementation("androidx.compose.animation:animation:latest_version")
+    implementation("androidx.compose.ui:ui:1.9.0")
+    implementation("androidx.compose.animation:animation:1.9.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.9.2")
     implementation("com.github.scribejava:scribejava-apis:8.3.3")
     implementation(libs.androidx.core.ktx)

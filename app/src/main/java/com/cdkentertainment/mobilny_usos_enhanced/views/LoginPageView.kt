@@ -105,6 +105,7 @@ fun LoginPageView(screenManagerViewModel: ScreenManagerViewModel = viewModel<Scr
             contentAlignment = Alignment.Center,
             modifier = Modifier
                 .weight(loginWeight)
+                .padding(horizontal = UISingleton.horizontalPadding, vertical = UISingleton.verticalPadding)
         ) {
             androidx.compose.animation.AnimatedVisibility(
                 visible = showLoginStuff,
@@ -160,11 +161,11 @@ private fun GoogleAutoLoginView() {
         Text(
             text = "Sprawdzam połączenie z serwisami Google...",
             textAlign = TextAlign.Center,
-            color = UISingleton.color4.primaryColor,
+            color = UISingleton.textColor1,
             style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.fillMaxWidth()
         )
-        CircularProgressIndicator(color = UISingleton.color3.primaryColor)
+        CircularProgressIndicator(color = UISingleton.textColor2)
     }
 }
 
@@ -192,8 +193,8 @@ private fun GoogleLoginView(onIdToken: (String) -> Unit) {
 
     Button(
         colors = ButtonDefaults.buttonColors(
-            containerColor = UISingleton.color2.primaryColor,
-            contentColor = UISingleton.color4.primaryColor
+            containerColor = UISingleton.color2,
+            contentColor = UISingleton.textColor1
         ),
         shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp),
         onClick = {
@@ -218,24 +219,24 @@ private fun GoogleLoginView(onIdToken: (String) -> Unit) {
             Text(
                 text = "Zaloguj przez Google",
                 style = MaterialTheme.typography.titleMedium,
-                color = UISingleton.color4.primaryColor,
+                color = UISingleton.textColor1,
                 modifier = Modifier.weight(1f)
             )
             Icon(
                 imageVector = ImageVector.vectorResource(R.drawable.ic_google),
                 contentDescription = null,
-                tint = UISingleton.color1.primaryColor,
+                tint = UISingleton.textColor4,
                 modifier = Modifier
                     .size(48.dp)
-                    .background(UISingleton.color3.primaryColor, CircleShape)
+                    .background(UISingleton.color3, CircleShape)
                     .padding(8.dp)
             )
         }
     }
 //    Button(
 //        colors = ButtonDefaults.buttonColors(
-//            contentColor = UISingleton.color3.primaryColor,
-//            containerColor = UISingleton.color2.primaryColor,
+//            contentColor = UISingleton.color3,
+//            containerColor = UISingleton.color2,
 //        ),
 //        onClick = onClick
 //    ) {
@@ -264,11 +265,11 @@ private fun UsosAutoLoginView(viewModel: LoginPageViewModel) {
         Text(
             text = "Sprawdzam połączenie z serwisami USOS...",
             textAlign = TextAlign.Center,
-            color = UISingleton.color4.primaryColor,
+            color = UISingleton.textColor1,
             style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.fillMaxWidth()
         )
-        CircularProgressIndicator(color = UISingleton.color3.primaryColor)
+        CircularProgressIndicator(color = UISingleton.textColor2)
     }
 }
 
@@ -276,8 +277,8 @@ private fun UsosAutoLoginView(viewModel: LoginPageViewModel) {
 private fun UsosLoginView(onClick: () -> Unit) {
     Button(
         colors = ButtonDefaults.buttonColors(
-            contentColor = UISingleton.color4.primaryColor,
-            containerColor = UISingleton.color2.primaryColor,
+            contentColor = UISingleton.textColor1,
+            containerColor = UISingleton.color2,
         ),
         shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp),
         onClick = onClick
@@ -295,10 +296,10 @@ private fun UsosLoginView(onClick: () -> Unit) {
             Icon(
                 imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
                 contentDescription = null,
-                tint = UISingleton.color1.primaryColor,
+                tint = UISingleton.textColor4,
                 modifier = Modifier
                     .size(48.dp)
-                    .background(UISingleton.color3.primaryColor, CircleShape)
+                    .background(UISingleton.color3, CircleShape)
                     .padding(8.dp)
             )
         }
@@ -315,11 +316,11 @@ private fun UsosRequestTokenView() {
         Text(
             text = "Sprawdzam połączenie z serwisami USOS...",
             textAlign = TextAlign.Center,
-            color = UISingleton.color4.primaryColor,
+            color = UISingleton.textColor1,
             style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.fillMaxWidth()
         )
-        CircularProgressIndicator(color = UISingleton.color3.primaryColor)
+        CircularProgressIndicator(color = UISingleton.textColor2)
     }
 }
 
@@ -335,7 +336,7 @@ private fun UsosOauthVerifierView(viewModel: LoginPageViewModel) {
     ) {
         Text(
             text = "Wprowadź PIN podany na stronie",
-            color = UISingleton.color4.primaryColor,
+            color = UISingleton.textColor1,
             style = MaterialTheme.typography.titleLarge,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
@@ -345,28 +346,28 @@ private fun UsosOauthVerifierView(viewModel: LoginPageViewModel) {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .background(UISingleton.color2.primaryColor, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
+                .background(UISingleton.color2, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
                 .padding(12.dp)
         ) {
             TextField(
                 colors = TextFieldDefaults.colors(
-                    focusedTextColor = UISingleton.color4.primaryColor,
-                    unfocusedTextColor = UISingleton.color4.primaryColor,
+                    focusedTextColor = UISingleton.textColor1,
+                    unfocusedTextColor = UISingleton.textColor1,
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,
-                    cursorColor = UISingleton.color4.primaryColor,
+                    cursorColor = UISingleton.textColor1,
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent
                 ),
                 shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp),
                 textStyle = MaterialTheme.typography.titleMedium,
                 value = oauthPin,
-                leadingIcon = { Icon(imageVector = Icons.Rounded.Lock, contentDescription = "lockIcon", tint = UISingleton.color3.primaryColor) },
+                leadingIcon = { Icon(imageVector = Icons.Rounded.Lock, contentDescription = "lockIcon", tint = UISingleton.textColor2) },
                 placeholder = {
                     Text(
                         text = "Wprowadź PIN",
                         style = MaterialTheme.typography.titleMedium,
-                        color = UISingleton.color3.primaryColor,
+                        color = UISingleton.textColor2,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -380,8 +381,8 @@ private fun UsosOauthVerifierView(viewModel: LoginPageViewModel) {
             )
             IconButton(
                 colors = IconButtonDefaults.iconButtonColors(
-                    contentColor = UISingleton.color4.primaryColor,
-                    containerColor = UISingleton.color2.primaryColor,
+                    contentColor = UISingleton.textColor1,
+                    containerColor = UISingleton.color2,
                 ),
                 onClick = {
                     if (oauthPin.length == 8) {
@@ -395,10 +396,10 @@ private fun UsosOauthVerifierView(viewModel: LoginPageViewModel) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
                     contentDescription = "Authorize",
-                    tint = UISingleton.color1.primaryColor,
+                    tint = UISingleton.textColor4,
                     modifier = Modifier
                         .size(48.dp)
-                        .background(UISingleton.color3.primaryColor, CircleShape)
+                        .background(UISingleton.textColor2, CircleShape)
                         .padding(8.dp)
                 )
             }
@@ -424,12 +425,12 @@ private fun DatabaseSavingSessionView(viewModel: LoginPageViewModel) {
     ) {
         Text(
             text = "Jeszcze chwilka...",
-            color = UISingleton.color4.primaryColor,
+            color = UISingleton.textColor1,
             style = MaterialTheme.typography.titleLarge,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )
-        CircularProgressIndicator(color = UISingleton.color3.primaryColor)
+        CircularProgressIndicator(color = UISingleton.textColor2)
     }
 }
 
@@ -442,7 +443,7 @@ private fun SuccessView(screenManagerViewModel: ScreenManagerViewModel) {
     Text(
         text = "Zalogowany",
         style = MaterialTheme.typography.titleLarge,
-        color = UISingleton.color4.primaryColor,
+        color = UISingleton.textColor1,
         textAlign = TextAlign.Center,
         modifier = Modifier.fillMaxWidth()
     )
@@ -455,7 +456,7 @@ fun LoginPreview() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(UISingleton.color1.primaryColor)
+            .background(UISingleton.color1)
             .padding(12.dp)
     ) {
         AnimatedContent(targetState = currentScreen) { target ->

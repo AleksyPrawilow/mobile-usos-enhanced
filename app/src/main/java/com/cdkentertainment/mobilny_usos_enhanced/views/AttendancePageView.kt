@@ -9,10 +9,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -26,11 +28,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
+import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.models.LessonGroup
@@ -55,6 +60,14 @@ fun AttendancePageView() {
         }
     }
 
+    val density: Density = LocalDensity.current
+    val insets = WindowInsets.systemBars
+    val topInset = insets.getTop(density)
+    val bottomInset = insets.getBottom(density)
+    val topPadding = with(LocalDensity.current) { topInset.toDp() }
+    val bottomPadding = with(LocalDensity.current) { bottomInset.toDp() }
+    val paddingModifier: Modifier = Modifier.padding(horizontal = UISingleton.horizontalPadding)
+
     LaunchedEffect(Unit) {
         attendancePageViewModel.fetchLessonGroups()
         delay(150)
@@ -65,48 +78,51 @@ fun AttendancePageView() {
         AttendancePopupView(viewModel = attendancePageViewModel, onDismissRequest = onPopupDismissRequest)
     }
 
-    if (attendancePageViewModel.lessonGroups == null) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            CircularProgressIndicator(color = UISingleton.color3.primaryColor, modifier = Modifier.align(Alignment.Center))
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(
+                top = topPadding,
+                bottom = bottomPadding
+            )
+    ) {
+        item {
+            PageHeaderView(stringResource(R.string.attendance_page))
         }
-    } else {
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
-        ) {
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-            }
-            item {
-                AnimatedVisibility(showElements, enter = enterTransition(0)) {
-                    Text(
-                        text = "Obecność",
-                        style = MaterialTheme.typography.headlineLarge,
-                        color = UISingleton.color4.primaryColor,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    )
+        item {
+            AnimatedVisibility(attendancePageViewModel.lessonGroups == null, modifier = paddingModifier) {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    CircularProgressIndicator(color = UISingleton.textColor2, modifier = Modifier.align(Alignment.Center))
                 }
             }
+        }
+        if (attendancePageViewModel.lessonGroups != null) {
             for (seasonId in attendancePageViewModel.lessonGroups!!.groups.keys.reversed()) {
-                val season: Map<String, List<LessonGroup>>? = attendancePageViewModel.lessonGroups!!.groups[seasonId]
+                val season: Map<String, List<LessonGroup>>? =
+                    attendancePageViewModel.lessonGroups!!.groups[seasonId]
                 var groupCount: Int = 0
                 val courses: List<List<LessonGroup>> = season?.values?.toList() ?: emptyList()
                 for (course in courses) {
                     groupCount += course.size
                 }
                 stickyHeader {
-                    AnimatedVisibility(showElements, enter = enterTransition(1)) {
+                    AnimatedVisibility(
+                        showElements,
+                        enter = enterTransition(1),
+                        modifier = paddingModifier.then(Modifier.fillMaxWidth())
+                    ) {
                         SemesterCardView(seasonId)
                     }
                 }
                 if (season != null) {
                     items(courses.size) { courseIndex ->
                         val courseUnits: List<LessonGroup> = courses[courseIndex]
-                        AnimatedVisibility(showElements, enter = enterTransition(2 + courseIndex)) {
+                        AnimatedVisibility(
+                            showElements,
+                            enter = enterTransition(2 + courseIndex),
+                            modifier = paddingModifier
+                        ) {
                             CourseContainerView(courseUnits) { unit ->
                                 AttendanceClassGroupView(unit)
                             }
@@ -114,11 +130,15 @@ fun AttendancePageView() {
                     }
                 } else {
                     item {
-                        AnimatedVisibility(showElements, enter = enterTransition(2)) {
+                        AnimatedVisibility(
+                            showElements,
+                            enter = enterTransition(2),
+                            modifier = paddingModifier
+                        ) {
                             Text(
                                 text = "Brak grup zajęciowych w tym semestrze",
                                 style = MaterialTheme.typography.titleLarge,
-                                color = UISingleton.color4.primaryColor,
+                                color = UISingleton.textColor1,
                             )
                         }
                     }
@@ -127,9 +147,9 @@ fun AttendancePageView() {
                     Spacer(modifier = Modifier.height(24.dp))
                 }
             }
-            item {
-                Spacer(modifier = Modifier.height(64.dp))
-            }
+        }
+        item {
+            Spacer(modifier = Modifier.height(64.dp))
         }
     }
 }
@@ -142,7 +162,7 @@ fun AttendancePagePreview() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(UISingleton.color1.primaryColor)
+            .background(UISingleton.color1)
             .padding(12.dp)
     ) {
         AnimatedContent(targetState = currentScreen) { target ->

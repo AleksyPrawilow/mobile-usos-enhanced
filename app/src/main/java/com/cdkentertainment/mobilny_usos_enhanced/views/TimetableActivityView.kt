@@ -1,9 +1,11 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
+import android.content.Context
 import androidx.compose.animation.core.EaseOutBack
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,14 +25,17 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush.Companion.verticalGradient
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
+import com.cdkentertainment.mobilny_usos_enhanced.getLocalized
 import com.cdkentertainment.mobilny_usos_enhanced.models.Lesson
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.SchedulePageViewModel
 import kotlinx.coroutines.delay
@@ -42,15 +47,17 @@ fun TimetableActivityView(
     viewModel: SchedulePageViewModel?,
     index: Int
 ) {
+    val context: Context = LocalContext.current
     val minutesFromStart: Int = 7 * 60
     val startTime: String = viewModel!!.getTimeFromDate(data!!.start_time)
     val (hoursStr, minutesStr) = startTime.split(":")
     val startTimeMinutes: Int = hoursStr.toInt() * 60 + minutesStr.toInt()
-    val endTime: String = viewModel!!.getTimeFromDate(data!!.end_time)
+    val endTime: String = viewModel.getTimeFromDate(data.end_time)
     val (endHoursStr, endMinutesStr) = endTime.split(":")
     val endTimeMinutes: Int = endHoursStr.toInt() * 60 + endMinutesStr.toInt()
     val durationMinutes: Int = endTimeMinutes - startTimeMinutes
 
+    var showDetails: Boolean by rememberSaveable { mutableStateOf(false) }
     var show: Boolean by rememberSaveable { mutableStateOf(false) }
     val appearFactor: Float by animateFloatAsState(
         if (show) 1f else 0f,
@@ -61,6 +68,11 @@ fun TimetableActivityView(
         delay(20)
         show = true
     }
+
+    if (showDetails) {
+        ActivityInfoPopupView(data = data, onDismissRequest = { showDetails = false })
+    }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -72,14 +84,17 @@ fun TimetableActivityView(
                 alpha = appearFactor
             )
             .shadow(5.dp, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
+            .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
             .background(
                 brush = verticalGradient(
-                    0.0f to UISingleton.color2.primaryColor,
-                    0.5f to UISingleton.color2.primaryColor,
-                    0.5f to UISingleton.color1.primaryColor
+                    0.0f to UISingleton.color2,
+                    0.5f to UISingleton.color2,
+                    0.5f to UISingleton.color1
                 ),
-                shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp)
             )
+            .clickable(onClick = {
+                showDetails = true
+            })
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(0.dp, Alignment.CenterVertically),
@@ -96,7 +111,7 @@ fun TimetableActivityView(
             ) {
                 Text(
                     text = "$startTime - $endTime",
-                    color = UISingleton.color4.primaryColor,
+                    color = UISingleton.textColor1,
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier
                         .weight(1f)
@@ -104,7 +119,7 @@ fun TimetableActivityView(
                 Column {
                     Text(
                         text = data.classtype_id,
-                        color = UISingleton.color3.primaryColor,
+                        color = UISingleton.textColor2,
                         style = MaterialTheme.typography.bodyMedium,
                         textAlign = TextAlign.Right,
                         modifier = Modifier
@@ -112,7 +127,7 @@ fun TimetableActivityView(
                     )
                     Text(
                         text = "Sala: ${data.room_number}",
-                        color = UISingleton.color3.primaryColor,
+                        color = UISingleton.textColor2,
                         style = MaterialTheme.typography.bodyMedium,
                         textAlign = TextAlign.Right,
                         modifier = Modifier
@@ -125,8 +140,8 @@ fun TimetableActivityView(
                 modifier = Modifier.weight(1f).fillMaxWidth()
             ) {
                 Text(
-                    text = data.course_name.pl,
-                    color = UISingleton.color4.primaryColor,
+                    text = data.course_name.getLocalized(context),
+                    color = UISingleton.textColor1,
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,

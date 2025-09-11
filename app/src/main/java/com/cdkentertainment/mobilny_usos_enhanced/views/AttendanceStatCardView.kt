@@ -31,15 +31,16 @@ fun AttendanceStatCardView(
         modifier = Modifier
             .fillMaxWidth()
             .background(
-                UISingleton.color2.primaryColor,
+                UISingleton.color2,
                 RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp)
             )
             .padding(12.dp)
     ) {
         Text(
             text = statName,
-            color = UISingleton.color4.primaryColor,
+            color = UISingleton.textColor1,
             style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Medium,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f)
@@ -50,12 +51,12 @@ fun AttendanceStatCardView(
             modifier = Modifier
                 .defaultMinSize(minWidth = 48.dp)
                 .height(48.dp)
-                .background(UISingleton.color3.primaryColor, RoundedCornerShape(50.dp))
+                .background(UISingleton.color3, RoundedCornerShape(50.dp))
                 .padding(horizontal = 6.dp)
         )  {
             Text(
                 text = statValue,
-                color = UISingleton.color1.primaryColor,
+                color = UISingleton.textColor4,
                 fontSize = 14.sp.scaleIndependent(),
                 fontWeight = FontWeight.ExtraBold,
                 modifier = Modifier

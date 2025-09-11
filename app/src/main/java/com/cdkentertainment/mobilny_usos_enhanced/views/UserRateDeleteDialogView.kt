@@ -60,12 +60,12 @@ fun UserRateDeleteDialogView(
                     shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp)
                 )
                 .background(
-                    UISingleton.color2.primaryColor,
+                    UISingleton.color2,
                     RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp)
                 )
                 .border(
                     5.dp,
-                    UISingleton.color1.primaryColor,
+                    UISingleton.color1,
                     RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp)
                 )
         ) {
@@ -79,7 +79,7 @@ fun UserRateDeleteDialogView(
                     Text(
                         text = "Czy jesteś ${if (userSex == "M") "pewien" else "pewna"} że chcesz usunąc swoją ocenę?",
                         style = MaterialTheme.typography.headlineSmall,
-                        color = UISingleton.color4.primaryColor,
+                        color = UISingleton.textColor1,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -88,7 +88,7 @@ fun UserRateDeleteDialogView(
                     Text(
                         text = "Usuwam ocenę...",
                         style = MaterialTheme.typography.headlineSmall,
-                        color = UISingleton.color4.primaryColor,
+                        color = UISingleton.textColor1,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -97,14 +97,14 @@ fun UserRateDeleteDialogView(
                     Text(
                         text = "Nie udało się usunąć ocenę.",
                         style = MaterialTheme.typography.headlineSmall,
-                        color = UISingleton.color4.primaryColor,
+                        color = UISingleton.textColor1,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
                 Spacer(modifier = Modifier.height(24.dp))
                 AnimatedVisibility(visible = savingDeletion && !deletionFinished) {
-                    CircularProgressIndicator(color = UISingleton.color3.primaryColor)
+                    CircularProgressIndicator(color = UISingleton.textColor2)
                 }
                 AnimatedVisibility(visible = !savingDeletion) {
                     Row(
@@ -115,13 +115,13 @@ fun UserRateDeleteDialogView(
                         Text(
                             text = "Tak",
                             style = MaterialTheme.typography.titleLarge,
-                            color = UISingleton.color1.primaryColor,
+                            color = UISingleton.textColor4,
                             fontWeight = FontWeight.Bold,
                             textAlign = TextAlign.Center,
                             modifier = Modifier
                                 .weight(1f)
                                 .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
-                                .background(UISingleton.color3.primaryColor)
+                                .background(UISingleton.color3)
                                 .clickable(onClick = {
                                     savingDeletion = true
                                     coroutineScope.launch {
@@ -143,13 +143,13 @@ fun UserRateDeleteDialogView(
                         Text(
                             text = "Nie",
                             style = MaterialTheme.typography.titleLarge,
-                            color = UISingleton.color4.primaryColor,
+                            color = UISingleton.textColor1,
                             fontWeight = FontWeight.Bold,
                             textAlign = TextAlign.Center,
                             modifier = Modifier
                                 .weight(1f)
                                 .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
-                                .background(UISingleton.color1.primaryColor)
+                                .background(UISingleton.color1)
                                 .clickable(onClick = onDismiss, enabled = !savingDeletion)
                                 .padding(12.dp)
                         )

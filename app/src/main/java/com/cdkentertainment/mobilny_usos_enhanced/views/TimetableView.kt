@@ -82,7 +82,7 @@ fun TimetableView(schedulePageViewModel: SchedulePageViewModel? = null) {
                                 text = "$hour:00",
                                 fontSize = 18.sp.scaleIndependent(),
                                 textAlign = TextAlign.Center,
-                                color = UISingleton.color3.primaryColor,
+                                color = UISingleton.textColor2,
                                 modifier = Modifier
                                     .width(60.dp)
                             )
@@ -105,7 +105,7 @@ fun TimetableView(schedulePageViewModel: SchedulePageViewModel? = null) {
                                 .padding(start = 60.dp)
                                 .fillMaxHeight(verticalFraction)
                                 .width(2.dp)
-                                .background(UISingleton.color2.primaryColor)
+                                .background(UISingleton.color2)
                         )
                         for (quarter in 0..1) {
                             Box(
@@ -113,7 +113,7 @@ fun TimetableView(schedulePageViewModel: SchedulePageViewModel? = null) {
                                     .height(2.dp)
                                     .fillMaxWidth(fraction)
                                     .offset(y = minutesDp * quarter * 4)
-                                    .background(UISingleton.color2.primaryColor, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
+                                    .background(UISingleton.color2, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
                             )
                         }
                     }
@@ -154,7 +154,7 @@ fun TimetablePreview() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = UISingleton.color1.primaryColor)
+            .background(color = UISingleton.color1)
             .padding(12.dp)
     ) {
         TimetableView()

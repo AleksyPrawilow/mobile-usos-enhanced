@@ -22,11 +22,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
+import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.models.SharedDataClasses
@@ -43,6 +45,7 @@ fun LecturerRatesPageView() {
     var showDetails: Boolean by rememberSaveable { mutableStateOf(false) }
 
     val onPopupDismiss: () -> Unit = {
+        UISingleton.dropBlurContent()
         showDetails = false
     }
 
@@ -59,7 +62,7 @@ fun LecturerRatesPageView() {
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(horizontal = UISingleton.horizontalPadding, vertical = UISingleton.verticalPadding)
     ) {
         item {
             Spacer(modifier = Modifier.height(16.dp))
@@ -67,9 +70,9 @@ fun LecturerRatesPageView() {
         item {
             AnimatedVisibility(showElements, enter = enterTransition(0)) {
                 Text(
-                    text = "Prowadzący",
+                    text = stringResource(R.string.lecturers_page),
                     style = MaterialTheme.typography.headlineLarge,
-                    color = UISingleton.color4.primaryColor,
+                    color = UISingleton.textColor1,
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -85,7 +88,7 @@ fun LecturerRatesPageView() {
                 )
                 AnimatedVisibility(showElements, enter = enterTransition(1 + index)) {
                     LecturerCardView(index, lecturer) {
-                        println("Clicked on lecturer $index")
+                        UISingleton.blurContent()
                         lecturerRatesPageViewModel.selectLecturer(lecturer)
                         showDetails = true
                     }
@@ -107,7 +110,7 @@ fun LecturerRatesPagePreview() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(UISingleton.color1.primaryColor)
+            .background(UISingleton.color1)
             .padding(12.dp)
     ) {
         AnimatedContent(targetState = currentScreen) { target ->

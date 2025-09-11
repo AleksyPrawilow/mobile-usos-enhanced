@@ -10,12 +10,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -26,45 +30,60 @@ import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 fun GradeCardView(
     courseName: String = "Nazwa przedmiotu",
     grade: String = "5",
+    showGrade: Boolean = true,
+    showArrow: Boolean = false,
+    backgroundColor: Color = UISingleton.color1,
     onClick: () -> Unit = {}
 ) {
     Row(
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalArrangement = Arrangement.spacedBy(0.dp),
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
             .background(
-                UISingleton.color1.primaryColor,
+                backgroundColor,
             )
             .clickable(onClick = onClick)
             .padding(12.dp)
     ) {
         Text(
             text = courseName,
-            color = UISingleton.color4.primaryColor,
+            color = UISingleton.textColor1,
             style = MaterialTheme.typography.titleMedium,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f)
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.weight(1f).padding(end = 6.dp)
         )
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .defaultMinSize(minWidth = 48.dp)
-                .height(48.dp)
-                .background(UISingleton.color3.primaryColor, RoundedCornerShape(50.dp))
-                .padding(horizontal = 6.dp)
-        ) {
-            Text(
-                text = grade,
-                color = UISingleton.color1.primaryColor,
-                fontSize = 18.sp.scaleIndependent(),
-                fontWeight = FontWeight.ExtraBold,
-                maxLines = 1,
+        if (showArrow) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
+                contentDescription = "More",
+                tint = UISingleton.textColor1,
                 modifier = Modifier
-                    .align(Alignment.Center)
+                    .padding(horizontal = 12.dp)
             )
+        }
+        if (showGrade) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .defaultMinSize(minWidth = 40.dp)
+                    .height(40.dp)
+                    .background(UISingleton.color3, RoundedCornerShape(50.dp))
+                    .padding(horizontal = 6.dp)
+            ) {
+                Text(
+                    text = grade,
+                    color = UISingleton.textColor4,
+                    fontSize = 17.sp.scaleIndependent(),
+                    fontWeight = FontWeight.ExtraBold,
+                    maxLines = 1,
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                )
+            }
         }
     }
 }

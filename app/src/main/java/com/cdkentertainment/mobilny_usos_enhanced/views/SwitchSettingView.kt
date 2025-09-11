@@ -52,7 +52,7 @@ fun SwitchSettingView(
         ) {
             Text(
                 text = text,
-                color = color1,
+                color = UISingleton.textColor1,
                 style = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier
                     .weight(1f)

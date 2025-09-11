@@ -13,10 +13,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -32,12 +34,15 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
+import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.models.Payment
@@ -55,6 +60,13 @@ fun PaymentsPageView() {
         targetValue = if (showTexts) paymentsPageViewModel.unpaidSum else 0f,
         animationSpec = tween(2000, 0, EaseOutQuad)
     )
+    val density: Density = LocalDensity.current
+    val insets = WindowInsets.systemBars
+    val topInset = insets.getTop(density)
+    val bottomInset = insets.getBottom(density)
+    val topPadding = with(LocalDensity.current) { topInset.toDp() }
+    val bottomPadding = with(LocalDensity.current) { bottomInset.toDp() }
+    val paddingModifier: Modifier = Modifier.padding(horizontal = UISingleton.horizontalPadding)
 
     LaunchedEffect(Unit) {
         paymentsPageViewModel.fetchPayments()
@@ -68,40 +80,28 @@ fun PaymentsPageView() {
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(top = topPadding, bottom = bottomPadding)
     ) {
         item {
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-        item {
-            AnimatedVisibility(showElements, enter = enterTransition(0)) {
-                Text(
-                    text = "Płatności",
-                    style = MaterialTheme.typography.headlineLarge,
-                    color = UISingleton.color4.primaryColor,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
-            }
+            PageHeaderView(stringResource(R.string.payments_page))
         }
         item {
             Spacer(Modifier.height(16.dp))
         }
         item {
-            AnimatedVisibility(showElements, enter = enterTransition(2)) {
+            AnimatedVisibility(showElements, enter = enterTransition(2), modifier = paddingModifier) {
                 Card(
                     colors = CardDefaults.cardColors(
-                        containerColor = UISingleton.color3.primaryColor,
-                        disabledContainerColor = UISingleton.color3.primaryColor,
-                        contentColor = UISingleton.color4.primaryColor,
-                        disabledContentColor = UISingleton.color4.primaryColor
+                        containerColor = UISingleton.color3,
+                        disabledContainerColor = UISingleton.color3,
+                        contentColor = UISingleton.textColor1,
+                        disabledContentColor = UISingleton.textColor1
                     ),
                     shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp),
                     modifier = Modifier
                         .fillMaxWidth()
                         .animateContentSize()
-                        .border(5.dp, UISingleton.color4.primaryColor, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
+                        .border(5.dp, UISingleton.color4, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
                 ) {
                     Column(
                         modifier = Modifier.padding(12.dp)
@@ -111,14 +111,14 @@ fun PaymentsPageView() {
                                 text = "${"%.2f".format(unpaidSum)} zł",
                                 style = MaterialTheme.typography.headlineMedium,
                                 fontWeight = FontWeight.ExtraBold,
-                                color = UISingleton.color1.primaryColor
+                                color = UISingleton.textColor4
                             )
                         }
                         AnimatedVisibility(showTexts, enter = enterTransition(3)) {
                             Text(
                                 text = "Do zapłaty",
                                 style = MaterialTheme.typography.titleMedium,
-                                color = UISingleton.color1.primaryColor
+                                color = UISingleton.textColor4
                             )
                         }
                     }
@@ -133,19 +133,19 @@ fun PaymentsPageView() {
         val unpaidSize: Int = unpaidPayments?.size ?: 0
         val paidSize: Int = paidPayments?.size ?: 0
         item {
-            AnimatedVisibility(showTexts, enter = enterTransition(4)) {
+            AnimatedVisibility(showTexts, enter = enterTransition(4), modifier = paddingModifier) {
                 Text(
                     text = "Nierozliczone płatności",
                     style = MaterialTheme.typography.headlineSmall,
-                    color = UISingleton.color4.primaryColor
+                    color = UISingleton.textColor1
                 )
             }
         }
         item {
-            AnimatedVisibility(showTexts, enter = enterTransition(5)) {
+            AnimatedVisibility(showTexts, enter = enterTransition(5), modifier = paddingModifier) {
                 HorizontalDivider(
                     thickness = 5.dp,
-                    color = UISingleton.color3.primaryColor,
+                    color = UISingleton.textColor2,
                     modifier = Modifier
                         .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
                 )
@@ -153,17 +153,17 @@ fun PaymentsPageView() {
         }
         if (!unpaidPayments.isNullOrEmpty()) {
             items(unpaidPayments.size, key = { paymentIndex -> unpaidPayments[paymentIndex].id }) { paymentIndex ->
-                AnimatedVisibility(showTexts, enter = enterTransition(6 + paymentIndex)) {
+                AnimatedVisibility(showTexts, enter = enterTransition(6 + paymentIndex), modifier = paddingModifier) {
                     PaymentView(unpaidPayments[paymentIndex])
                 }
             }
         } else {
             item {
-                AnimatedVisibility(showTexts, enter = enterTransition(7 + unpaidSize)) {
+                AnimatedVisibility(showTexts, enter = enterTransition(7 + unpaidSize), modifier = paddingModifier) {
                     Text(
                         text = "Brak nierozliczonych płatności",
                         style = MaterialTheme.typography.titleLarge,
-                        color = UISingleton.color4.primaryColor
+                        color = UISingleton.textColor1
                     )
                 }
             }
@@ -172,19 +172,19 @@ fun PaymentsPageView() {
             Spacer(Modifier.height(16.dp))
         }
         item {
-            AnimatedVisibility(showTexts, enter = enterTransition(8 + unpaidSize)) {
+            AnimatedVisibility(showTexts, enter = enterTransition(8 + unpaidSize), modifier = paddingModifier) {
                 Text(
                     text = "Rozliczone płatności",
                     style = MaterialTheme.typography.headlineSmall,
-                    color = UISingleton.color4.primaryColor
+                    color = UISingleton.textColor1
                 )
             }
         }
         item {
-            AnimatedVisibility(showTexts, enter = enterTransition(9 + unpaidSize)) {
+            AnimatedVisibility(showTexts, enter = enterTransition(9 + unpaidSize), modifier = paddingModifier) {
                 HorizontalDivider(
                     thickness = 5.dp,
-                    color = UISingleton.color3.primaryColor,
+                    color = UISingleton.textColor2,
                     modifier = Modifier
                         .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
                 )
@@ -192,17 +192,17 @@ fun PaymentsPageView() {
         }
         if (!paidPayments.isNullOrEmpty()) {
             items(paidPayments.size, key = { paymentIndex -> paidPayments[paymentIndex].id }) { paymentIndex ->
-                AnimatedVisibility(showTexts, enter = enterTransition(10 + unpaidSize + paymentIndex)) {
+                AnimatedVisibility(showTexts, enter = enterTransition(10 + unpaidSize + paymentIndex), modifier = paddingModifier) {
                     PaymentView(paidPayments[paymentIndex])
                 }
             }
         } else {
             item {
-                AnimatedVisibility(showTexts, enter = enterTransition(11 + unpaidSize + paidSize)) {
+                AnimatedVisibility(showTexts, enter = enterTransition(11 + unpaidSize + paidSize), modifier = paddingModifier) {
                     Text(
                         text = "Brak rozliczonych płatności",
                         style = MaterialTheme.typography.titleLarge,
-                        color = UISingleton.color4.primaryColor
+                        color = UISingleton.textColor1
                     )
                 }
             }
@@ -221,7 +221,7 @@ fun PaymentsPagePreview() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(UISingleton.color1.primaryColor)
+            .background(UISingleton.color1)
             .padding(12.dp)
     ) {
         AnimatedContent(targetState = currentScreen) { target ->
