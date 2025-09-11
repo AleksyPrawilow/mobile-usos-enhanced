@@ -35,6 +35,7 @@ import coil.request.ImageRequest
 import coil.size.Size.Companion.ORIGINAL
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
+import com.cdkentertainment.mobilny_usos_enhanced.getLocalized
 
 @Composable
 fun UserDataView() {
@@ -124,7 +125,7 @@ fun UserDataView() {
                 AnimatedVisibility(expanded) {
                     Column {
                         Text(
-                            text = "${OAuthSingleton.userData?.programme[0]?.programme?.description?.pl}",
+                            text = "${OAuthSingleton.userData?.programme[0]?.programme?.description?.getLocalized(context)}",
                             style = MaterialTheme.typography.titleMedium,
                             color = UISingleton.textColor2
                         )

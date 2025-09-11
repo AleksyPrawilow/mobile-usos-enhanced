@@ -1,5 +1,6 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -27,17 +28,20 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
+import com.cdkentertainment.mobilny_usos_enhanced.getLocalized
 import com.cdkentertainment.mobilny_usos_enhanced.models.Payment
 
 @Composable
 fun PaymentView(
     payment: Payment
 ) {
+    val context: Context = LocalContext.current
     var showDetails: Boolean by rememberSaveable { mutableStateOf(false) }
     if (showDetails) {
         PaymentInfoPopupView(data = payment, onDismissRequest = { showDetails = false })
@@ -82,7 +86,7 @@ fun PaymentView(
                     .padding(12.dp)
             ) {
                 Text(
-                    text = payment.description.pl,
+                    text = payment.description.getLocalized(context),
                     style = MaterialTheme.typography.titleLarge,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,

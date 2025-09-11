@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -143,7 +144,7 @@ fun FloatingButtonView(
             )
         }
         Text(
-            text = Screens.fromOrdinal(index + 1)?.pageName?.first ?: "N/A",
+            text = stringResource(Screens.fromOrdinal(index + 1)!!.pageName),
             fontWeight = if (screenManagerViewModel.selectedScreen.ordinal == index + 1) FontWeight.ExtraBold else FontWeight.SemiBold,
             color = if (screenManagerViewModel.selectedScreen.ordinal == index + 1) UISingleton.textColor4 else UISingleton.textColor3,
             textAlign = TextAlign.Center,

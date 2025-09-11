@@ -1,5 +1,6 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -19,12 +20,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
+import com.cdkentertainment.mobilny_usos_enhanced.getLocalized
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.AttendancePageViewModel
 
 @Composable
@@ -32,6 +35,7 @@ fun AttendancePopupView(
     viewModel: AttendancePageViewModel,
     onDismissRequest: () -> Unit
 ) {
+    val context: Context = LocalContext.current
     Dialog(
         onDismissRequest = onDismissRequest,
         properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true)
@@ -53,7 +57,7 @@ fun AttendancePopupView(
                 }
                 item {
                     Text(
-                        text = "${viewModel.popupData?.classGroupData?.course_name?.pl ?: "N/A"} - ${viewModel.popupData?.classGroupData?.class_type_id ?: "N/A"}",
+                        text = "${viewModel.popupData?.classGroupData?.course_name?.getLocalized(context) ?: "N/A"} - ${viewModel.popupData?.classGroupData?.class_type_id ?: "N/A"}",
                         style = MaterialTheme.typography.headlineMedium,
                         color = UISingleton.textColor1,
                         textAlign = TextAlign.Center,

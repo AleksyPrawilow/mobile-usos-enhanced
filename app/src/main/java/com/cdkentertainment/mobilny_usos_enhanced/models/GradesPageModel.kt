@@ -1,7 +1,6 @@
 package com.cdkentertainment.mobilny_usos_enhanced.models
 
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
-import com.cdkentertainment.mobilny_usos_enhanced.views.DismissPopupButtonView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
@@ -114,7 +113,7 @@ class GradesPageModel {
         val resultData: MutableMap<String, CourseUnitIds> = mutableMapOf<String, CourseUnitIds>()
         for (key in courseData.keys) {
             if(courseData[key] != null) {
-                val currentElement: CourseUnitIds = CourseUnitIds(courseData[key]!!.course_name.pl, courseData[key]!!.classtype_id)
+                val currentElement: CourseUnitIds = CourseUnitIds(courseData[key]!!.course_name, courseData[key]!!.classtype_id)
                 resultData.put(key, currentElement)
             } //dorobic zwracanie nulla jesli znalazlo
         }
@@ -184,7 +183,7 @@ data class Course (
 )
 @Serializable
 data class CourseUnitIds( //it is the final structure for Unit ids and names, Json parser doesn't use it
-    val course_name: String,
+    val course_name: SharedDataClasses.LangDict,
     val classtype_id: String
 )
 @Serializable

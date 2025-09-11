@@ -1,5 +1,6 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
+import android.content.Context
 import androidx.compose.animation.core.EaseOutBack
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -28,11 +29,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush.Companion.verticalGradient
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
+import com.cdkentertainment.mobilny_usos_enhanced.getLocalized
 import com.cdkentertainment.mobilny_usos_enhanced.models.Lesson
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.SchedulePageViewModel
 import kotlinx.coroutines.delay
@@ -44,6 +47,7 @@ fun TimetableActivityView(
     viewModel: SchedulePageViewModel?,
     index: Int
 ) {
+    val context: Context = LocalContext.current
     val minutesFromStart: Int = 7 * 60
     val startTime: String = viewModel!!.getTimeFromDate(data!!.start_time)
     val (hoursStr, minutesStr) = startTime.split(":")
@@ -136,7 +140,7 @@ fun TimetableActivityView(
                 modifier = Modifier.weight(1f).fillMaxWidth()
             ) {
                 Text(
-                    text = data.course_name.pl,
+                    text = data.course_name.getLocalized(context),
                     color = UISingleton.textColor1,
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 2,

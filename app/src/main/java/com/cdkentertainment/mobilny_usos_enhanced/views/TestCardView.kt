@@ -1,5 +1,6 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
+import android.content.Context
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedVisibility
@@ -37,11 +38,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
+import com.cdkentertainment.mobilny_usos_enhanced.getLocalized
 import com.cdkentertainment.mobilny_usos_enhanced.models.SubjectTestContainer
 import com.cdkentertainment.mobilny_usos_enhanced.models.Test
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.TestsPageViewModel
@@ -55,6 +58,7 @@ fun TestCardView(
 
     }
 ) {
+    val context: Context = LocalContext.current
     var expanded: Boolean by rememberSaveable { mutableStateOf(false) }
     var isRootFolder: Boolean by rememberSaveable { mutableStateOf(true) }
     var lastClickedBack: Boolean by rememberSaveable { mutableStateOf(false) }
@@ -144,7 +148,7 @@ fun TestCardView(
                     )
                 }
                 Text(
-                    text = data.course_edition?.course_name?.pl ?: "N/A",
+                    text = data.course_edition?.course_name?.getLocalized(context) ?: "N/A",
                     color = UISingleton.textColor1,
                     style = MaterialTheme.typography.titleLarge,
                     maxLines = 2,
@@ -208,14 +212,14 @@ fun TestCardView(
                     ) {
                         if (folder != null) {
                             TestNameDescriptionView(
-                                folder.name?.pl ?: "N/A",
-                                folder.description?.pl ?: "N/A"
+                                folder.name?.getLocalized(context) ?: "N/A",
+                                folder.description?.getLocalized(context) ?: "N/A"
                             )
                             for (node in folder.subnodes_deep ?: listOf()) {
                                 when {
                                     node!!.folder_node_details != null -> {
                                         NodeFolderView(
-                                            node.name?.pl ?: "N/A",
+                                            node.name?.getLocalized(context) ?: "N/A",
                                             node.folder_node_details,
                                             node.students_points
                                         ) {
@@ -231,7 +235,7 @@ fun TestCardView(
 
                                     node.task_node_details != null -> {
                                         NodeTaskView(
-                                            node.name?.pl ?: "N/A",
+                                            node.name?.getLocalized(context) ?: "N/A",
                                             node.task_node_details,
                                             node.students_points,
                                             node.subnodes_deep
@@ -248,7 +252,7 @@ fun TestCardView(
 
                                     node.grade_node_details != null -> {
                                         NodeGradeView(
-                                            node.name?.pl ?: "N/A",
+                                            node.name?.getLocalized(context) ?: "N/A",
                                             node.grade_node_details
                                         )
                                     }

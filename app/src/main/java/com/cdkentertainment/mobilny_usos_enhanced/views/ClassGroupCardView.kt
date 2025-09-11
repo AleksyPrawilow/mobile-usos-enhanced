@@ -1,5 +1,6 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,12 +20,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
+import com.cdkentertainment.mobilny_usos_enhanced.getLocalized
 import com.cdkentertainment.mobilny_usos_enhanced.models.LessonGroup
 
 @Composable
@@ -32,6 +35,7 @@ fun ClassGroupCardView(
     data: LessonGroup,
     onClick: () -> Unit = {}
 ) {
+    val context: Context = LocalContext.current
     Row(
         horizontalArrangement = Arrangement.spacedBy(0.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -46,7 +50,7 @@ fun ClassGroupCardView(
             .padding(12.dp)
     ) {
         Text(
-            text = UIHelper.classTypeIds[data.class_type_id]?.name?.pl ?: data.class_type_id,
+            text = UIHelper.classTypeIds[data.class_type_id]?.name?.getLocalized(context) ?: data.class_type_id,
             color = UISingleton.textColor1,
             style = MaterialTheme.typography.titleMedium,
             maxLines = 2,

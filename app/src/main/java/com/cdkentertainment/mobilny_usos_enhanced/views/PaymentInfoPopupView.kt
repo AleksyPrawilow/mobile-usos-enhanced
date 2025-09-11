@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
+import com.cdkentertainment.mobilny_usos_enhanced.getLocalized
 import com.cdkentertainment.mobilny_usos_enhanced.models.Payment
 
 @Composable
@@ -59,7 +60,7 @@ fun PaymentInfoPopupView(
             ) {
                 Spacer(modifier = Modifier.height(48.dp))
                 Text(
-                    text = data.description.pl,
+                    text = data.description.getLocalized(context),
                     style = MaterialTheme.typography.headlineSmall,
                     color = UISingleton.textColor1,
                     fontWeight = FontWeight.Bold,

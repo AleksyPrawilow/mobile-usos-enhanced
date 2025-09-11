@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Mobilny USOS</string>
+    <string name="home_page">Home</string>
+    <string name="grade_page">Oceny</string>
+    <string name="tests_page">Sprawdziany</string>
+    <string name="schedule_page">Rozkład</string>
+    <string name="schedule_page_header">Rozkład zajęć</string>
+    <string name="class_groups_page">Grupy</string>
+    <string name="class_groups_page_header">Grupy zajęciowe</string>
+    <string name="payments_page">Płatności</string>
+    <string name="attendance_page">Obecność</string>
+    <string name="lecturers_page">Prowadzący</string>
+    <string name="settings_page">Ustawienia</string>
+    <string name="greeting">Cześć</string>
+</resources>

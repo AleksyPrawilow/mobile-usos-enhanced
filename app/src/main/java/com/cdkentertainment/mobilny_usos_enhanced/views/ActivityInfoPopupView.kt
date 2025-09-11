@@ -1,5 +1,6 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -34,6 +36,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
+import com.cdkentertainment.mobilny_usos_enhanced.getLocalized
 import com.cdkentertainment.mobilny_usos_enhanced.models.Lesson
 import com.cdkentertainment.mobilny_usos_enhanced.models.SharedDataClasses
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.SchedulePageViewModel
@@ -43,12 +46,13 @@ fun ActivityInfoPopupView(
     data: Lesson,
     onDismissRequest: () -> Unit
 ) {
+    val context: Context = LocalContext.current
     Dialog(
         onDismissRequest = onDismissRequest,
         properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true)
     ) {
         val viewModel: SchedulePageViewModel = viewModel<SchedulePageViewModel>()
-        val address: String = data.building_name.pl
+        val address: String = data.building_name.getLocalized(context)
         val room: String = "Sala: ${data.room_number}"
         val time: String = "${viewModel.getTimeFromDate(data.start_time)} - ${viewModel.getTimeFromDate(data.end_time)}"
 
@@ -68,7 +72,7 @@ fun ActivityInfoPopupView(
             ) {
                 Spacer(modifier = Modifier.height(48.dp))
                 Text(
-                    text = data.course_name.pl,
+                    text = data.course_name.getLocalized(context),
                     style = MaterialTheme.typography.headlineSmall,
                     color = UISingleton.textColor1,
                     fontWeight = FontWeight.Bold,

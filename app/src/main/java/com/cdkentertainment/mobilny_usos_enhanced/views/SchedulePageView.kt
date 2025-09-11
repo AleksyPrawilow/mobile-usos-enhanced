@@ -23,11 +23,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
+import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.SchedulePageViewModel
@@ -68,7 +70,7 @@ fun SchedulePageView() {
             )
     ) {
         item {
-            PageHeaderView("Rozkład zajęć")
+            PageHeaderView(stringResource(R.string.schedule_page))
         }
         stickyHeader {
             AnimatedVisibility(showElements, enter = enterTransition(1), modifier = paddingModifier.then(Modifier.fillMaxWidth())) {

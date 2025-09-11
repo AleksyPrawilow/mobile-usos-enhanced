@@ -23,6 +23,10 @@ android {
     namespace = "com.cdkentertainment.mobilny_usos_enhanced"
     compileSdk = 36
 
+    androidResources{
+        generateLocaleConfig = true
+    }
+
     defaultConfig {
         applicationId = "com.cdkentertainment.mobilny_usos_enhanced"
         minSdk = 30

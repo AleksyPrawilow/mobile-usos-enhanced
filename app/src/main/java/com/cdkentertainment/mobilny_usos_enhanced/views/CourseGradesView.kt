@@ -1,11 +1,14 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
+import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
+import com.cdkentertainment.mobilny_usos_enhanced.getLocalized
 import com.cdkentertainment.mobilny_usos_enhanced.models.Course
 import com.cdkentertainment.mobilny_usos_enhanced.models.CourseUnitIds
 import com.cdkentertainment.mobilny_usos_enhanced.models.SharedDataClasses
@@ -18,6 +21,7 @@ fun CourseGradesView(
     nameMap: Map<String, CourseUnitIds>,
     classtypeIdInfo: Map<String, SharedDataClasses.IdAndName>?
 ) {
+    val context: Context = LocalContext.current
     var showDetails: Boolean by remember { mutableStateOf(false) }
     var popupGrade: TermGrade? by remember { mutableStateOf(null) }
 
@@ -30,13 +34,13 @@ fun CourseGradesView(
     }
 
     GroupedContentContainerView(
-        title = nameMap[data.courseGrades.course_units_grades.keys.first()]?.course_name ?: "N/A"
+        title = nameMap[data.courseGrades.course_units_grades.keys.first()]?.course_name?.getLocalized(context) ?: "N/A"
     ) {
         for (courseUnit in data.courseGrades.course_units_grades.keys) {
             val unitClassType: String = nameMap[courseUnit]?.classtype_id ?: "N/A"
             val condition: Boolean = data.courseGrades.course_units_grades[courseUnit] != null && data.courseGrades.course_units_grades[courseUnit]!![0]["1"] != null
             GradeCardView(
-                classtypeIdInfo?.get(unitClassType)?.name?.pl ?: "N/A",
+                classtypeIdInfo?.get(unitClassType)?.name?.getLocalized(context) ?: "N/A",
                 if (condition) data.courseGrades.course_units_grades[courseUnit]!![0]["1"]!!.value_symbol else "—",
                 showArrow = condition,
                 backgroundColor = UISingleton.color1
