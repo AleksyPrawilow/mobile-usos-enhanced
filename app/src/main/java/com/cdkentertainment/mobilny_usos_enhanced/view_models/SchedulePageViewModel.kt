@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.models.Schedule
 import com.cdkentertainment.mobilny_usos_enhanced.models.SchedulePageModel
+import com.cdkentertainment.mobilny_usos_enhanced.models.prettyPrint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -22,7 +23,8 @@ fun main(): Unit = runBlocking {
     launch {
         boom.fetchWeekData(LocalDate.of(2025, 5, 13))
         val model = SchedulePageModel()
-        println(model.getWeekSchedule(LocalDate.of(2025, 5, 13)))
+        println(model.getSingleDaySchedule(LocalDate.of(2025, 5, 13)))
+        println(model.getWeekSchedule(LocalDate.of(2025, 5, 13)).prettyPrint())
     }
 }
 

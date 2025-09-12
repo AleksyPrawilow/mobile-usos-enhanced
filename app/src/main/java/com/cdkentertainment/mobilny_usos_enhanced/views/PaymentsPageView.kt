@@ -64,8 +64,8 @@ fun PaymentsPageView() {
     val insets = WindowInsets.systemBars
     val topInset = insets.getTop(density)
     val bottomInset = insets.getBottom(density)
-    val topPadding = with(LocalDensity.current) { topInset.toDp() }
-    val bottomPadding = with(LocalDensity.current) { bottomInset.toDp() }
+    val topPadding = with(density) { topInset.toDp() }
+    val bottomPadding = with(density) { bottomInset.toDp() }
     val paddingModifier: Modifier = Modifier.padding(horizontal = UISingleton.horizontalPadding)
 
     LaunchedEffect(Unit) {

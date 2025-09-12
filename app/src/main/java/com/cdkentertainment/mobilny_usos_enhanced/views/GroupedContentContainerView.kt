@@ -45,12 +45,14 @@ fun GroupedContentContainerView(
                 .padding(12.dp)
                 .fillMaxWidth()
         ) {
-            Text(
-                text = title,
-                color = UISingleton.textColor1,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
-            )
+            if (title.isNotEmpty()) {
+                Text(
+                    text = title,
+                    color = UISingleton.textColor1,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
+            }
             content()
         }
     }

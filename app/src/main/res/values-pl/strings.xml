@@ -14,4 +14,7 @@
     <string name="settings_page">Ustawienia</string>
     <string name="greeting">Cześć</string>
     <string name="stay_up_to_date">Bądź na bieżąco</string>
+    <string name="no_activities">Brak zajęć na dzisiaj</string>
+    <string name="todays_schedule">Plan na dzisiaj</string>
+    <string name="activities">Zajęcia</string>
 </resources>

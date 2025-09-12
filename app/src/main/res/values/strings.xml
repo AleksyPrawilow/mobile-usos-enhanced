@@ -13,4 +13,7 @@
     <string name="settings_page">Settings</string>
     <string name="greeting">Hi</string>
     <string name="stay_up_to_date">Stay in the loop</string>
+    <string name="no_activities">No activities for today</string>
+    <string name="todays_schedule">Today\'s schedule</string>
+    <string name="activities">Activities</string>
 </resources>
