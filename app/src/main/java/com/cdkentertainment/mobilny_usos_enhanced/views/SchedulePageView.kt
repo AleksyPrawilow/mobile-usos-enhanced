@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
@@ -50,7 +49,7 @@ fun SchedulePageView() {
     val bottomInset = insets.getBottom(density)
     val topPadding = with(LocalDensity.current) { topInset.toDp() }
     val bottomPadding = with(LocalDensity.current) { bottomInset.toDp() }
-    val paddingModifier: Modifier = Modifier.padding(horizontal = UISingleton.horizontalPadding)
+    val paddingModifier: Modifier = Modifier.padding(horizontal = UISingleton.horizontalPadding, vertical = 8.dp)
 
     LaunchedEffect(Unit) {
         delay(150)
@@ -61,7 +60,7 @@ fun SchedulePageView() {
     }
 
     LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(0.dp),
         modifier = Modifier
             .fillMaxSize()
             .padding(
@@ -70,11 +69,14 @@ fun SchedulePageView() {
             )
     ) {
         item {
-            PageHeaderView(stringResource(R.string.schedule_page))
+            PageHeaderView(stringResource(R.string.schedule_page_header))
+        }
+        item {
+            Spacer(modifier = Modifier.height(8.dp))
         }
         stickyHeader {
-            AnimatedVisibility(showElements, enter = enterTransition(1), modifier = paddingModifier.then(Modifier.fillMaxWidth())) {
-                ScheduleDaySelectorView(schedulePageViewModel)
+            AnimatedVisibility(showElements, enter = enterTransition(1)) {
+                ScheduleDaySelectorView(schedulePageViewModel, modifier = paddingModifier)
             }
         }
         item {

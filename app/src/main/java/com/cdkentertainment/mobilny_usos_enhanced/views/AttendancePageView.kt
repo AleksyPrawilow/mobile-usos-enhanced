@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
@@ -66,7 +65,7 @@ fun AttendancePageView() {
     val bottomInset = insets.getBottom(density)
     val topPadding = with(LocalDensity.current) { topInset.toDp() }
     val bottomPadding = with(LocalDensity.current) { bottomInset.toDp() }
-    val paddingModifier: Modifier = Modifier.padding(horizontal = UISingleton.horizontalPadding)
+    val paddingModifier: Modifier = Modifier.padding(horizontal = UISingleton.horizontalPadding, vertical = 8.dp)
 
     LaunchedEffect(Unit) {
         attendancePageViewModel.fetchLessonGroups()
@@ -79,7 +78,7 @@ fun AttendancePageView() {
     }
 
     LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(0.dp),
         modifier = Modifier
             .fillMaxSize()
             .padding(
@@ -89,6 +88,9 @@ fun AttendancePageView() {
     ) {
         item {
             PageHeaderView(stringResource(R.string.attendance_page))
+        }
+        item {
+            Spacer(modifier = Modifier.height(8.dp))
         }
         item {
             AnimatedVisibility(attendancePageViewModel.lessonGroups == null, modifier = paddingModifier) {
@@ -110,9 +112,8 @@ fun AttendancePageView() {
                     AnimatedVisibility(
                         showElements,
                         enter = enterTransition(1),
-                        modifier = paddingModifier.then(Modifier.fillMaxWidth())
                     ) {
-                        SemesterCardView(seasonId)
+                        SemesterCardView(seasonId, modifier = paddingModifier)
                     }
                 }
                 if (season != null) {
@@ -120,10 +121,9 @@ fun AttendancePageView() {
                         val courseUnits: List<LessonGroup> = courses[courseIndex]
                         AnimatedVisibility(
                             showElements,
-                            enter = enterTransition(2 + courseIndex),
-                            modifier = paddingModifier
+                            enter = enterTransition(2 + courseIndex)
                         ) {
-                            CourseContainerView(courseUnits) { unit ->
+                            CourseContainerView(courseUnits, modifier = paddingModifier) { unit ->
                                 AttendanceClassGroupView(unit)
                             }
                         }

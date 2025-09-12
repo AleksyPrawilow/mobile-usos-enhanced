@@ -22,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -38,7 +39,7 @@ import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.getLocalized
 
 @Composable
-fun UserDataView() {
+fun UserDataView(modifier: Modifier = Modifier) {
     var expanded: Boolean by rememberSaveable { mutableStateOf(false) }
     val paddingSize: Int = 12
     val context: Context = LocalContext.current
@@ -51,7 +52,7 @@ fun UserDataView() {
             .error(android.R.drawable.ic_menu_help)
             .build()
     ) else null
-
+    val shape: RoundedCornerShape = remember { RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp) }
     Card(
         colors = CardColors(
             contentColor = UISingleton.textColor1,
@@ -60,13 +61,13 @@ fun UserDataView() {
             disabledContentColor = UISingleton.textColor1
         ),
         elevation = CardDefaults.cardElevation(3.dp),
-        shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp),
+        shape = shape,
         onClick = {
             expanded = !expanded
         },
         modifier = Modifier
             .fillMaxWidth()
-            //.animateContentSize()
+            .then(modifier)
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(12.dp),

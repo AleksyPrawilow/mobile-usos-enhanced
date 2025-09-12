@@ -34,6 +34,6 @@ fun ClassGroupView(
         courseName = UIHelper.classTypeIds[data.class_type_id]?.name?.getLocalized(context) ?: data.class_type_id,
         grade = data.group_number.toString(),
         showArrow = true,
-        onClick = onClick
+        onClick = onClick,
     )
 }

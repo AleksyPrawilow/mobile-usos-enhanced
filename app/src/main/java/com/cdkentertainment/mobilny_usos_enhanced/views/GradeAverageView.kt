@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.sp
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 
 @Composable
-fun GradeAverageView(gradeAverage: Float?) {
+fun GradeAverageView(gradeAverage: Float?, modifier: Modifier = Modifier) {
     Card(
         colors = CardColors(
             contentColor = UISingleton.textColor1,
@@ -36,6 +36,7 @@ fun GradeAverageView(gradeAverage: Float?) {
         shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius),
         modifier = Modifier
             .fillMaxWidth()
+            .then(modifier)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,

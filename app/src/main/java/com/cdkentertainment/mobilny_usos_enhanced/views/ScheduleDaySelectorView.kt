@@ -30,6 +30,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush.Companion.verticalGradient
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.SchedulePageViewModel
@@ -43,7 +44,7 @@ import kotlin.math.min
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ScheduleDaySelectorView(schedulePageViewModel: SchedulePageViewModel) {
+fun ScheduleDaySelectorView(schedulePageViewModel: SchedulePageViewModel, modifier: Modifier = Modifier) {
     val daysOfWeek: List<String> = listOf("pn", "wt", "śr", "cz", "pt")
     val datePickerState = rememberDatePickerState()
 
@@ -94,6 +95,8 @@ fun ScheduleDaySelectorView(schedulePageViewModel: SchedulePageViewModel) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(top = 4.dp)
+            .then(modifier)
             .shadow(5.dp, RoundedCornerShape(UISingleton.uiElementsCornerRadius))
             .background(
                 brush = verticalGradient(
@@ -122,7 +125,8 @@ fun ScheduleDaySelectorView(schedulePageViewModel: SchedulePageViewModel) {
                     Text(
                         text = if (weekOptionIndex == 0) "Aktualny tydzień" else "Inny tydzień",
                         color = UISingleton.textColor1,
-                        style = MaterialTheme.typography.titleMedium,
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
                         modifier = Modifier
                             .background(if (schedulePageViewModel.selectedWeekOption == weekOptionIndex) UISingleton.color1 else Color(TRANSPARENT), CircleShape)
                             .clip(CircleShape)

@@ -7,8 +7,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.rememberScrollState
@@ -38,7 +40,7 @@ import kotlinx.coroutines.delay
 fun HomePageView() {
     val enterTransition: (Int) -> EnterTransition = UIHelper.slideEnterTransition
     var showElements: Boolean by rememberSaveable { mutableStateOf(false) }
-    val paddingModifier: Modifier = Modifier.padding(horizontal = UISingleton.horizontalPadding)
+    val paddingModifier: Modifier = Modifier.padding(horizontal = UISingleton.horizontalPadding, vertical = 8.dp)
     val density: Density = LocalDensity.current
     val insets = WindowInsets.systemBars
     val topInset = insets.getTop(density)
@@ -52,19 +54,20 @@ fun HomePageView() {
     }
 
     Column(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(0.dp),
         modifier = Modifier
             .fillMaxSize()
             .padding(top = topPadding, bottom = bottomPadding)
             .verticalScroll(rememberScrollState())
     ) {
         PageHeaderView("${stringResource(R.string.greeting)}, ${OAuthSingleton.userData?.basicInfo?.first_name}!")
-        AnimatedVisibility(showElements, enter = enterTransition(1), modifier = paddingModifier) {
-            UserDataView()
+        Spacer(modifier = Modifier.height(8.dp))
+        AnimatedVisibility(showElements, enter = enterTransition(1)) {
+            UserDataView(paddingModifier)
         }
         AnimatedVisibility(showElements, enter = enterTransition(2), modifier = paddingModifier) {
             Text(
-                text = "Plan na dzisiaj:",
+                text = stringResource(R.string.stay_up_to_date),
                 color = UISingleton.textColor1,
                 style = MaterialTheme.typography.headlineMedium
             )

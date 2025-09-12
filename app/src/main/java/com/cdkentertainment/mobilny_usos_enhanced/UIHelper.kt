@@ -19,8 +19,8 @@ object UIHelper {
     private val safeEasing = Easing { fraction ->
         EaseOutBack.transform(fraction.coerceIn(0f, 0.9999f))
     }
-    private val tweenSlideSpec : (Int) -> FiniteAnimationSpec<IntOffset> = { delayIndex: Int -> tween(SLIDE_APPEAR_DURATION, SLIDE_DELAY_BETWEEN_SHOWS * delayIndex, safeEasing) }
-    private val tweenFadeSpec  : (Int) -> FiniteAnimationSpec<Float>     = { delayIndex: Int -> tween(SLIDE_APPEAR_DURATION, SLIDE_DELAY_BETWEEN_SHOWS * delayIndex, safeEasing) }
+    private val tweenSlideSpec : (Int) -> FiniteAnimationSpec<IntOffset> = { delayIndex: Int -> tween(SLIDE_APPEAR_DURATION, SLIDE_DELAY_BETWEEN_SHOWS * delayIndex) }
+    private val tweenFadeSpec  : (Int) -> FiniteAnimationSpec<Float>     = { delayIndex: Int -> tween(SLIDE_APPEAR_DURATION, SLIDE_DELAY_BETWEEN_SHOWS * delayIndex) }
     val slideEnterTransition: (Int) -> EnterTransition = { delayIndex: Int -> slideInHorizontally(tweenSlideSpec(delayIndex)) + fadeIn(tweenFadeSpec(delayIndex)) }
 
     var classTypeIds: Map<String, SharedDataClasses.IdAndName> by mutableStateOf(emptyMap())
