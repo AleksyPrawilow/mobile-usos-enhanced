@@ -17,4 +17,8 @@
     <string name="no_activities">Brak zajęć na dzisiaj</string>
     <string name="todays_schedule">Plan na dzisiaj</string>
     <string name="activities">Zajęcia</string>
+    <string name="latest_grades">Oceny</string>
+    <string name="notifications">Powiadomienia</string>
+    <string name="payments">Płatności</string>
+    <string name="attendance">Obecność</string>
 </resources>

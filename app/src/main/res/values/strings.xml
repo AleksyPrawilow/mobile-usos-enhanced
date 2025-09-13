@@ -16,4 +16,8 @@
     <string name="no_activities">No activities for today</string>
     <string name="todays_schedule">Today\'s schedule</string>
     <string name="activities">Activities</string>
+    <string name="latest_grades">Grades</string>
+    <string name="notifications">Notifications</string>
+    <string name="payments">Payments</string>
+    <string name="attendance">Attendance</string>
 </resources>

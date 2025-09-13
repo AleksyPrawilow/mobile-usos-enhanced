@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Done
-import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -26,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -36,7 +36,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
@@ -70,6 +73,22 @@ fun HomePageView() {
     val bottomPadding = with(density) { bottomInset.toDp() }
     val schedule: Schedule? = viewModel.todaySchedule
     val scheduleKeysEmpty: Boolean = schedule?.lessons?.keys?.isEmpty() ?: true
+    val textMeasurer = rememberTextMeasurer()
+    val cardLabels: List<Pair<String, ImageVector>> = listOf(
+        Pair(stringResource(R.string.latest_grades), ImageVector.vectorResource(R.drawable.rounded_star_24)),
+        Pair(stringResource(R.string.notifications), ImageVector.vectorResource(R.drawable.rounded_notifications_24)),
+        Pair(stringResource(R.string.payments), ImageVector.vectorResource(R.drawable.rounded_payments_24)),
+        Pair(stringResource(R.string.attendance), ImageVector.vectorResource(R.drawable.rounded_alarm_24))
+    )
+    val cardLabelStyle: TextStyle = MaterialTheme.typography.titleMedium
+    val maxCardWidth: Int = remember(cardLabels, cardLabelStyle) {
+        cardLabels.maxOf {
+            textMeasurer.measure(
+                text = AnnotatedString(it.first),
+                style = cardLabelStyle
+            ).size.width
+        }
+    }
 
     LaunchedEffect(Unit) {
         viewModel.fetchSchedule()
@@ -115,27 +134,32 @@ fun HomePageView() {
             ) {
                 AnimatedVisibility(showElements, enter = scaleEnterTransition(3)) {
                     LatestSomethingView(
-                        ImageVector.vectorResource(R.drawable.rounded_star_24),
-                        "Najnowsze oceny",
+                        cardLabels[0].second,
+                        cardLabels[0].first,
+                        maxCardWidth,
                         badge = "2!"
                     )
                 }
                 AnimatedVisibility(showElements, enter = scaleEnterTransition(5)) {
                     LatestSomethingView(
-                        Icons.Rounded.Notifications,
-                        "Powiadomienia"
+                        cardLabels[1].second,
+                        cardLabels[1].first,
+                        maxCardWidth
                     )
                 }
                 AnimatedVisibility(showElements, enter = scaleEnterTransition(6)) {
                     LatestSomethingView(
-                        ImageVector.vectorResource(R.drawable.rounded_payments_24),
-                        "Płatności"
+                        cardLabels[2].second,
+                        cardLabels[2].first,
+                        maxCardWidth,
+                        badge = "3000 zł"
                     )
                 }
                 AnimatedVisibility(showElements, enter = scaleEnterTransition(4)) {
                     LatestSomethingView(
-                        ImageVector.vectorResource(R.drawable.rounded_alarm_24),
-                        "Zaznacz obecność",
+                        cardLabels[3].second,
+                        cardLabels[3].first,
+                        maxCardWidth,
                         badge = "99!"
                     )
                 }

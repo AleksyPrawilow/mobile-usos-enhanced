@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Badge
 import androidx.compose.material3.Card
@@ -17,7 +18,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 
@@ -25,9 +29,11 @@ import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 fun LatestSomethingView(
     icon: ImageVector,
     title: String,
+    maxWidth: Int,
     badge: String? = null
 ) {
     val cardShape: RoundedCornerShape = remember { RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp) }
+    val density: Density = LocalDensity.current
     Card(
         colors = CardDefaults.cardColors(
             containerColor = UISingleton.color2,
@@ -63,7 +69,10 @@ fun LatestSomethingView(
                     text = title,
                     color = UISingleton.textColor1,
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier
+                        .width(with(density) { maxWidth.toDp() })
                 )
             }
             if (badge != null) {
