@@ -20,4 +20,26 @@
     <string name="notifications">Notifications</string>
     <string name="payments">Payments</string>
     <string name="attendance">Attendance</string>
+    <string name="lecturers">Lecturers</string>
+    <string name="subject">Course</string>
+    <string name="participants">Participants</string>
+    <string name="group">Group</string>
+    <string name="meetings">Meetings</string>
+    <string name="frequency">Frequency</string>
+    <string name="absences">Unexc. absences</string>
+    <string name="delete_rating">Delete your rating</string>
+    <string name="update_rating">Edit your rating</string>
+    <string name="your_rating">Your rating</string>
+    <string name="overall_rating">Overall rating</string>
+    <string name="contact_information">Contact information</string>
+    <string name="coordinated_courses">Coordinated courses</string>
+    <string name="information">Information</string>
+    <string name="room">Room</string>
+    <string name="grade_distribution">Grade distribution</string>
+    <string name="grade_information">Grade information</string>
+    <string name="grade_average">Grade average</string>
+    <string name="your_grade">Your grade</string>
+    <string name="description">Description</string>
+    <string name="payment_information">Payment information</string>
+    <string name="active_student">Active student</string>
 </resources>

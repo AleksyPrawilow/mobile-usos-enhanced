@@ -16,8 +16,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -27,14 +25,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.R
+import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.getLocalized
 import com.cdkentertainment.mobilny_usos_enhanced.models.Lesson
@@ -53,13 +51,12 @@ fun ActivityInfoPopupView(
     ) {
         val viewModel: SchedulePageViewModel = viewModel<SchedulePageViewModel>()
         val address: String = data.building_name.getLocalized(context)
-        val room: String = "Sala: ${data.room_number}"
+        val room: String = "${stringResource(R.string.room)}: ${data.room_number}"
         val time: String = "${viewModel.getTimeFromDate(data.start_time)} - ${viewModel.getTimeFromDate(data.end_time)}"
 
         Box(
             contentAlignment = Alignment.TopCenter,
             modifier = Modifier
-                //.fillMaxSize()
                 .fillMaxWidth()
                 .shadow(10.dp, shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
                 .background(UISingleton.color2, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
@@ -70,30 +67,23 @@ fun ActivityInfoPopupView(
                     .fillMaxWidth()
                     .verticalScroll(rememberScrollState())
             ) {
-                Spacer(modifier = Modifier.height(48.dp))
-                Text(
-                    text = data.course_name.getLocalized(context),
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = UISingleton.textColor1,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                PopupHeaderView(
+                    title = data.course_name.getLocalized(context)
                 )
-                Text(
-                    text = data.classtype_id,
-                    style = MaterialTheme.typography.titleLarge,
-                    color = UISingleton.textColor2,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 12.dp, vertical = 6.dp)
-                )
-                Spacer(modifier = Modifier.height(24.dp))
                 GroupedContentContainerView(
-                    title = "Prowadzący",
+                    title = stringResource(R.string.subject),
+                    backgroundColor = UISingleton.color1,
+                    modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 12.dp, bottom = 0.dp)
+                ) {
+                    GradeCardView(
+                        courseName = UIHelper.classTypeIds[data.classtype_id]?.name?.getLocalized(context) ?: data.classtype_id,
+                        showArrow = false,
+                        showGrade = false,
+                        backgroundColor = UISingleton.color2
+                    )
+                }
+                GroupedContentContainerView(
+                    title = stringResource(R.string.lecturers),
                     backgroundColor = UISingleton.color1,
                     modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 12.dp, bottom = 0.dp)
                 ) {
@@ -102,13 +92,13 @@ fun ActivityInfoPopupView(
                     }
                 }
                 GroupedContentContainerView(
-                    title = "Informacja",
+                    title = stringResource(R.string.information),
                     backgroundColor = UISingleton.color1,
                     modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 12.dp, bottom = 0.dp)
                 ) {
                     val categories: Map<String, Pair<ImageVector, String>> = mapOf(
                         "Time" to (ImageVector.vectorResource(R.drawable.rounded_alarm_24) to time),
-                        "Address" to (Icons.Rounded.LocationOn to address),
+                        "Address" to (ImageVector.vectorResource(R.drawable.rounded_location_on_24) to address),
                         "Room" to (ImageVector.vectorResource(R.drawable.rounded_door_open_24) to room)
                     )
                     for ((category, iconAndText) in categories) {

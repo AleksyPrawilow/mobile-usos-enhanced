@@ -30,12 +30,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size.Companion.ORIGINAL
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
+import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.getLocalized
 
@@ -121,7 +123,7 @@ fun UserDataView(modifier: Modifier = Modifier) {
                     color = UISingleton.textColor1
                 )
                 Text(
-                    text = "Aktywny student",
+                    text = stringResource(R.string.active_student),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Light,
                     color = UISingleton.textColor1
@@ -130,18 +132,6 @@ fun UserDataView(modifier: Modifier = Modifier) {
                     Column {
                         Text(
                             text = "${OAuthSingleton.userData?.programme[0]?.programme?.description?.getLocalized(context)}",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Light,
-                            color = UISingleton.textColor1
-                        )
-                        Text(
-                            text = "${OAuthSingleton.userData?.basicInfo?.email}",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Light,
-                            color = UISingleton.textColor1
-                        )
-                        Text(
-                            text = OAuthSingleton.userData?.basicInfo?.mobile_numbers[0] ?: "null",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Light,
                             color = UISingleton.textColor1

@@ -18,9 +18,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 
 @Composable
@@ -44,7 +46,7 @@ fun GradeAverageView(gradeAverage: Float?, modifier: Modifier = Modifier) {
                 .padding(12.dp)
         ) {
             Text(
-                text = "Bieżąca średnia",
+                text = stringResource(R.string.grade_average),
                 color = UISingleton.textColor1,
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold

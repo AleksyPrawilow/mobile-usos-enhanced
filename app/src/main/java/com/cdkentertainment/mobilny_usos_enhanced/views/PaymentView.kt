@@ -86,7 +86,7 @@ fun PaymentView(
                     .padding(12.dp)
             ) {
                 Text(
-                    text = payment.description.getLocalized(context),
+                    text = payment.type.description.getLocalized(context),
                     style = MaterialTheme.typography.titleLarge,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,

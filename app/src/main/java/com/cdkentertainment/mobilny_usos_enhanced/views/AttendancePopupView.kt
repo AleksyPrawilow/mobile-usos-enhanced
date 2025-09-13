@@ -21,11 +21,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.cdkentertainment.mobilny_usos_enhanced.R
+import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.getLocalized
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.AttendancePageViewModel
@@ -53,44 +55,42 @@ fun AttendancePopupView(
                     .fillMaxWidth()
             ) {
                 item {
-                    Spacer(modifier = Modifier.height(48.dp))
-                }
-                item {
-                    Text(
-                        text = "${viewModel.popupData?.classGroupData?.course_name?.getLocalized(context) ?: "N/A"} - ${viewModel.popupData?.classGroupData?.class_type_id ?: "N/A"}",
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = UISingleton.textColor1,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 12.dp, vertical = 6.dp)
-                    )
-                }
-                item {
-                    Text(
-                        text = "Grupa ${viewModel.popupData?.classGroupData?.group_number ?: "N/A"}",
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = UISingleton.textColor2,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 12.dp)
-                    )
+                    PopupHeaderView(viewModel.popupData?.classGroupData?.course_name?.getLocalized(context) ?: "N/A")
                 }
                 item {
                     GroupedContentContainerView(
-                        title = "Obecność",
+                        title = stringResource(R.string.subject),
+                        backgroundColor = UISingleton.color1,
+                        modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 12.dp)
+                    ) {
+                        GradeCardView(
+                            courseName = stringResource(R.string.group),
+                            grade = "${viewModel.popupData?.classGroupData?.group_number ?: "N/A"}",
+                            showArrow = false,
+                            backgroundColor = UISingleton.color2
+                        )
+                        GradeCardView(
+                            courseName = UIHelper.classTypeIds[viewModel.popupData?.classGroupData?.class_type_id]?.name?.getLocalized(context) ?: "N/A",
+                            showArrow = false,
+                            showGrade = false,
+                            backgroundColor = UISingleton.color2
+                        )
+                    }
+                }
+                item {
+                    GroupedContentContainerView(
+                        title = stringResource(R.string.attendance),
                         backgroundColor = UISingleton.color1,
                         modifier = Modifier.padding(12.dp)
                     ) {
-                        AttendanceStatCardView("Frekwencja", "100%")
-                        AttendanceStatCardView("Nieuspr. nieobecności", "0")
+                        AttendanceStatCardView(stringResource(R.string.frequency), "100%")
+                        AttendanceStatCardView(stringResource(R.string.absences), "0")
                     }
                 }
                 if (true) {
                     item {
                         Text(
-                            text = "Spotkania",
+                            text = stringResource(R.string.meetings),
                             color = UISingleton.textColor1,
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,

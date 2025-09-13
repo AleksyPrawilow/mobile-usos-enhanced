@@ -21,4 +21,26 @@
     <string name="notifications">Powiadomienia</string>
     <string name="payments">Płatności</string>
     <string name="attendance">Obecność</string>
+    <string name="lecturers">Prowadzący</string>
+    <string name="subject">Przedmiot</string>
+    <string name="participants">Uczestnicy</string>
+    <string name="group">Grupa</string>
+    <string name="meetings">Spotkania</string>
+    <string name="frequency">Frekwencja</string>
+    <string name="absences">Nieuspr. nieobecności</string>
+    <string name="delete_rating">Usuń swoją ocenę</string>
+    <string name="update_rating">Zmień swoją ocenę</string>
+    <string name="your_rating">Twoja ocena</string>
+    <string name="overall_rating">Ogólna ocena</string>
+    <string name="contact_information">Kontakt</string>
+    <string name="coordinated_courses">Koordynowane przedmioty</string>
+    <string name="information">Informacja</string>
+    <string name="room">Sala</string>
+    <string name="grade_distribution">Dystrybucja ocen</string>
+    <string name="grade_information">Informacja o ocenie</string>
+    <string name="grade_average">Bieżąca średnia</string>
+    <string name="your_grade">Twoja ocena</string>
+    <string name="description">Opis</string>
+    <string name="payment_information">Informacja o płatności</string>
+    <string name="active_student">Aktywny student</string>
 </resources>

@@ -28,7 +28,10 @@ fun CourseGradesView(
     var popupGrade: TermGrade? by remember { mutableStateOf(null) }
 
     if (showDetails && popupGrade != null) {
-        GradePopupView(popupGrade!!) {
+        GradePopupView(
+            popupGrade!!,
+            title = nameMap[data.courseGrades.course_units_grades.keys.first()]?.course_name?.getLocalized(context) ?: "N/A"
+        ) {
             UISingleton.dropBlurContent()
             showDetails = false
             popupGrade = null

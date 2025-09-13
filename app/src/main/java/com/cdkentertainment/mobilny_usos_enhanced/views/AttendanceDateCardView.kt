@@ -11,8 +11,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Done
-import androidx.compose.material.icons.rounded.Edit
-import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.Icon
@@ -28,9 +26,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.AttendancePageViewModel
 
@@ -43,9 +43,9 @@ fun AttendanceDateCardView(
 ) {
     var showTypeSelector: Boolean by rememberSaveable { mutableStateOf(false) }
     val imageVectors: List<ImageVector> = listOf(
-        Icons.Rounded.Edit,
+        ImageVector.vectorResource(R.drawable.rounded_edit_24),
         Icons.Rounded.Done,
-        Icons.Rounded.Warning,
+        ImageVector.vectorResource(R.drawable.rounded_warning_24),
         Icons.Rounded.Close
     )
     val state = remember { mutableStateOf(0) }

@@ -22,11 +22,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.cdkentertainment.mobilny_usos_enhanced.R
+import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.getLocalized
 import com.cdkentertainment.mobilny_usos_enhanced.models.LessonGroup
@@ -62,33 +64,31 @@ fun ClassGroupPopupView(
                     .fillMaxWidth()
             ) {
                 item {
-                    Spacer(modifier = Modifier.height(48.dp))
-                }
-                item {
-                    Text(
-                        text = "${data.course_name.getLocalized(context)} - ${data.class_type_id}",
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = UISingleton.textColor1,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 12.dp, vertical = 6.dp)
-                    )
-                }
-                item {
-                    Text(
-                        text = "Grupa ${data.group_number}",
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = UISingleton.textColor2,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 12.dp)
-                    )
+                    PopupHeaderView(data.course_name.getLocalized(context))
                 }
                 item {
                     GroupedContentContainerView(
-                        title = "Prowadzący",
+                        title = stringResource(R.string.subject),
+                        backgroundColor = UISingleton.color1,
+                        modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 12.dp)
+                    ) {
+                        GradeCardView(
+                            courseName = stringResource(R.string.group),
+                            grade = "${data.group_number}",
+                            showArrow = false,
+                            backgroundColor = UISingleton.color2
+                        )
+                        GradeCardView(
+                            courseName = UIHelper.classTypeIds[data.class_type_id]?.name?.getLocalized(context) ?: "N/A",
+                            showArrow = false,
+                            showGrade = false,
+                            backgroundColor = UISingleton.color2
+                        )
+                    }
+                }
+                item {
+                    GroupedContentContainerView(
+                        title = stringResource(R.string.lecturers),
                         backgroundColor = UISingleton.color1,
                         modifier = Modifier.padding(12.dp)
                     ) {
@@ -103,7 +103,7 @@ fun ClassGroupPopupView(
                     val participantsSize: Int = viewModel.groupDetails[groupKey]?.participants!!.participants.size
                     item {
                         Text(
-                            text = "Uczestnicy",
+                            text = stringResource(R.string.participants),
                             color = UISingleton.textColor1,
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,

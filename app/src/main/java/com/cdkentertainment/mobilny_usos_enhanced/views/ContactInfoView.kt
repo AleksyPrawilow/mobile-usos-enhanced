@@ -8,10 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Call
-import androidx.compose.material.icons.rounded.Email
-import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -19,7 +15,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 
 @Composable
@@ -29,14 +28,14 @@ fun ContactInfoView(
     address: String = "Uniwersytetu Poznańskiego 4, 61-614 Poznań, pokój B1-420"
 ) {
     GroupedContentContainerView(
-        title = "Kontakt",
+        title = stringResource(R.string.contact_information),
         backgroundColor = UISingleton.color1,
         modifier = Modifier.padding(horizontal = 12.dp)
     ) {
         val categories: Map<String, Pair<ImageVector, String>> = mapOf(
-            "Telefon" to (Icons.Rounded.Call to phoneNumber),
-            "Email" to (Icons.Rounded.Email to email),
-            "Adres" to (Icons.Rounded.LocationOn to address)
+            "Telefon" to (ImageVector.vectorResource(R.drawable.rounded_call_24) to phoneNumber),
+            "Email" to (ImageVector.vectorResource(R.drawable.rounded_mail_24) to email),
+            "Adres" to (ImageVector.vectorResource(R.drawable.rounded_location_on_24) to address)
         )
         for ((category, iconAndText) in categories) {
             if (iconAndText.second.isEmpty()) continue

@@ -13,8 +13,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
@@ -34,9 +32,13 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.models.LecturerRate
 import kotlin.math.min
@@ -44,7 +46,7 @@ import kotlin.math.min
 @Composable
 fun LecturerRateView(
     lecturerId: String,
-    title: String = "Ogólna ocena",
+    title: String = stringResource(R.string.overall_rating),
     numberOfReviews: Int = 0,
     showNumberOfReviews: Boolean = true,
     rate: LecturerRate = LecturerRate(),
@@ -164,13 +166,13 @@ fun LecturerRateView(
                         .padding(12.dp)
                 ) {
                     Text(
-                        text = "Zmień swoją ocenę",
+                        text = stringResource(R.string.update_rating),
                         style = MaterialTheme.typography.titleMedium,
                         color = UISingleton.textColor1,
                         modifier = Modifier.weight(1f)
                     )
                     Icon(
-                        imageVector = Icons.Rounded.Edit,
+                        imageVector = ImageVector.vectorResource(R.drawable.rounded_edit_24),
                         contentDescription = "Edit",
                         tint = UISingleton.textColor4,
                         modifier = Modifier
@@ -191,13 +193,13 @@ fun LecturerRateView(
                         .padding(12.dp)
                 ) {
                     Text(
-                        text = "Usuń swoją ocenę",
+                        text = stringResource(R.string.delete_rating),
                         style = MaterialTheme.typography.titleMedium,
                         color = UISingleton.textColor1,
                         modifier = Modifier.weight(1f)
                     )
                     Icon(
-                        imageVector = Icons.Rounded.Delete,
+                        imageVector = ImageVector.vectorResource(R.drawable.rounded_delete_24),
                         contentDescription = "Delete",
                         tint = UISingleton.textColor4,
                         modifier = Modifier
