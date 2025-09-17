@@ -44,4 +44,6 @@
     <string name="payment_information">Informacja o płatności</string>
     <string name="active_student">Aktywny student</string>
     <string name="failed_to_fetch">Nie udało się pobrać danych</string>
+    <string name="pinned_courses">Podpięte\nprzedmioty</string>
+    <string name="unpinned_courses">Niepodpięte\nprzedmioty</string>
 </resources>

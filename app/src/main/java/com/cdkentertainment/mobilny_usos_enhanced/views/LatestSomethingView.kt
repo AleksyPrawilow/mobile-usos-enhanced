@@ -1,5 +1,6 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,9 +15,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
@@ -30,22 +33,34 @@ fun LatestSomethingView(
     icon: ImageVector,
     title: String,
     maxWidth: Int,
-    badge: String? = null
+    badge: String? = null,
+    maxLines: Int = 1,
+    backgroundColor: Color = UISingleton.color2,
+    disabledBackgroundColor: Color = UISingleton.color2,
+    textColor: Color = UISingleton.textColor1,
+    disabledTextColor: Color = UISingleton.textColor1,
+    enabled: Boolean = true,
+    onClick: () -> Unit = {}
 ) {
     val cardShape: RoundedCornerShape = remember { RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp) }
     val density: Density = LocalDensity.current
+    val cardColor: Color by animateColorAsState(
+        if (enabled) backgroundColor else disabledBackgroundColor,
+    )
+    val fontColor: Color by animateColorAsState(
+        if (enabled) textColor else disabledTextColor,
+    )
     Card(
         colors = CardDefaults.cardColors(
-            containerColor = UISingleton.color2,
-            disabledContainerColor = UISingleton.color2,
-            contentColor = UISingleton.textColor1,
-            disabledContentColor = UISingleton.textColor1
+            containerColor = cardColor,
+            disabledContainerColor = cardColor,
+            contentColor = fontColor,
+            disabledContentColor = fontColor
         ),
-        elevation = CardDefaults.cardElevation(3.dp),
+        elevation = CardDefaults.cardElevation(3.dp, disabledElevation = 12.dp),
+        enabled = enabled,
         shape = cardShape,
-        onClick = {
-
-        },
+        onClick = onClick,
         modifier = Modifier
             .padding(horizontal = 8.dp, vertical = 8.dp)
     ) {
@@ -62,13 +77,12 @@ fun LatestSomethingView(
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
-                    tint = UISingleton.textColor1,
                     modifier = Modifier.defaultMinSize(48.dp, 48.dp)
                 )
                 Text(
                     text = title,
-                    color = UISingleton.textColor1,
                     style = MaterialTheme.typography.titleMedium,
+                    maxLines = maxLines,
                     textAlign = TextAlign.Center,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier
@@ -77,8 +91,6 @@ fun LatestSomethingView(
             }
             if (badge != null) {
                 Badge(
-                    //containerColor = UISingleton.color3,
-                    //contentColor = UISingleton.textColor4,
                     modifier = Modifier
                         .align(Alignment.TopEnd)
                         .padding((UISingleton.uiElementsCornerRadius / 4).dp)

@@ -5,6 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+
 class LessonGroupPageModel {
     private val parser = Json {ignoreUnknownKeys = true}
     private val fields = "course_id|course_name|lecturers|group_number|course_unit_id|class_type_id"
@@ -22,10 +23,7 @@ class LessonGroupPageModel {
         for (season in parsedSeasonGroups.groups.keys) {
             val seasonGroups = parsedSeasonGroups.groups[season]
             if (seasonGroups != null) {
-                val groupedBySubjects = seasonGroups.groupBy { group ->
-                    group.course_id
-                }
-                groupsGroupedBySubjects.groups.put(season, groupedBySubjects)
+                groupsGroupedBySubjects.groups.put(season, mergeGroupsBySubjects(seasonGroups))
             } else {
                 print("todo")
             }
@@ -35,6 +33,12 @@ class LessonGroupPageModel {
     private fun parseParticipantsApiResponse(responseString: String): Participants {
         val parsedParticipants: Participants = parser.decodeFromString(responseString)
         return parsedParticipants
+    }
+    public fun mergeGroupsBySubjects(seasonGroups: List<LessonGroup>): Map<String, List<LessonGroup>> {
+        val groupedBySubjects = seasonGroups.groupBy { group ->
+            group.course_id
+        }
+        return groupedBySubjects
     }
     public suspend fun getLessonGroups(): SeasonGroupsGroupedBySubject {
         return withContext(Dispatchers.IO) {

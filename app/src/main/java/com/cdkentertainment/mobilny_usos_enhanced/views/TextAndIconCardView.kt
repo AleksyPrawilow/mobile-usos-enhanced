@@ -30,7 +30,7 @@ fun TextAndIconCardView(
     modifier: Modifier = Modifier,
     backgroundColor: Color = UISingleton.color2,
     icon: ImageVector = Icons.Rounded.Refresh,
-    onClick: () -> Unit = {}
+    onClick: (() -> Unit)? = null
 ) {
     val shape: RoundedCornerShape = remember { RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp) }
     Card(
@@ -40,9 +40,10 @@ fun TextAndIconCardView(
             contentColor = UISingleton.textColor1,
             disabledContentColor = UISingleton.textColor1
         ),
-        elevation = CardDefaults.cardElevation(3.dp),
+        elevation = CardDefaults.cardElevation(3.dp, disabledElevation = 3.dp),
         shape = shape,
-        onClick = onClick,
+        onClick = onClick ?: {},
+        enabled = onClick != null,
         modifier = Modifier
             .fillMaxWidth()
             .then(modifier)

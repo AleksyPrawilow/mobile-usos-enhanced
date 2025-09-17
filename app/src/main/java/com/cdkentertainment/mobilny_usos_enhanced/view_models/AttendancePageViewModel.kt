@@ -11,7 +11,6 @@ import com.cdkentertainment.mobilny_usos_enhanced.models.AttendancePageModel
 import com.cdkentertainment.mobilny_usos_enhanced.models.GradesPageModel
 import com.cdkentertainment.mobilny_usos_enhanced.models.LessonGroup
 import com.cdkentertainment.mobilny_usos_enhanced.models.LessonGroupPageModel
-import com.cdkentertainment.mobilny_usos_enhanced.models.SeasonGroupsGroupedBySubject
 import com.cdkentertainment.mobilny_usos_enhanced.models.SharedDataClasses
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -29,7 +28,11 @@ fun main(): Unit = runBlocking {
     }
 }
 class AttendancePageViewModel: ViewModel() {
-    var lessonGroups: SeasonGroupsGroupedBySubject? by mutableStateOf(null)
+    var lessonGroups: List<List<LessonGroup>>? by mutableStateOf(null)
+        private set
+    var pinnedGroups: List<LessonGroup>? = null
+        private set
+    var pinnedGroupedBySubject: Map<String, List<LessonGroup>>? by mutableStateOf(null)
         private set
     var showPopup: Boolean by mutableStateOf(false)
         private set
@@ -59,7 +62,9 @@ class AttendancePageViewModel: ViewModel() {
                 return@withContext
             }
             try {
-                lessonGroups = lessongGroupModel.getLessonGroups()
+                // TODO: Powinien być bieżący semestr!!!
+                val groups = lessongGroupModel.getLessonGroups()
+                lessonGroups = groups.groups["2025/SZ"]?.values?.toList() ?: emptyList()
             } catch (e: Exception) {
                 // TODO: Add error handling
                 return@withContext
@@ -88,6 +93,21 @@ class AttendancePageViewModel: ViewModel() {
             savingAttendance = false
             showPopup = false
             popupData = null
+        }
+    }
+
+    suspend fun pinGroup(group: LessonGroup) {
+        withContext(Dispatchers.IO) {
+            if (pinnedGroups == null) {
+                pinnedGroups = emptyList()
+            }
+            val pinnedGroupsOldSize: Int = pinnedGroups!!.size
+            pinnedGroups = pinnedGroups!! + group
+            pinnedGroups = pinnedGroups!!.distinctBy { it.course_unit_id }
+            if (pinnedGroupsOldSize == pinnedGroups!!.size) {
+                return@withContext
+            }
+            pinnedGroupedBySubject = lessongGroupModel.mergeGroupsBySubjects(pinnedGroups!!)
         }
     }
 }
