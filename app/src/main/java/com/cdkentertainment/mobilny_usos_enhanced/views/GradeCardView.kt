@@ -33,7 +33,7 @@ fun GradeCardView(
     showGrade: Boolean = true,
     showArrow: Boolean = false,
     backgroundColor: Color = UISingleton.color1,
-    onClick: () -> Unit = {}
+    onClick: (() -> Unit)? = null
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(0.dp),
@@ -44,7 +44,7 @@ fun GradeCardView(
             .background(
                 backgroundColor,
             )
-            .clickable(onClick = onClick)
+            .clickable(onClick = onClick ?: {}, enabled = onClick != null)
             .padding(12.dp)
     ) {
         Text(

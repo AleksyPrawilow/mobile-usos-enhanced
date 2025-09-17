@@ -22,8 +22,8 @@ class LessonGroupPageModel {
         for (season in parsedSeasonGroups.groups.keys) {
             val seasonGroups = parsedSeasonGroups.groups[season]
             if (seasonGroups != null) {
-                val groupedBySubjects = seasonGroups.groupBy {
-                    group -> group.course_id
+                val groupedBySubjects = seasonGroups.groupBy { group ->
+                    group.course_id
                 }
                 groupsGroupedBySubjects.groups.put(season, groupedBySubjects)
             } else {

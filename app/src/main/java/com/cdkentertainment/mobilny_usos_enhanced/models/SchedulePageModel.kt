@@ -2,7 +2,6 @@ package com.cdkentertainment.mobilny_usos_enhanced.models
 
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -10,11 +9,10 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.TemporalAdjusters
-import kotlin.io.path.Path
 
 class SchedulePageModel {
     private val parser = Json { ignoreUnknownKeys = true }
-    private val fields = "start_time|end_time|room_number|course_name|classtype_id|building_name"
+    private val fields = "start_time|end_time|room_number|course_name|classtype_id|building_name|lecturer_ids"
     private val requestUrl = "tt/student"
     private fun getDayIndexFromDate(date: LocalDate): Int {
         return date.dayOfWeek.value - 1
@@ -111,5 +109,6 @@ data class Lesson(
     var room_number: String,
     val course_name: SharedDataClasses.LangDict,
     val classtype_id: String,
-    val building_name: SharedDataClasses.LangDict
+    val building_name: SharedDataClasses.LangDict,
+    val lecturer_ids: List<Int>
 )

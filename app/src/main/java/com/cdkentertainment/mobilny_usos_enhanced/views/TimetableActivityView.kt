@@ -126,7 +126,7 @@ fun TimetableActivityView(
                             .align(Alignment.End)
                     )
                     Text(
-                        text = "Sala: ${data.room_number}",
+                        text = data.room_number,
                         color = UISingleton.textColor2,
                         style = MaterialTheme.typography.bodyMedium,
                         textAlign = TextAlign.Right,

@@ -49,6 +49,7 @@ import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.getLocalized
+import com.cdkentertainment.mobilny_usos_enhanced.models.Lesson
 import com.cdkentertainment.mobilny_usos_enhanced.models.Schedule
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.HomePageViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.Screens
@@ -63,6 +64,7 @@ fun HomePageView() {
     val enterTransition: (Int) -> EnterTransition = UIHelper.slideEnterTransition
     val scaleEnterTransition: (Int) -> EnterTransition = UIHelper.scaleEnterTransition
     var showElements: Boolean by rememberSaveable { mutableStateOf(false) }
+    var showActivityDetails: Lesson? by remember { mutableStateOf(null) }
     val paddingModifier: Modifier = Modifier.padding(horizontal = UISingleton.horizontalPadding, vertical = 8.dp)
     val density: Density = LocalDensity.current
     val context: Context = LocalContext.current
@@ -91,10 +93,13 @@ fun HomePageView() {
     }
 
     LaunchedEffect(Unit) {
+        viewModel.fetchClasstypes()
         viewModel.fetchSchedule()
         delay(150)
         showElements = true
     }
+
+    showActivityDetails?.let { ActivityInfoPopupView(data = it, onDismissRequest = { showActivityDetails = null }) }
 
     LazyColumn (
         verticalArrangement = Arrangement.spacedBy(0.dp),
@@ -193,7 +198,7 @@ fun HomePageView() {
         item {
             AnimatedVisibility(!viewModel.scheduleFetchSuccess && showElements, enter = enterTransition(8)) {
                 TextAndIconCardView(
-                    "Nie udało się pobrać danych",
+                    stringResource(R.string.failed_to_fetch),
                     paddingModifier
                 ) {
                     coroutineScope.launch {
@@ -222,11 +227,15 @@ fun HomePageView() {
                         for (day in schedule.lessons.keys) {
                             for (activity in schedule.lessons[day]!!) {
                                 val time: String = "${viewModel.getTimeFromDate(activity.start_time)}-${viewModel.getTimeFromDate(activity.end_time)}"
-                                GradeCardView(
-                                    courseName = activity.course_name.getLocalized(context),
-                                    grade = time,
-                                    showArrow = true
-                                )
+                                TextAndBottomTextContainerView(
+                                    title = activity.course_name.getLocalized(context),
+                                    highlightedText = time,
+                                    bottomFirstText = activity.classtype_id,
+                                    bottomSecondText = activity.room_number,
+                                    backgroundColor = UISingleton.color1
+                                ) {
+                                    showActivityDetails = activity
+                                }
                             }
                         }
                     }

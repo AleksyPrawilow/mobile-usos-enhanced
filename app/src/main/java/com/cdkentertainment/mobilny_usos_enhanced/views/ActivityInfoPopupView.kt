@@ -87,8 +87,8 @@ fun ActivityInfoPopupView(
                     backgroundColor = UISingleton.color1,
                     modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 12.dp, bottom = 0.dp)
                 ) {
-                    repeat(2) { index ->
-                        GroupLecturerCardView(SharedDataClasses.Human(index.toString(), "Jan", "Kowalski"))
+                    for (lecturer in data.lecturer_ids) {
+                        GroupLecturerCardView(SharedDataClasses.Human(id = lecturer.toString(), first_name = lecturer.toString(), last_name = ""))
                     }
                 }
                 GroupedContentContainerView(
