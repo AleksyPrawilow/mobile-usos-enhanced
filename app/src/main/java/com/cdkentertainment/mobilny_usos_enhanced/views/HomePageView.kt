@@ -82,7 +82,7 @@ fun HomePageView() {
         Pair(stringResource(R.string.payments), ImageVector.vectorResource(R.drawable.rounded_payments_24)),
         Pair(stringResource(R.string.attendance), ImageVector.vectorResource(R.drawable.rounded_alarm_24))
     )
-    val cardLabelStyle: TextStyle = MaterialTheme.typography.titleMedium
+    val cardLabelStyle: TextStyle = MaterialTheme.typography.titleLarge
     val maxCardWidth: Int = remember(cardLabels, cardLabelStyle) {
         cardLabels.maxOf {
             textMeasurer.measure(

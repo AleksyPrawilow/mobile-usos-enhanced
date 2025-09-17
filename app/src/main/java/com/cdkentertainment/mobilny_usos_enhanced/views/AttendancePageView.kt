@@ -90,7 +90,7 @@ fun AttendancePageView() {
         Pair(stringResource(R.string.pinned_courses), ImageVector.vectorResource(R.drawable.rounded_bookmark_star_24)),
         Pair(stringResource(R.string.unpinned_courses), ImageVector.vectorResource(R.drawable.rounded_bookmark_remove_24)),
     )
-    val cardLabelStyle: TextStyle = MaterialTheme.typography.titleMedium
+    val cardLabelStyle: TextStyle = MaterialTheme.typography.titleLarge
     val maxCardWidth: Int = remember(cardLabels, cardLabelStyle) {
         cardLabels.maxOf {
             textMeasurer.measure(
