@@ -28,6 +28,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.cdkentertainment.mobilny_usos_enhanced.R
@@ -96,6 +97,7 @@ fun AttendanceTypePopupView(
                             Text(
                                 text = text.first,
                                 style = MaterialTheme.typography.titleMedium,
+                                fontWeight = if (text == selectedOption) FontWeight.Normal else FontWeight.Light,
                                 modifier = Modifier.padding(start = 12.dp)
                             )
                         }
