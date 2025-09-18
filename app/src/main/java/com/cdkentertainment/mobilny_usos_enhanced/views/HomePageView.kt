@@ -51,6 +51,7 @@ import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.getLocalized
 import com.cdkentertainment.mobilny_usos_enhanced.models.Lesson
 import com.cdkentertainment.mobilny_usos_enhanced.models.Schedule
+import com.cdkentertainment.mobilny_usos_enhanced.view_models.AttendancePageViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.HomePageViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.Screens
 import kotlinx.coroutines.CoroutineScope
@@ -60,6 +61,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomePageView() {
     val coroutineScope: CoroutineScope = rememberCoroutineScope()
+    val attendancePageViewModel: AttendancePageViewModel = viewModel<AttendancePageViewModel>()
     val viewModel: HomePageViewModel = viewModel<HomePageViewModel>()
     val enterTransition: (Int) -> EnterTransition = UIHelper.slideEnterTransition
     val scaleEnterTransition: (Int) -> EnterTransition = UIHelper.scaleEnterTransition
@@ -82,7 +84,7 @@ fun HomePageView() {
         Pair(stringResource(R.string.payments), ImageVector.vectorResource(R.drawable.rounded_payments_24)),
         Pair(stringResource(R.string.attendance), ImageVector.vectorResource(R.drawable.rounded_alarm_24))
     )
-    val cardLabelStyle: TextStyle = MaterialTheme.typography.titleLarge
+    val cardLabelStyle: TextStyle = MaterialTheme.typography.titleMedium
     val maxCardWidth: Int = remember(cardLabels, cardLabelStyle) {
         cardLabels.maxOf {
             textMeasurer.measure(
@@ -93,6 +95,7 @@ fun HomePageView() {
     }
 
     LaunchedEffect(Unit) {
+        attendancePageViewModel.readPinnedGroups(context)
         viewModel.fetchClasstypes()
         viewModel.fetchSchedule()
         delay(150)

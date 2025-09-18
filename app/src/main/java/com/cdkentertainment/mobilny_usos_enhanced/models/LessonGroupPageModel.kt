@@ -51,7 +51,7 @@ class LessonGroupPageModel {
             }
         }
     }
-   public suspend fun getParticipantOfGivenGroup(groupNumber: String, courseUnitId: String): Participants {
+    public suspend fun getParticipantOfGivenGroup(groupNumber: String, courseUnitId: String): Participants {
        return withContext(Dispatchers.IO) {
            val apiRequest: String = "$participantUrl?course_unit_id=$courseUnitId&group_number=$groupNumber&fields=$participantField"
            val response: Map<String, String> = OAuthSingleton.get(apiRequest)
@@ -62,7 +62,7 @@ class LessonGroupPageModel {
                throw(Exception("API Error"))
            }
        }
-   }
+    }
 }
 @Serializable
 data class SeasonGroupsGroupedBySubject (

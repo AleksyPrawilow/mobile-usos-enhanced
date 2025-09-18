@@ -1,10 +1,12 @@
 package com.cdkentertainment.mobilny_usos_enhanced.models
 
+import android.content.Context
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import java.io.File
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -50,6 +52,30 @@ class AttendancePageModel {
                 return@withContext dates
             } else {
                 throw(Exception("API Error"))
+            }
+        }
+    }
+    public suspend fun savePinnedGroups(groups: List<LessonGroup>, fileName: String, context: Context): Result<Unit> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val json: String = parser.encodeToString(groups)
+                val file = File(context.filesDir, fileName)
+                file.writeText(json)
+                Result.success(Unit)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+    public suspend fun readPinnedGroups(fileName: String, context: Context): List<LessonGroup> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val file = File(context.filesDir, fileName)
+                val json: String = file.readText()
+                val groups: List<LessonGroup> = parser.decodeFromString(json)
+                return@withContext groups
+            } catch (e: Exception) {
+                return@withContext emptyList()
             }
         }
     }

@@ -32,38 +32,40 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
-import com.cdkentertainment.mobilny_usos_enhanced.view_models.AttendancePageViewModel
 
 @Composable
 fun AttendanceDateCardView(
     index: Int,
+    maxIndex: Int,
     date: String,
-    viewModel: AttendancePageViewModel,
-    modifier: Modifier
+    modifier: Modifier = Modifier,
+    icon: ImageVector? = null,
+    enabled: Boolean = true
 ) {
     var showTypeSelector: Boolean by rememberSaveable { mutableStateOf(false) }
     val imageVectors: List<ImageVector> = listOf(
         ImageVector.vectorResource(R.drawable.rounded_edit_24),
         Icons.Rounded.Done,
         ImageVector.vectorResource(R.drawable.rounded_warning_24),
-        Icons.Rounded.Close
+        Icons.Rounded.Close,
+        ImageVector.vectorResource(R.drawable.rounded_door_open_24),
     )
     val state = remember { mutableStateOf(0) }
-    val shape: RoundedCornerShape = RoundedCornerShape(
-        topStart = 0.dp,
-        topEnd = 0.dp,
-        bottomStart = if (index == 5 - 1) UISingleton.uiElementsCornerRadius.dp else 0.dp,
-        bottomEnd = if (index == 5 - 1) UISingleton.uiElementsCornerRadius.dp else 0.dp,
-    )
+    val shape: RoundedCornerShape = remember {
+        RoundedCornerShape(
+            topStart = 0.dp,
+            topEnd = 0.dp,
+            bottomStart = if (index == maxIndex - 1) UISingleton.uiElementsCornerRadius.dp else 0.dp,
+            bottomEnd = if (index == maxIndex - 1) UISingleton.uiElementsCornerRadius.dp else 0.dp,
+        )
+    }
 
     if (showTypeSelector) {
         AttendanceTypePopupView(
             value = state,
             onDismissExtra = {
                 showTypeSelector = false
-                println("Ok")
-            },
-            sex = 0
+            }
         )
     }
 
@@ -77,6 +79,7 @@ fun AttendanceDateCardView(
         onClick = {
             showTypeSelector = true
         },
+        enabled = enabled,
         shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp),
         modifier = Modifier
             .fillMaxWidth()
@@ -107,7 +110,7 @@ fun AttendanceDateCardView(
                     .weight(1f)
             )
             Icon(
-                imageVector = imageVectors[state.value],
+                imageVector = if (enabled == false) icon!! else imageVectors[state.value],
                 contentDescription = "Icon",
                 tint = UISingleton.textColor4,
                 modifier = Modifier

@@ -17,6 +17,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -36,27 +37,36 @@ import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.getLocalized
+import com.cdkentertainment.mobilny_usos_enhanced.models.AttendanceDatesObject
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.AttendancePageViewModel
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 @Composable
-fun AttendancePopupView(
+fun UnpinnedCoursePopupView(
     viewModel: AttendancePageViewModel,
     onDismissRequest: () -> Unit,
-    onRemovePin: () -> Unit
+    onAddPin: () -> Unit
 ) {
+    val formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale.getDefault())
     val context: Context = LocalContext.current
-    var showRemoveDialog: Boolean by rememberSaveable { mutableStateOf(false) }
-    if (showRemoveDialog) {
+    var showPinDialog: Boolean by rememberSaveable { mutableStateOf(false) }
+    val meetings: List<AttendanceDatesObject>? = viewModel.unitMeetings[viewModel.popupData!!.classGroupData.course_unit_id.toString()]
+
+    LaunchedEffect(Unit) {
+        viewModel.readAllCourseMeetings(viewModel.popupData!!.classGroupData)
+    }
+
+    if (showPinDialog) {
         ConfirmDialogPopupView(
-            title = stringResource(R.string.unpin_confirm),
+            title = stringResource(R.string.pin_confirm),
             confirmTitle = stringResource(R.string.yes),
             dismissTitle = stringResource(R.string.no),
-            description = stringResource(R.string.unpin_description),
             onConfirm = {
-                showRemoveDialog = false
-                onRemovePin()
+                showPinDialog = false
+                onAddPin()
             },
-            onDismiss = { showRemoveDialog = false }
+            onDismiss = { showPinDialog = false }
         )
     }
     Dialog(
@@ -99,16 +109,16 @@ fun AttendancePopupView(
                     }
                 }
                 item {
-                    GroupedContentContainerView(
-                        title = stringResource(R.string.attendance),
-                        backgroundColor = UISingleton.color1,
-                        modifier = Modifier.padding(12.dp)
+                    TextAndIconCardView(
+                        title = stringResource(R.string.add_pin),
+                        icon = ImageVector.vectorResource(R.drawable.rounded_pin_24),
+                        modifier = Modifier.padding(12.dp),
+                        backgroundColor = UISingleton.color1
                     ) {
-                        AttendanceStatCardView(stringResource(R.string.frequency), "100%")
-                        AttendanceStatCardView(stringResource(R.string.absences), "0")
+                        showPinDialog = true
                     }
                 }
-                if (true) {
+                if (meetings != null) {
                     item {
                         Text(
                             text = stringResource(R.string.meetings),
@@ -124,24 +134,15 @@ fun AttendancePopupView(
                                 .animateItem()
                         )
                     }
-
-                    items(5, key = { it }) { index ->
+                    items(meetings.size, key = { it }) { index ->
                         AttendanceDateCardView(
                             index = index,
-                            date = "12 Października 2025",
-                            maxIndex = 5,
+                            maxIndex = meetings.size,
+                            date = meetings[index].startDateTime.toLocalDate().format(formatter),
+                            icon = ImageVector.vectorResource(R.drawable.rounded_calendar_month_24),
+                            enabled = false,
                             modifier = Modifier.animateItem()
                         )
-                    }
-                    item {
-                        TextAndIconCardView(
-                            title = stringResource(R.string.remove_pin),
-                            icon = ImageVector.vectorResource(R.drawable.rounded_bookmark_remove_24),
-                            modifier = Modifier.padding(top = 12.dp, start = 12.dp, end = 12.dp),
-                            backgroundColor = UISingleton.color1
-                        ) {
-                            showRemoveDialog = true
-                        }
                     }
                 } else {
                     item {

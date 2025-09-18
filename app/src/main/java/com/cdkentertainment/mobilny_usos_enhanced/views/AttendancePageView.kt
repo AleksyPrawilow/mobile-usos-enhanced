@@ -57,7 +57,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -72,8 +71,24 @@ fun AttendancePageView() {
 
     val context: Context = LocalContext.current
     val onPopupDismissRequest: () -> Unit = {
+        attendancePageViewModel.dismissPopup()
+    }
+
+    val onUnpinnedPopupDismissRequest: () -> Unit = {
+        attendancePageViewModel.dismissUnpinnedPopup()
+    }
+
+    val onRemovePin: () -> Unit = {
         CoroutineScope(Dispatchers.IO).launch {
-            attendancePageViewModel.dismissPopup(context)
+            attendancePageViewModel.removePin(attendancePageViewModel.popupData!!.classGroupData, context)
+            attendancePageViewModel.dismissPopup()
+        }
+    }
+
+    val onAddPin: () -> Unit = {
+        CoroutineScope(Dispatchers.IO).launch {
+            attendancePageViewModel.pinGroup(attendancePageViewModel.popupData!!.classGroupData, context)
+            attendancePageViewModel.dismissUnpinnedPopup()
         }
     }
 
@@ -121,7 +136,11 @@ fun AttendancePageView() {
     }
 
     if (attendancePageViewModel.showPopup) {
-        AttendancePopupView(viewModel = attendancePageViewModel, onDismissRequest = onPopupDismissRequest)
+        AttendancePopupView(viewModel = attendancePageViewModel, onDismissRequest = onPopupDismissRequest, onRemovePin = onRemovePin)
+    }
+
+    if (attendancePageViewModel.showUnpinnedPopup) {
+        UnpinnedCoursePopupView(viewModel = attendancePageViewModel, onDismissRequest = onUnpinnedPopupDismissRequest, onAddPin = onAddPin)
     }
 
     LazyColumn(
@@ -214,11 +233,7 @@ fun AttendancePageView() {
                                             showArrow = true,
                                             showGrade = false,
                                         ) {
-                                            coroutineScope.launch {
-                                                withContext(Dispatchers.IO) {
-                                                    attendancePageViewModel.pinGroup(course)
-                                                }
-                                            }
+                                            attendancePageViewModel.showUnpinnedPopup(course)
                                         }
                                     }
                                 }
@@ -252,11 +267,7 @@ fun AttendancePageView() {
                         ) {
                             CourseContainerView(courseUnits, modifier = paddingModifier) { unit ->
                                 AttendanceClassGroupView(unit) {
-                                    coroutineScope.launch {
-                                        withContext(Dispatchers.IO) {
-                                            attendancePageViewModel.showPopup(unit, context)
-                                        }
-                                    }
+                                    attendancePageViewModel.showPopup(unit)
                                 }
                             }
                         }

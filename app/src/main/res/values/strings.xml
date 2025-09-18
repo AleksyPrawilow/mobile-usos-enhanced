@@ -45,4 +45,17 @@
     <string name="failed_to_fetch">Failed to fetch data</string>
     <string name="pinned_courses">Pinned\ncourses</string>
     <string name="unpinned_courses">Unpinned\ncourses</string>
+    <string name="remove_pin">Remove pin</string>
+    <string name="add_pin">Pin this course</string>
+    <string name="register_attendance">Register your attendance</string>
+    <string name="present">Present</string>
+    <string name="excused_absence">Excused absence</string>
+    <string name="unexcused_absence">Unexcused absence</string>
+    <string name="class_cancelled">Class cancelled</string>
+    <string name="confirm">Confirm</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="pin_confirm">Are you sure you want to pin this course?</string>
+    <string name="unpin_confirm">Are you sure you want to unpin this course?</string>
+    <string name="unpin_description">Attendance data related to this course will not be lost</string>
 </resources>
