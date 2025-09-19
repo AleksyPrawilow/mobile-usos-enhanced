@@ -17,6 +17,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -92,11 +93,16 @@ fun AttendanceTypePopupView(
                         ) {
                             RadioButton(
                                 selected = (text == selectedOption),
-                                onClick = null
+                                onClick = null,
+                                colors = RadioButtonDefaults.colors(
+                                    selectedColor = UISingleton.color4,
+                                    unselectedColor = UISingleton.color2
+                                )
                             )
                             Text(
                                 text = text.first,
                                 style = MaterialTheme.typography.titleMedium,
+                                color = UISingleton.textColor1,
                                 fontWeight = if (text == selectedOption) FontWeight.Normal else FontWeight.Light,
                                 modifier = Modifier.padding(start = 12.dp)
                             )
