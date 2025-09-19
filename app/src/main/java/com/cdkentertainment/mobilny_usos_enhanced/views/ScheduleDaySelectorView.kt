@@ -1,42 +1,40 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
-import android.graphics.Color.TRANSPARENT
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush.Companion.verticalGradient
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.SchedulePageViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -44,15 +42,26 @@ import kotlin.math.min
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ScheduleDaySelectorView(schedulePageViewModel: SchedulePageViewModel, modifier: Modifier = Modifier) {
-    val daysOfWeek: List<String> = listOf("pn", "wt", "śr", "cz", "pt")
+fun ScheduleDaySelectorView(
+    modifier: Modifier = Modifier,
+    onDaySelected: (Int) -> Unit = {}
+) {
+    val daysOfWeek: List<String> = listOf(
+        "pn",
+        "wt",
+        "śr",
+        "cz",
+        "pt"
+    )
+    val coroutineScope: CoroutineScope = rememberCoroutineScope()
+    val schedulePageViewModel: SchedulePageViewModel = viewModel<SchedulePageViewModel>()
     val datePickerState = rememberDatePickerState()
 
     LaunchedEffect(Unit) {
         schedulePageViewModel.selectDay(min(LocalDate.now().dayOfWeek.value - 1, 4))
     }
 
-    AnimatedVisibility(schedulePageViewModel.displayDateSelector) {
+    if (schedulePageViewModel.displayDateSelector) {
         DatePickerDialog(
 //            colors = DatePickerDefaults.colors(
 //
@@ -99,11 +108,7 @@ fun ScheduleDaySelectorView(schedulePageViewModel: SchedulePageViewModel, modifi
             .then(modifier)
             .shadow(5.dp, RoundedCornerShape(UISingleton.uiElementsCornerRadius))
             .background(
-                brush = verticalGradient(
-                    0.0f to UISingleton.color2,
-                    0.5f to UISingleton.color2,
-                    0.5f to UISingleton.color3
-                ),
+                UISingleton.color2,
                 shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius)
             )
     ) {
@@ -114,62 +119,79 @@ fun ScheduleDaySelectorView(schedulePageViewModel: SchedulePageViewModel, modifi
                 .fillMaxWidth()
                 .padding(12.dp)
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .horizontalScroll(rememberScrollState())
+            SingleChoiceSegmentedButtonRow(
+                modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState())
             ) {
                 for (weekOptionIndex in 0..1) {
-                    Text(
-                        text = if (weekOptionIndex == 0) "Aktualny tydzień" else "Inny tydzień",
-                        color = UISingleton.textColor1,
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier
-                            .background(if (schedulePageViewModel.selectedWeekOption == weekOptionIndex) UISingleton.color1 else Color(TRANSPARENT), CircleShape)
-                            .clip(CircleShape)
-                            .clickable(onClick = {
-                                if (weekOptionIndex == 0) {
-                                    if (schedulePageViewModel.selectedWeekOption != weekOptionIndex) {
-                                        schedulePageViewModel.resetSchedule()
-                                        schedulePageViewModel.selectDay(min(LocalDate.now().dayOfWeek.value - 1, 4))
-                                        CoroutineScope(Dispatchers.IO).launch {
+                    SegmentedButton(
+                        shape = SegmentedButtonDefaults.itemShape(
+                            index = weekOptionIndex,
+                            count = 2,
+                        ),
+                        onClick = {
+                            if (weekOptionIndex == 0) {
+                                if (schedulePageViewModel.selectedWeekOption != weekOptionIndex) {
+                                    val dayIndex: Int = min(LocalDate.now().dayOfWeek.value - 1, 4)
+                                    schedulePageViewModel.resetSchedule()
+                                    schedulePageViewModel.selectDay(dayIndex)
+                                    coroutineScope.launch {
+                                        withContext(Dispatchers.IO) {
                                             schedulePageViewModel.fetchWeekData(LocalDate.of(2025, 5, 13))
+                                            onDaySelected(dayIndex)
                                         }
                                     }
-                                } else {
-                                    schedulePageViewModel.setDateSelectorVisibility(true)
                                 }
-                                schedulePageViewModel.selectWeekOption(weekOptionIndex)
-                            })
-                            .padding(horizontal = 16.dp, 12.dp)
-                    )
+                            } else {
+                                schedulePageViewModel.setDateSelectorVisibility(true)
+                            }
+                            schedulePageViewModel.selectWeekOption(weekOptionIndex)
+                            onDaySelected(schedulePageViewModel.selectedDay)
+                        },
+                        colors = SegmentedButtonDefaults.colors(
+                            activeContentColor = UISingleton.textColor4,
+                            activeContainerColor = UISingleton.color3,
+                            activeBorderColor = UISingleton.color3,
+                            inactiveContentColor = UISingleton.textColor1,
+                            inactiveContainerColor = UISingleton.color1,
+                            inactiveBorderColor = UISingleton.color1
+                        ),
+                        selected = weekOptionIndex == schedulePageViewModel.selectedWeekOption,
+                    ) {
+                        Text(
+                            text = if (weekOptionIndex == 0) "Ten tydzień" else "Inny tydzień",
+                            style = MaterialTheme.typography.titleMedium,
+                            textAlign = TextAlign.Center,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
             }
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .horizontalScroll(rememberScrollState())
-            ) {
-                for (dayIndex in 0 until daysOfWeek.size) {
-                    Text(
-                        text = daysOfWeek[dayIndex],
-                        style = MaterialTheme.typography.titleMedium,
-                        color = UISingleton.textColor4,
-                        modifier = Modifier
-                            .background(if (schedulePageViewModel.selectedDay == dayIndex) UISingleton.color4 else Color(TRANSPARENT), CircleShape)
-                            .clip(CircleShape)
-                            .clickable(
-                                onClick = {
-                                    schedulePageViewModel.selectDay(dayIndex)
-                                }
-                            )
-                            .padding(horizontal = 16.dp, 12.dp)
-                    )
+            SingleChoiceSegmentedButtonRow {
+                daysOfWeek.forEachIndexed { index, label ->
+                    SegmentedButton(
+                        shape = SegmentedButtonDefaults.itemShape(
+                            index = index,
+                            count = daysOfWeek.size,
+                        ),
+                        onClick = {
+                            schedulePageViewModel.selectDay(index)
+                            onDaySelected(index)
+                        },
+                        colors = SegmentedButtonDefaults.colors(
+                            activeContentColor = UISingleton.textColor4,
+                            activeContainerColor = UISingleton.color3,
+                            activeBorderColor = UISingleton.color3,
+                            inactiveContentColor = UISingleton.textColor1,
+                            inactiveContainerColor = UISingleton.color1,
+                            inactiveBorderColor = UISingleton.color1
+                        ),
+                        selected = index == schedulePageViewModel.selectedDay,
+                    ) {
+                        Text(
+                            text = label,
+                            style = MaterialTheme.typography.titleMedium,
+                        )
+                    }
                 }
             }
         }

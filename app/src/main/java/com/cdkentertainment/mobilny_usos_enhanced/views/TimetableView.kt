@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -29,21 +28,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
+import com.cdkentertainment.mobilny_usos_enhanced.models.Schedule
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.SchedulePageViewModel
 import kotlinx.coroutines.delay
 
 @Composable
-fun TimetableView(schedulePageViewModel: SchedulePageViewModel? = null) {
-    val minutesDp: Dp = spToDp(32.sp)
+fun TimetableView(
+    minutesDp: Dp = spToDp(32.sp),
+    startHour: Int = 7,
+    endHour: Int = 23,
+    schedule: Schedule? = null
+) {
+    val schedulePageViewModel: SchedulePageViewModel = viewModel<SchedulePageViewModel>()
     val hoursDp: Dp = minutesDp * 4
-    val startHour: Int = 7
-    val endHour: Int = 22
     val totalHours: Int = endHour - startHour
     val totalHeight: Dp = hoursDp * totalHours
     var show: Boolean by rememberSaveable { mutableStateOf(true) }
@@ -56,7 +59,8 @@ fun TimetableView(schedulePageViewModel: SchedulePageViewModel? = null) {
     }
     Box(
         contentAlignment = Alignment.TopStart,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(0.dp),
@@ -120,13 +124,13 @@ fun TimetableView(schedulePageViewModel: SchedulePageViewModel? = null) {
                 }
             }
         }
-        if (schedulePageViewModel?.schedule != null) {
-            if (schedulePageViewModel.schedule!!.lessons.containsKey(schedulePageViewModel.selectedDay)) {
-                for (activityIndex in 0 until schedulePageViewModel.schedule!!.lessons[schedulePageViewModel.selectedDay]!!.size) {
+        if (schedule != null) {
+            if (schedule.lessons.containsKey(schedulePageViewModel.selectedDay)) {
+                for (activityIndex in 0 until schedule.lessons[schedulePageViewModel.selectedDay]!!.size) {
                     key("$activityIndex/${schedulePageViewModel.selectedDay}") {
                         TimetableActivityView(
                             minutesDp,
-                            schedulePageViewModel.schedule!!.lessons[schedulePageViewModel.selectedDay]!![activityIndex],
+                            schedule.lessons[schedulePageViewModel.selectedDay]!![activityIndex],
                             schedulePageViewModel,
                             activityIndex
                         )
@@ -146,17 +150,4 @@ fun spToDp(sp: TextUnit): Dp {
 @Composable
 fun TextUnit.scaleIndependent(): TextUnit {
     return this / LocalDensity.current.fontScale
-}
-
-@Preview(showBackground = true)
-@Composable
-fun TimetablePreview() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = UISingleton.color1)
-            .padding(12.dp)
-    ) {
-        TimetableView()
-    }
 }

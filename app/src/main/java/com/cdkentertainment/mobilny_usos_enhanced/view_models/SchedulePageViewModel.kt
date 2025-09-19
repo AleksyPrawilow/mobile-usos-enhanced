@@ -1,10 +1,12 @@
 package com.cdkentertainment.mobilny_usos_enhanced.view_models
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
+import com.cdkentertainment.mobilny_usos_enhanced.models.Lesson
 import com.cdkentertainment.mobilny_usos_enhanced.models.Schedule
 import com.cdkentertainment.mobilny_usos_enhanced.models.SchedulePageModel
 import com.cdkentertainment.mobilny_usos_enhanced.models.prettyPrint
@@ -38,6 +40,7 @@ class SchedulePageViewModel: ViewModel() {
         private set
     var schedule: Schedule? by mutableStateOf(null)
         private set
+    var groupedByHours: Map<Int, List<Lesson>> = mutableStateMapOf<Int, List<Lesson>>()
     private val model: SchedulePageModel = SchedulePageModel()
 
     fun selectWeekOption(weekOptionIndex: Int) {
@@ -60,6 +63,12 @@ class SchedulePageViewModel: ViewModel() {
         val localDateTime = LocalDateTime.parse(date, timeFormatter)
         val localTime: LocalTime = localDateTime.toLocalTime()
         return localTime.toString()
+    }
+
+    fun groupLessonsByHour(lessons: List<Lesson>) {
+        groupedByHours = lessons.groupBy {
+            getTimeFromDate(it.start_time).substring(0, 2).toInt()
+        }
     }
 
     suspend fun fetchTodaysActivities() {
