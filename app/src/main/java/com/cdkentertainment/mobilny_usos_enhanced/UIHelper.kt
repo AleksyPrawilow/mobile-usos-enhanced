@@ -24,6 +24,50 @@ object UIHelper {
     private val tweenFadeSpec  : (Int) -> FiniteAnimationSpec<Float>     = { delayIndex: Int -> tween(SLIDE_APPEAR_DURATION, SLIDE_DELAY_BETWEEN_SHOWS * delayIndex) }
     val slideEnterTransition: (Int) -> EnterTransition = { delayIndex: Int -> slideInHorizontally(tweenSlideSpec(delayIndex)) + fadeIn(tweenFadeSpec(delayIndex)) }
     val scaleEnterTransition: (Int) -> EnterTransition = { delayIndex: Int -> scaleIn(tweenFadeSpec(delayIndex)) + fadeIn(tweenFadeSpec(delayIndex)) }
-
     var classTypeIds: Map<String, SharedDataClasses.IdAndName> by mutableStateOf(emptyMap())
+
+    private val lectureIcon: Int = R.drawable.rounded_school_24
+    private val labsIcon: Int = R.drawable.rounded_science_24
+    private val classroomIcon: Int = R.drawable.rounded_assignment_24
+    private val seminarIcon: Int = R.drawable.rounded_group_24
+    private val tutorialIcon: Int = R.drawable.rounded_developer_guide_24
+    private val workshopIcon: Int = R.drawable.rounded_settings_24
+    private val outsideTrainingIcon: Int = R.drawable.rounded_nature_people_24
+    private val sportsIcon: Int = R.drawable.rounded_sports_24
+    val otherIcon: Int = R.drawable.rounded_menu_book_24
+
+    val activityTypeIconMapping: Map<String, Int?> = mapOf(
+        "CW1" to classroomIcon, // cw
+        "CW2" to classroomIcon,
+        "CW3" to classroomIcon,
+        "CW4" to classroomIcon,
+        "CW5" to classroomIcon,
+        "PB" to otherIcon, // Projekt badawczy
+        "MET" to null, // Zajęcia metodyczne
+        "WMED" to otherIcon, // Warsztaty metodyczne
+        "WYK" to lectureIcon, // wykład
+        "CW" to classroomIcon,
+        "LAB" to labsIcon, // Zajęcia laboratoryjne,
+        "SEM" to seminarIcon, // Seminarium,
+        "WF" to sportsIcon, // WF
+        "KON" to null, // Konserwatorium
+        "LEK" to null, // Lektorat
+        "EGZ" to classroomIcon, // Egzamin
+        "WAR" to workshopIcon, // Warsztat
+        "MED" to null, // Zajęcia metodyczne w szkole
+        "ZTER" to outsideTrainingIcon, // Zajęcia terenowe
+        "WYK2" to lectureIcon, // Wykład
+        "PRA" to lectureIcon, // Praktyka
+        "HOST" to null, // Hospitacje
+        "PROS" to seminarIcon, // Proseminarium
+        "MET1" to null, // Zajęcia metodyczne w szkołach oraz placówkach opiekuńczo-wychowawczych
+        "MET2" to null, // Zajęcia metodyczne w szkołach, przedszkolach oraz placówkach opiekuńczo-wychowawczych
+        "MET3" to null, // Zajęcia metodyczne w szkołach i przedszkolach
+        "MET4" to null, // Zajęcia metodyczne w szkołach i przedszkolach oraz placówkach diagnostyczno-terapeutycznych
+        "MET5" to null, // Zajęcia metod. w placówkach diagnostyczno-terapeutycznych oraz opiekuńczo-wychowawczych
+        "LEKT" to null, // Lektorat
+        "TEST" to classroomIcon, // Test
+        "TUT" to tutorialIcon, // Tutorial
+        "KCW" to labsIcon, // kcw
+    )
 }

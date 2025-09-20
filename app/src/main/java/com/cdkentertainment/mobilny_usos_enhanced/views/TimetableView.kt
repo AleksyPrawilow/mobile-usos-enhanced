@@ -129,10 +129,9 @@ fun TimetableView(
                 for (activityIndex in 0 until schedule.lessons[schedulePageViewModel.selectedDay]!!.size) {
                     key("$activityIndex/${schedulePageViewModel.selectedDay}") {
                         TimetableActivityView(
-                            minutesDp,
-                            schedule.lessons[schedulePageViewModel.selectedDay]!![activityIndex],
-                            schedulePageViewModel,
-                            activityIndex
+                            minutesDp = minutesDp,
+                            data = schedule.lessons[schedulePageViewModel.selectedDay]!![activityIndex],
+                            index = activityIndex
                         )
                     }
                 }

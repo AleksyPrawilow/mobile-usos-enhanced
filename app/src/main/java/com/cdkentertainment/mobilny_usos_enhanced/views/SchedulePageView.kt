@@ -117,7 +117,7 @@ fun SchedulePageView() {
             }
         }
         item {
-            AnimatedVisibility(showElements, enter = enterTransition(2), modifier = paddingModifier) {
+            AnimatedVisibility(showElements, enter = enterTransition(2)) {
                 TimetableView(
                     minutesDp = minutesDp,
                     startHour = startHour,
