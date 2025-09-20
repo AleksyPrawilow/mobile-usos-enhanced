@@ -1,12 +1,14 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
-import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,34 +20,30 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
-import com.cdkentertainment.mobilny_usos_enhanced.getLocalized
-import com.cdkentertainment.mobilny_usos_enhanced.models.Payment
 
 @Composable
-fun PaymentView(
-    payment: Payment
+fun TextAndBottomTextContainerView(
+    title: String,
+    highlightedText: String,
+    bottomFirstText: String,
+    bottomSecondText: String,
+    showHighlightedText: Boolean = true,
+    showArrow: Boolean = true,
+    backgroundColor: Color = UISingleton.color2,
+    onClick: (() -> Unit)? = null
 ) {
-    val context: Context = LocalContext.current
-    var showDetails: Boolean by rememberSaveable { mutableStateOf(false) }
-    if (showDetails) {
-        PaymentInfoPopupView(data = payment, onDismissRequest = { showDetails = false })
-    }
     Column(
         modifier = Modifier
             .drawBehind {
@@ -54,25 +52,21 @@ fun PaymentView(
                     cornerRadius = CornerRadius(UISingleton.uiElementsCornerRadius.dp.toPx(), UISingleton.uiElementsCornerRadius.dp.toPx())
                 )
             }
-            .shadow(3.dp, shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
             .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
-            .clickable(onClick = {
-                showDetails = true
-            })
+            .clickable(onClick = onClick ?: {}, enabled = onClick != null)
     ) {
         Card(
             colors = CardDefaults.cardColors(
-                containerColor = UISingleton.color2,
-                disabledContainerColor = UISingleton.color2,
+                containerColor = backgroundColor,
+                disabledContainerColor = backgroundColor,
                 contentColor = UISingleton.textColor1,
                 disabledContentColor = UISingleton.textColor1
             ),
-            //elevation = CardDefaults.cardElevation(3.dp),
             shape = RoundedCornerShape(
                 bottomStart = 0.dp,
                 topEnd = UISingleton.uiElementsCornerRadius.dp,
                 topStart = UISingleton.uiElementsCornerRadius.dp,
-                bottomEnd = 0.dp//UISingleton.uiElementsCornerRadius.dp
+                bottomEnd = 0.dp
             ),
             modifier = Modifier
                 .fillMaxWidth()
@@ -86,8 +80,8 @@ fun PaymentView(
                     .padding(12.dp)
             ) {
                 Text(
-                    text = payment.type.description.getLocalized(context),
-                    style = MaterialTheme.typography.titleLarge,
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     color = UISingleton.textColor1,
@@ -95,28 +89,46 @@ fun PaymentView(
                         .weight(1f)
                         .padding(end = 6.dp)
                 )
-                Icon(
-                    imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
-                    contentDescription = "More",
-                    tint = UISingleton.textColor1,
-                    modifier = Modifier
-                )
+                if (showArrow) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
+                        contentDescription = "More",
+                        tint = UISingleton.textColor1,
+                        modifier = Modifier
+                            .padding(horizontal = 12.dp)
+                    )
+                }
+                if (showHighlightedText) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .defaultMinSize(minWidth = 40.dp)
+                            .height(40.dp)
+                            .background(UISingleton.color3, RoundedCornerShape(50.dp))
+                            .padding(horizontal = 6.dp)
+                    ) {
+                        Text(
+                            text = highlightedText,
+                            color = UISingleton.textColor4,
+                            fontSize = 17.sp.scaleIndependent(),
+                            fontWeight = FontWeight.ExtraBold,
+                            maxLines = 1,
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                        )
+                    }
+                }
             }
-//            Text(
-//                text = payment.description.pl,
-//                style = MaterialTheme.typography.titleLarge,
-//                color = UISingleton.textColor1,
-//                maxLines = 2,
-//                overflow = TextOverflow.Ellipsis,
-//                modifier = Modifier.padding(12.dp)
-//            )
         }
         Row(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                text = payment.payment_deadline,
-                style = MaterialTheme.typography.titleMedium,
+                text = bottomFirstText,
+                style = MaterialTheme.typography.titleSmall,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                fontWeight = FontWeight.Bold,
                 color = UISingleton.textColor4,
                 modifier = Modifier
                     .background(
@@ -132,11 +144,11 @@ fun PaymentView(
                     .padding(top = 4.dp, bottom = 4.dp, start = 12.dp, end = 12.dp)
             )
             Text(
-                text = "${"%.2f".format(if (payment.state == "unpaid") payment.total_amount - payment.saldo_amount else payment.total_amount)} zł",
-                style = MaterialTheme.typography.titleMedium,
+                text = bottomSecondText,
+                style = MaterialTheme.typography.titleSmall,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                fontWeight = FontWeight.ExtraBold,
+                fontWeight = FontWeight.Bold,
                 color = UISingleton.textColor4,
                 modifier = Modifier
                     .offset(x = -UISingleton.uiElementsCornerRadius.dp)

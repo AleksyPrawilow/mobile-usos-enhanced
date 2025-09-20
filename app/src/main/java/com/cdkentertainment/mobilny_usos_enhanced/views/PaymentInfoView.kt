@@ -17,15 +17,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.models.Payment
 
 @Composable
 fun PaymentInfoView(data: Payment) {
     GroupedContentContainerView(
-        title = "Informacja o płatności",
+        title = stringResource(R.string.payment_information),
         backgroundColor = UISingleton.color1,
         modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 12.dp)
     ) {

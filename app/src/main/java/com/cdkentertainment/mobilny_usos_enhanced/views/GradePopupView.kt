@@ -36,11 +36,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.models.TermGrade
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.GradesPageViewModel
@@ -75,7 +77,9 @@ private val BottomAxisValueFormatter = CartesianValueFormatter { context, x, _ -
 
 @Composable
 fun GradePopupView(
-    grade: TermGrade, onDismiss: () -> Unit
+    grade: TermGrade,
+    title: String? = null,
+    onDismiss: () -> Unit
 ) {
     val viewModel: GradesPageViewModel = viewModel<GradesPageViewModel>()
     var fetchingSuccess: Boolean by rememberSaveable { mutableStateOf(true) }
@@ -107,14 +111,20 @@ fun GradePopupView(
                     .fillMaxWidth()
                     .verticalScroll(rememberScrollState())
             ) {
-                Spacer(Modifier.height(36.dp))
+                if (title != null) {
+                    PopupHeaderView(
+                        title = title
+                    )
+                } else {
+                    Spacer(Modifier.height(48.dp))
+                }
                 GroupedContentContainerView(
-                    title = "Informacja o ocenie",
+                    title = stringResource(R.string.grade_information),
                     backgroundColor = UISingleton.color1,
-                    modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 12.dp)
+                    modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 0.dp)
                 ) {
                     GradeCardView(
-                        courseName = "Twoja ocena",
+                        courseName = stringResource(R.string.your_grade),
                         grade = grade.value_symbol,
                         backgroundColor = UISingleton.color2
                     )
@@ -144,7 +154,7 @@ fun GradePopupView(
                     }
                 }
                 GroupedContentContainerView(
-                    title = "Dystrybucja ocen",
+                    title = stringResource(R.string.grade_distribution),
                     backgroundColor = UISingleton.color1,
                     modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 12.dp)
                 ) {

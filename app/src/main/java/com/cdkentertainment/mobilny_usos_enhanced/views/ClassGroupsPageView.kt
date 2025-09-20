@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
@@ -52,9 +51,9 @@ fun ClassGroupsPageView() {
     val insets = WindowInsets.systemBars
     val topInset = insets.getTop(density)
     val bottomInset = insets.getBottom(density)
-    val topPadding = with(LocalDensity.current) { topInset.toDp() }
-    val bottomPadding = with(LocalDensity.current) { bottomInset.toDp() }
-    val paddingModifier: Modifier = Modifier.padding(horizontal = UISingleton.horizontalPadding)
+    val topPadding = with(density) { topInset.toDp() }
+    val bottomPadding = with(density) { bottomInset.toDp() }
+    val paddingModifier: Modifier = Modifier.padding(horizontal = UISingleton.horizontalPadding, vertical = 8.dp)
 
     LaunchedEffect(Unit) {
         groupsPageViewModel.fetchLessonGroups()
@@ -63,7 +62,7 @@ fun ClassGroupsPageView() {
     }
 
     LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(0.dp),
         modifier = Modifier
             .fillMaxSize()
             .padding(
@@ -73,6 +72,9 @@ fun ClassGroupsPageView() {
     ) {
         item {
             PageHeaderView(stringResource(R.string.class_groups_page_header))
+        }
+        item {
+            Spacer(modifier = Modifier.height(8.dp))
         }
         item {
             AnimatedVisibility(groupsPageViewModel.lessonGroups == null, modifier = paddingModifier) {
@@ -94,9 +96,8 @@ fun ClassGroupsPageView() {
                     AnimatedVisibility(
                         showElements,
                         enter = enterTransition(1),
-                        modifier = paddingModifier.then(Modifier.fillMaxWidth())
                     ) {
-                        SemesterCardView(seasonId)
+                        SemesterCardView(seasonId, modifier = paddingModifier)
                     }
                 }
                 if (season != null) {
@@ -105,9 +106,8 @@ fun ClassGroupsPageView() {
                         AnimatedVisibility(
                             showElements,
                             enter = enterTransition(2 + courseIndex),
-                            modifier = paddingModifier
                         ) {
-                            CourseContainerView(courseUnits) { unit ->
+                            CourseContainerView(courseUnits, modifier = paddingModifier) { unit ->
                                 ClassGroupView(unit)
                             }
                         }

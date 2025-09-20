@@ -18,11 +18,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -31,26 +37,42 @@ import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.getLocalized
-import com.cdkentertainment.mobilny_usos_enhanced.models.LessonGroup
-import com.cdkentertainment.mobilny_usos_enhanced.view_models.LessonGroupPageViewModel
+import com.cdkentertainment.mobilny_usos_enhanced.models.AttendanceDatesObject
+import com.cdkentertainment.mobilny_usos_enhanced.view_models.AttendancePageViewModel
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 @Composable
-fun ClassGroupPopupView(
-    data: LessonGroup,
-    viewModel: LessonGroupPageViewModel,
-    groupKey: String,
-    onDismissRequest: () -> Unit
+fun UnpinnedCoursePopupView(
+    viewModel: AttendancePageViewModel,
+    onDismissRequest: () -> Unit,
+    onAddPin: () -> Unit
 ) {
+    val formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale.getDefault())
     val context: Context = LocalContext.current
+    var showPinDialog: Boolean by rememberSaveable { mutableStateOf(false) }
+    val meetings: List<AttendanceDatesObject>? = viewModel.unitMeetings[viewModel.popupData!!.classGroupData.course_unit_id.toString()]
+
+    LaunchedEffect(Unit) {
+        viewModel.readAllCourseMeetings(viewModel.popupData!!.classGroupData)
+    }
+
+    if (showPinDialog) {
+        ConfirmDialogPopupView(
+            title = stringResource(R.string.pin_confirm),
+            confirmTitle = stringResource(R.string.yes),
+            dismissTitle = stringResource(R.string.no),
+            onConfirm = {
+                showPinDialog = false
+                onAddPin()
+            },
+            onDismiss = { showPinDialog = false }
+        )
+    }
     Dialog(
         onDismissRequest = onDismissRequest,
         properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true)
     ) {
-        LaunchedEffect(Unit) {
-            if (viewModel.groupDetails[groupKey]?.participants == null) {
-                viewModel.groupDetails[groupKey]?.participants = viewModel.fetchParticipants(data.group_number.toString(), data.course_unit_id.toString())
-            }
-        }
         Box(
             contentAlignment = Alignment.TopCenter,
             modifier = Modifier
@@ -64,7 +86,7 @@ fun ClassGroupPopupView(
                     .fillMaxWidth()
             ) {
                 item {
-                    PopupHeaderView(data.course_name.getLocalized(context))
+                    PopupHeaderView(viewModel.popupData?.classGroupData?.course_name?.getLocalized(context) ?: "N/A")
                 }
                 item {
                     GroupedContentContainerView(
@@ -74,12 +96,12 @@ fun ClassGroupPopupView(
                     ) {
                         GradeCardView(
                             courseName = stringResource(R.string.group),
-                            grade = "${data.group_number}",
+                            grade = "${viewModel.popupData?.classGroupData?.group_number ?: "N/A"}",
                             showArrow = false,
                             backgroundColor = UISingleton.color2
                         )
                         GradeCardView(
-                            courseName = UIHelper.classTypeIds[data.class_type_id]?.name?.getLocalized(context) ?: "N/A",
+                            courseName = UIHelper.classTypeIds[viewModel.popupData?.classGroupData?.class_type_id]?.name?.getLocalized(context) ?: "N/A",
                             showArrow = false,
                             showGrade = false,
                             backgroundColor = UISingleton.color2
@@ -87,23 +109,19 @@ fun ClassGroupPopupView(
                     }
                 }
                 item {
-                    GroupedContentContainerView(
-                        title = stringResource(R.string.lecturers),
-                        backgroundColor = UISingleton.color1,
-                        modifier = Modifier.padding(12.dp)
+                    TextAndIconCardView(
+                        title = stringResource(R.string.add_pin),
+                        icon = ImageVector.vectorResource(R.drawable.rounded_pin_24),
+                        modifier = Modifier.padding(12.dp),
+                        backgroundColor = UISingleton.color1
                     ) {
-                        for (lecturer in 0 until data.lecturers.size) {
-                            //Can this be replaced with GroupParticipantCardView.kt?
-                            //The answer is NO, it cannot!
-                            GroupLecturerCardView(data.lecturers[lecturer])
-                        }
+                        showPinDialog = true
                     }
                 }
-                if (viewModel.groupDetails[groupKey]?.participants != null) {
-                    val participantsSize: Int = viewModel.groupDetails[groupKey]?.participants!!.participants.size
+                if (meetings != null) {
                     item {
                         Text(
-                            text = stringResource(R.string.participants),
+                            text = stringResource(R.string.meetings),
                             color = UISingleton.textColor1,
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
@@ -116,11 +134,13 @@ fun ClassGroupPopupView(
                                 .animateItem()
                         )
                     }
-                    items(participantsSize, key = { index -> viewModel.groupDetails[groupKey]!!.participants!!.participants[index].id }) { index ->
-                        GroupParticipantCardView(
+                    items(meetings.size, key = { it }) { index ->
+                        AttendanceDateCardView(
                             index = index,
-                            participant = viewModel.groupDetails[groupKey]!!.participants!!.participants[index],
-                            participantsSize = participantsSize,
+                            maxIndex = meetings.size,
+                            date = meetings[index].startDateTime.toLocalDate().format(formatter),
+                            icon = ImageVector.vectorResource(R.drawable.rounded_calendar_month_24),
+                            enabled = false,
                             modifier = Modifier.animateItem()
                         )
                     }

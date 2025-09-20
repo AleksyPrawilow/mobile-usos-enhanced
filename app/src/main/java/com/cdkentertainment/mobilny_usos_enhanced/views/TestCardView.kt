@@ -54,6 +54,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun TestCardView(
     data: Test,
+    modifier: Modifier = Modifier,
     onFolderClick: () -> Unit = {
 
     }
@@ -109,6 +110,7 @@ fun TestCardView(
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .then(modifier)
     ) {
         Column(
             modifier = Modifier

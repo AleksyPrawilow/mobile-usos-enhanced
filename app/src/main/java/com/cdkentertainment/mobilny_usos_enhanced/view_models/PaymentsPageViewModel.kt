@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.models.Payment
 import com.cdkentertainment.mobilny_usos_enhanced.models.PaymentsPageModel
+import com.cdkentertainment.mobilny_usos_enhanced.models.prettyPrint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -19,7 +20,7 @@ fun main(): Unit = runBlocking{
         val payments: List<Payment> = model.getAllPayments()
 
         val filtered: List<Payment> = payments.filter { it.state == "unpaid" }
-        println(filtered)
+        println(filtered.prettyPrint())
     }
 }
 

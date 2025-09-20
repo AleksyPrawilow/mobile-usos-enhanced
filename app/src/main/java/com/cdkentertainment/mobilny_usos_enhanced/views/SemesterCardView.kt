@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 
 @Composable
-fun SemesterCardView(text: String) {
+fun SemesterCardView(text: String, modifier: Modifier = Modifier) {
     Card(
         colors = CardColors(
             contentColor = UISingleton.textColor1,
@@ -25,7 +25,7 @@ fun SemesterCardView(text: String) {
         ),
         elevation = CardDefaults.cardElevation(5.dp),
         shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp),
-        modifier = Modifier.fillMaxWidth().padding(top = 4.dp)
+        modifier = Modifier.fillMaxWidth().padding(top = 4.dp).then(modifier)
     ) {
         Text(
             text = text,

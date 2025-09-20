@@ -5,53 +5,53 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
+import kotlin.math.max
 
 @Composable
 fun AttendanceTypePopupView(
     value: MutableState<Int>,
-    onDismissExtra: () -> Unit,
-    sex: Int = 0
+    onDismissExtra: () -> Unit
 ) {
-    var wasPresent: Boolean by rememberSaveable { mutableStateOf(true) }
-    var absenceJustified: Boolean by rememberSaveable { mutableStateOf(true) }
+    val radioOptions = listOf(
+        Pair(stringResource(R.string.present), 1),
+        Pair(stringResource(R.string.excused_absence), 2),
+        Pair(stringResource(R.string.unexcused_absence), 3),
+        Pair(stringResource(R.string.class_cancelled), 4)
+    )
+    val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[max(0, value.value - 1)]) }
     val onDismiss: () -> Unit = {
-        println("OK!")
-        if (wasPresent) {
-            value.value = 1
-        }
-        if (!wasPresent && !absenceJustified) {
-            value.value = 2
-        }
-        if (!wasPresent && absenceJustified) {
-            value.value = 3
-        }
+        value.value = selectedOption.second
     }
+    val shape: RoundedCornerShape = remember { RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp) }
 
     Dialog(
         onDismissRequest = {
@@ -69,54 +69,42 @@ fun AttendanceTypePopupView(
             Column(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier
-                    .padding(12.dp)
+                    .verticalScroll(rememberScrollState())
             ) {
-                Spacer(modifier = Modifier.height(48.dp))
-                Text(
-                    text = "Zaznacz obecność",
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = UISingleton.textColor1,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                HorizontalDivider(thickness = 5.dp, color = UISingleton.textColor2, modifier = Modifier.clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp)))
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = UISingleton.color1,
-                        disabledContainerColor = UISingleton.color1,
-                        contentColor = UISingleton.textColor1,
-                        disabledContentColor = UISingleton.textColor1
-                    ),
-                    shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp)
+                PopupHeaderView(title = stringResource(R.string.register_attendance))
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier.selectableGroup().padding(horizontal = 12.dp)
                 ) {
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
-                        modifier = Modifier
-                            .padding(12.dp)
-                    ) {
-                        SwitchSettingView(
-                            color1 = UISingleton.color4,
-                            color2 = UISingleton.color3,
-                            color3 = UISingleton.color2,
-                            color4 = UISingleton.color2,
-                            checked = wasPresent,
-                            text = if (sex == 0) "Obecny" else "Obecna",
-                            onSwitchChange = {
-                                wasPresent = it
-                                absenceJustified = true
-                            }
-                        )
-                        if (!wasPresent) {
-                            SwitchSettingView(
-                                color1 = UISingleton.color4,
-                                color2 = UISingleton.color3,
-                                color3 = UISingleton.color2,
-                                color4 = UISingleton.color2,
-                                checked = absenceJustified,
-                                text = "Usprawiedliwiona",
-                                onSwitchChange = {
-                                    absenceJustified = it
-                                }
+                    radioOptions.forEach { text ->
+                        Row(
+                            Modifier
+                                .fillMaxWidth()
+                                .shadow(3.dp, shape = shape)
+                                .clip(shape)
+                                .selectable(
+                                    selected = (text.first == selectedOption.first),
+                                    onClick = { onOptionSelected(text) },
+                                    role = Role.RadioButton
+                                )
+                                .background(UISingleton.color1, shape = shape)
+                                .padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            RadioButton(
+                                selected = (text == selectedOption),
+                                onClick = null,
+                                colors = RadioButtonDefaults.colors(
+                                    selectedColor = UISingleton.color4,
+                                    unselectedColor = UISingleton.color2
+                                )
+                            )
+                            Text(
+                                text = text.first,
+                                style = MaterialTheme.typography.titleMedium,
+                                color = UISingleton.textColor1,
+                                fontWeight = if (text == selectedOption) FontWeight.Normal else FontWeight.Light,
+                                modifier = Modifier.padding(start = 12.dp)
                             )
                         }
                     }
@@ -132,12 +120,14 @@ fun AttendanceTypePopupView(
                         onDismiss()
                         onDismissExtra()
                     },
-                    shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp),
+                    elevation = ButtonDefaults.buttonElevation(3.dp),
+                    shape = shape,
                     modifier = Modifier
                         .fillMaxWidth()
+                        .padding(start = 12.dp, end = 12.dp, bottom = 12.dp)
                 ) {
                     Text(
-                        text = "Zatwierdź",
+                        text = stringResource(R.string.confirm),
                         style = MaterialTheme.typography.titleLarge,
                         color = UISingleton.textColor1
                     )

@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
@@ -62,13 +61,13 @@ fun TestsPageView() {
     val insets = WindowInsets.systemBars
     val topInset = insets.getTop(density)
     val bottomInset = insets.getBottom(density)
-    val topPadding = with(LocalDensity.current) { topInset.toDp() }
-    val bottomPadding = with(LocalDensity.current) { bottomInset.toDp() }
-    val paddingModifier: Modifier = Modifier.padding(horizontal = UISingleton.horizontalPadding)
+    val topPadding = with(density) { topInset.toDp() }
+    val bottomPadding = with(density) { bottomInset.toDp() }
+    val paddingModifier: Modifier = Modifier.padding(horizontal = UISingleton.horizontalPadding, vertical = 8.dp)
 
     LazyColumn(
         state = listState,
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(0.dp),
         modifier = Modifier
             .fillMaxSize()
             .padding(
@@ -78,6 +77,9 @@ fun TestsPageView() {
     ) {
         item {
             PageHeaderView(stringResource(R.string.tests_page))
+        }
+        item {
+            Spacer(modifier = Modifier.height(8.dp))
         }
         item {
             AnimatedVisibility(testsPageViewModel.tests == null, modifier = paddingModifier) {
@@ -94,10 +96,9 @@ fun TestsPageView() {
                 stickyHeader {
                     AnimatedVisibility(
                         showElements,
-                        enter = enterTransition(1),
-                        modifier = paddingModifier.then(Modifier.fillMaxWidth())
+                        enter = enterTransition(1)
                     ) {
-                        SemesterCardView(semester)
+                        SemesterCardView(semester, modifier = paddingModifier)
                     }
                 }
                 if (semesterTests != null) {
@@ -108,8 +109,8 @@ fun TestsPageView() {
                         val test: Test? = semesterTests[keys[index]]
                         if (test != null) {
                             item {
-                                AnimatedVisibility(showElements, enter = enterTransition(2 + index), modifier = paddingModifier) {
-                                    TestCardView(semesterTests[keys[index]]!!) {
+                                AnimatedVisibility(showElements, enter = enterTransition(2 + index)) {
+                                    TestCardView(semesterTests[keys[index]]!!, modifier = paddingModifier) {
                                         coroutineScope.launch {
                                             listState.animateScrollToItem(index = captureIndex, with(density) { -96.dp.toPx() }.toInt())
                                         }

@@ -24,6 +24,7 @@ fun GroupedContentContainerView(
     title: String,
     modifier: Modifier = Modifier,
     backgroundColor: Color = UISingleton.color2,
+    onClick: (() -> Unit)? = null,
     content: @Composable (ColumnScope.() -> Unit)
 ) {
     Card(
@@ -33,8 +34,13 @@ fun GroupedContentContainerView(
             disabledContainerColor = backgroundColor,
             disabledContentColor = UISingleton.textColor1
         ),
-        elevation = CardDefaults.cardElevation(3.dp),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 3.dp,
+            disabledElevation = 3.dp
+        ),
         shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp),
+        onClick = onClick ?: {},
+        enabled = onClick != null,
         modifier = Modifier
             .fillMaxWidth()
             .then(modifier)
@@ -45,12 +51,14 @@ fun GroupedContentContainerView(
                 .padding(12.dp)
                 .fillMaxWidth()
         ) {
-            Text(
-                text = title,
-                color = UISingleton.textColor1,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
-            )
+            if (title.isNotEmpty()) {
+                Text(
+                    text = title,
+                    color = UISingleton.textColor1,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
+            }
             content()
         }
     }

@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
@@ -46,14 +45,14 @@ fun GradesPageView() {
     val gradesPageViewModel: GradesPageViewModel = viewModel<GradesPageViewModel>()
     val enterTransition: (Int) -> EnterTransition = UIHelper.slideEnterTransition
     var showElements: Boolean by rememberSaveable { mutableStateOf(false) }
-    val paddingModifier: Modifier = Modifier.padding(horizontal = UISingleton.horizontalPadding)
+    val paddingModifier: Modifier = Modifier.padding(horizontal = UISingleton.horizontalPadding, vertical = 8.dp)
 
     val density: Density = LocalDensity.current
     val insets = WindowInsets.systemBars
     val topInset = insets.getTop(density)
     val bottomInset = insets.getBottom(density)
-    val topPadding = with(LocalDensity.current) { topInset.toDp() }
-    val bottomPadding = with(LocalDensity.current) { bottomInset.toDp() }
+    val topPadding = with(density) { topInset.toDp() }
+    val bottomPadding = with(density) { bottomInset.toDp() }
 
     LaunchedEffect(Unit) {
         if (gradesPageViewModel.userGrades == null) {
@@ -63,7 +62,7 @@ fun GradesPageView() {
         showElements = true
     }
     LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(0.dp),
         modifier = Modifier
             .fillMaxSize()
             .padding(
@@ -73,6 +72,9 @@ fun GradesPageView() {
     ) {
         item {
             PageHeaderView(stringResource(R.string.grade_page))
+        }
+        item {
+            Spacer(modifier = Modifier.height(8.dp))
         }
         item {
             AnimatedVisibility(gradesPageViewModel.userGrades == null, modifier = paddingModifier) {
@@ -86,19 +88,19 @@ fun GradesPageView() {
                 val season: Season = gradesPageViewModel.userGrades!![iteration]
                 val subjectCount: Int = season.courseList.size
                 stickyHeader {
-                    AnimatedVisibility(showElements, enter = enterTransition(1), modifier = paddingModifier.then(Modifier.fillMaxWidth())) {
-                        SemesterCardView(season.seasonId)
+                    AnimatedVisibility(showElements, enter = enterTransition(1)) {
+                        SemesterCardView(season.seasonId, modifier = paddingModifier)
                     }
                 }
                 item {
-                    AnimatedVisibility(showElements, enter = enterTransition(2), modifier = paddingModifier) {
-                        GradeAverageView(season.avgGrade)
+                    AnimatedVisibility(showElements, enter = enterTransition(2)) {
+                        GradeAverageView(season.avgGrade, modifier = paddingModifier)
                     }
                 }
                 items(subjectCount) { courseIndex ->
                     val course: Course = season.courseList[courseIndex]
-                    AnimatedVisibility(showElements, enter = enterTransition(3 + courseIndex), modifier = paddingModifier){
-                        CourseGradesView(course, gradesPageViewModel.userSubjects!!, gradesPageViewModel.classtypeIdInfo)
+                    AnimatedVisibility(showElements, enter = enterTransition(3 + courseIndex)){
+                        CourseGradesView(course, gradesPageViewModel.userSubjects!!, gradesPageViewModel.classtypeIdInfo, modifier = paddingModifier)
                     }
                 }
                 item {

@@ -67,8 +67,8 @@ object UISingleton {
         id = 1,
         color1 = Color(0xFF1B3C53),
         color2 = Color(0xFF456882),
-        color3 = Color(0xFFBDC3C7),
-        color4 = Color(0xFFECF0F1),
+        color3 = Color(0xFFEAEAEA),
+        color4 = Color(0xFFFFFFFF),
         textTheme = standardDarkTextTheme
     )
 

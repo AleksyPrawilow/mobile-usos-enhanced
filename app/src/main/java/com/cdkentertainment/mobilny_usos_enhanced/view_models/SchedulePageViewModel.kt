@@ -1,12 +1,15 @@
 package com.cdkentertainment.mobilny_usos_enhanced.view_models
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
+import com.cdkentertainment.mobilny_usos_enhanced.models.Lesson
 import com.cdkentertainment.mobilny_usos_enhanced.models.Schedule
 import com.cdkentertainment.mobilny_usos_enhanced.models.SchedulePageModel
+import com.cdkentertainment.mobilny_usos_enhanced.models.prettyPrint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -22,7 +25,8 @@ fun main(): Unit = runBlocking {
     launch {
         boom.fetchWeekData(LocalDate.of(2025, 5, 13))
         val model = SchedulePageModel()
-        println(model.getWeekSchedule(LocalDate.of(2025, 5, 13)))
+        println(model.getSingleDaySchedule(LocalDate.of(2025, 5, 13)))
+        println(model.getWeekSchedule(LocalDate.of(2025, 5, 13)).prettyPrint())
     }
 }
 
@@ -36,6 +40,7 @@ class SchedulePageViewModel: ViewModel() {
         private set
     var schedule: Schedule? by mutableStateOf(null)
         private set
+    var groupedByHours: Map<Int, List<Lesson>> = mutableStateMapOf<Int, List<Lesson>>()
     private val model: SchedulePageModel = SchedulePageModel()
 
     fun selectWeekOption(weekOptionIndex: Int) {
@@ -58,6 +63,12 @@ class SchedulePageViewModel: ViewModel() {
         val localDateTime = LocalDateTime.parse(date, timeFormatter)
         val localTime: LocalTime = localDateTime.toLocalTime()
         return localTime.toString()
+    }
+
+    fun groupLessonsByHour(lessons: List<Lesson>) {
+        groupedByHours = lessons.groupBy {
+            getTimeFromDate(it.start_time).substring(0, 2).toInt()
+        }
     }
 
     suspend fun fetchTodaysActivities() {

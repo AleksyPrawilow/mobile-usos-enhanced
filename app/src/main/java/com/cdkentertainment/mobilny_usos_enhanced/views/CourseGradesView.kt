@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.getLocalized
@@ -19,14 +20,18 @@ import com.cdkentertainment.mobilny_usos_enhanced.models.TermGrade
 fun CourseGradesView(
     data: Course,
     nameMap: Map<String, CourseUnitIds>,
-    classtypeIdInfo: Map<String, SharedDataClasses.IdAndName>?
+    classtypeIdInfo: Map<String, SharedDataClasses.IdAndName>?,
+    modifier: Modifier = Modifier
 ) {
     val context: Context = LocalContext.current
     var showDetails: Boolean by remember { mutableStateOf(false) }
     var popupGrade: TermGrade? by remember { mutableStateOf(null) }
 
     if (showDetails && popupGrade != null) {
-        GradePopupView(popupGrade!!) {
+        GradePopupView(
+            popupGrade!!,
+            title = nameMap[data.courseGrades.course_units_grades.keys.first()]?.course_name?.getLocalized(context) ?: "N/A"
+        ) {
             UISingleton.dropBlurContent()
             showDetails = false
             popupGrade = null
@@ -34,7 +39,8 @@ fun CourseGradesView(
     }
 
     GroupedContentContainerView(
-        title = nameMap[data.courseGrades.course_units_grades.keys.first()]?.course_name?.getLocalized(context) ?: "N/A"
+        title = nameMap[data.courseGrades.course_units_grades.keys.first()]?.course_name?.getLocalized(context) ?: "N/A",
+        modifier = modifier
     ) {
         for (courseUnit in data.courseGrades.course_units_grades.keys) {
             val unitClassType: String = nameMap[courseUnit]?.classtype_id ?: "N/A"
