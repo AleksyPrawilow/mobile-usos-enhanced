@@ -25,8 +25,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
@@ -106,7 +108,10 @@ fun SchedulePageView() {
             )
     ) {
         item {
-            PageHeaderView(stringResource(R.string.schedule_page_header))
+            PageHeaderView(
+                text = stringResource(R.string.schedule_page_header),
+                icon = ImageVector.vectorResource(R.drawable.rounded_calendar_month_24)
+            )
         }
         item {
             Spacer(modifier = Modifier.height(8.dp))

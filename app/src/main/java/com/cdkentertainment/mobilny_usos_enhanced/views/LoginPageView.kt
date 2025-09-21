@@ -91,9 +91,9 @@ fun LoginPageView(screenManagerViewModel: ScreenManagerViewModel = viewModel<Scr
     )
 
     LaunchedEffect(Unit) {
+        pageViewModel.tryGoogleAutoLogIn(context, activity!!)
         delay(3000)
         showLoginStuff = true
-        pageViewModel.tryGoogleAutoLogIn(context, activity!!)
     }
 
     Column(

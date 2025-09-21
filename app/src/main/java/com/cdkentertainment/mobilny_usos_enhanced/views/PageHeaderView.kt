@@ -1,20 +1,25 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -24,7 +29,8 @@ import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 
 @Composable
 fun PageHeaderView(
-    text: String
+    text: String,
+    icon: ImageVector? = null
 ) {
     val density: Density = LocalDensity.current
     val insets = WindowInsets.systemBars
@@ -40,13 +46,27 @@ fun PageHeaderView(
     ) {
         Column {
             Spacer(Modifier.height(16.dp))
-            Text(
-                text = text,
-                style = MaterialTheme.typography.headlineLarge,
-                fontWeight = FontWeight.Bold,
-                color = UISingleton.textColor1,
-                textAlign = TextAlign.Center,
-            )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterHorizontally),
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = text,
+                    style = MaterialTheme.typography.headlineLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = UISingleton.textColor1,
+                    textAlign = TextAlign.Center,
+                )
+                if (icon != null) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = text,
+                        tint = UISingleton.textColor1,
+                        modifier = Modifier.size(36.dp)
+                    )
+                }
+            }
         }
     }
 }

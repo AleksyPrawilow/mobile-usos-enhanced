@@ -1,11 +1,9 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
 import android.content.Context
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.FlowRow
@@ -40,11 +38,9 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.rememberTextMeasurer
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.UIHelper.scaleEnterTransition
@@ -52,7 +48,6 @@ import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.getLocalized
 import com.cdkentertainment.mobilny_usos_enhanced.models.LessonGroup
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.AttendancePageViewModel
-import com.cdkentertainment.mobilny_usos_enhanced.view_models.Screens
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -153,7 +148,10 @@ fun AttendancePageView() {
             )
     ) {
         item {
-            PageHeaderView(stringResource(R.string.attendance_page))
+            PageHeaderView(
+                text = stringResource(R.string.attendance_page),
+                icon = ImageVector.vectorResource(R.drawable.rounded_alarm_24)
+            )
         }
         item {
             Spacer(modifier = Modifier.height(8.dp))
@@ -301,23 +299,4 @@ fun AttendancePageView() {
 private enum class ShownCourses {
     PINNED,
     UNPINNED
-}
-
-@Preview(showBackground = true)
-@Composable
-fun AttendancePagePreview() {
-    OAuthSingleton.setTestAccessToken()
-    val currentScreen: Screens = Screens.GROUPS
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(UISingleton.color1)
-            .padding(12.dp)
-    ) {
-        AnimatedContent(targetState = currentScreen) { target ->
-            if (currentScreen == target) {
-                AttendancePageView()
-            }
-        }
-    }
 }

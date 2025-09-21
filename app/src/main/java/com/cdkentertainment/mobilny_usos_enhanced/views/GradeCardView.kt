@@ -62,7 +62,7 @@ fun GradeCardView(
                 contentDescription = "More",
                 tint = UISingleton.textColor1,
                 modifier = Modifier
-                    .padding(horizontal = 12.dp)
+                    .padding(horizontal = 6.dp)
             )
         }
         if (showGrade) {
