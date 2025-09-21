@@ -5,12 +5,15 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -141,12 +144,26 @@ fun LoginPageView(screenManagerViewModel: ScreenManagerViewModel = viewModel<Scr
                             }
                         }
                         LoginPageViewModel.LoginState.USOS_RETREIVING_REQUEST_TOKEN -> UsosRequestTokenView()
+                        LoginPageViewModel.LoginState.USOS_RETREIVING_OAUTH_VERIFIER -> {}
                         LoginPageViewModel.LoginState.USOS_OAUTH_VERIFIER -> UsosOauthVerifierView(pageViewModel)
                         LoginPageViewModel.LoginState.DATABASE_SAVING_SESSION -> DatabaseSavingSessionView(pageViewModel)
                         LoginPageViewModel.LoginState.SUCCESS -> SuccessView(screenManagerViewModel)
                     }
                 }
             }
+        }
+    }
+
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        AnimatedVisibility(
+            pageViewModel.loginState == LoginPageViewModel.LoginState.USOS_RETREIVING_OAUTH_VERIFIER,
+            enter = slideInHorizontally(spring(Spring.DampingRatioMediumBouncy)) + fadeIn(),
+            exit = slideOutHorizontally(spring(Spring.DampingRatioMediumBouncy)) + fadeOut(),
+            modifier = Modifier.fillMaxSize()
+        ) {
+            UsosLoginView(pageViewModel.oauthUrl)
         }
     }
 }
@@ -166,6 +183,22 @@ private fun GoogleAutoLoginView() {
             modifier = Modifier.fillMaxWidth()
         )
         CircularProgressIndicator(color = UISingleton.textColor2)
+    }
+}
+
+@Composable
+private fun UsosLoginView(authUrl: String) {
+    val coroutineScope: CoroutineScope = rememberCoroutineScope()
+    val viewModel: LoginPageViewModel = viewModel<LoginPageViewModel>()
+    val authUrl = authUrl
+    val context: Context = LocalContext.current
+
+    OAuthWebView(url = authUrl) { uri ->
+        val oauthToken = uri.getQueryParameter("oauth_token")
+        val oauthVerifier = uri.getQueryParameter("oauth_verifier")
+        coroutineScope.launch {
+            viewModel.onOAuthRedirect(oauthToken, oauthVerifier, context)
+        }
     }
 }
 
