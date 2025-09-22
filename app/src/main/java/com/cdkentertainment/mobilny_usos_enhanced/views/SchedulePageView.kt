@@ -72,7 +72,7 @@ fun SchedulePageView() {
     var schedule: Schedule? = schedulePageViewModel.schedule
     val onDaySelected: (Int) -> Unit = { index ->
         if (schedule != null) {
-            schedulePageViewModel.groupLessonsByHour(schedule!!.lessons[index]!!)
+            schedulePageViewModel.groupLessonsByHour(schedule!!.lessons[index])
         }
         try {
             val firstActivityHour: Int = schedulePageViewModel.groupedByHours.keys.sorted()[0]
