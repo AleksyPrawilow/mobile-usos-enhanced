@@ -60,4 +60,6 @@
     <string name="unpin_description">Attendance data related to this course will not be lost</string>
     <string name="summer_semester">Summer semester</string>
     <string name="winter_semester">Winter semester</string>
+    <string name="paid_debts">Paid\ndebts</string>
+    <string name="unpaid_debts">Unpaid\ndebts</string>
 </resources>

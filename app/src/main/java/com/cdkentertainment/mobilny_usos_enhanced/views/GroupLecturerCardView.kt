@@ -32,6 +32,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.models.LecturerRate
 import com.cdkentertainment.mobilny_usos_enhanced.models.SharedDataClasses
+import com.cdkentertainment.mobilny_usos_enhanced.scaleIndependent
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.LecturerRatesPageViewModel
 
 @Composable
@@ -87,7 +88,7 @@ fun GroupLecturerCardView(
                 Text(
                     text = "%.1f".format(rateAverage),
                     color = UISingleton.textColor4,
-                    fontSize = 14.sp.scaleIndependent(),
+                    fontSize = 14.sp.scaleIndependent,
                     fontWeight = FontWeight.ExtraBold,
                     maxLines = 1,
                 )

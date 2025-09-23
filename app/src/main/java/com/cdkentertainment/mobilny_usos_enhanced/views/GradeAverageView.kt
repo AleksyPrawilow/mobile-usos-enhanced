@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
+import com.cdkentertainment.mobilny_usos_enhanced.scaleIndependent
 
 @Composable
 fun GradeAverageView(gradeAverage: Float?, modifier: Modifier = Modifier) {
@@ -76,7 +77,7 @@ fun GradeAverageView(gradeAverage: Float?, modifier: Modifier = Modifier) {
                     text = if (gradeAverage?.isNaN() ?: true) "—" else "%.2f".format(gradeAverage),
                     color = UISingleton.textColor4,
                     fontWeight = FontWeight.ExtraBold,
-                    fontSize = 16.sp.scaleIndependent(),
+                    fontSize = 16.sp.scaleIndependent,
                     modifier = Modifier
                         .align(Alignment.Center)
                 )

@@ -29,6 +29,7 @@ import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.getLocalized
 import com.cdkentertainment.mobilny_usos_enhanced.models.LessonGroup
+import com.cdkentertainment.mobilny_usos_enhanced.scaleIndependent
 
 @Composable
 fun ClassGroupCardView(
@@ -77,7 +78,7 @@ fun ClassGroupCardView(
             Text(
                 text = "${data.group_number}",
                 color = UISingleton.textColor4,
-                fontSize = 18.sp.scaleIndependent(),
+                fontSize = 18.sp.scaleIndependent,
                 fontWeight = FontWeight.ExtraBold,
                 maxLines = 1,
                 modifier = Modifier

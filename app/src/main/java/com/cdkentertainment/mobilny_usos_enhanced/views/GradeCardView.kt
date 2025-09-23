@@ -25,6 +25,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
+import com.cdkentertainment.mobilny_usos_enhanced.scaleIndependent
 
 @Composable
 fun GradeCardView(
@@ -77,7 +78,7 @@ fun GradeCardView(
                 Text(
                     text = grade,
                     color = UISingleton.textColor4,
-                    fontSize = 17.sp.scaleIndependent(),
+                    fontSize = 17.sp.scaleIndependent,
                     fontWeight = FontWeight.ExtraBold,
                     maxLines = 1,
                     modifier = Modifier

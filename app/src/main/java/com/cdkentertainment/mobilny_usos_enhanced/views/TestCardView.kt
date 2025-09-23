@@ -88,8 +88,8 @@ fun TestCardView(
     }
     val retractFolder: () -> Unit = {
         lastClickedBack = true
-        currentFolderName = data.name.getLocalized(context)
         isRootFolder = viewModel.retractToPreviousFolder(data.node_id)
+        currentFolderName = viewModel.testsSelectedFolder.getOrDefault(data.node_id, null)?.name?.getLocalized(context) ?: "N/A"
     }
     val onClick: () -> Unit = {
         fetchDetails()

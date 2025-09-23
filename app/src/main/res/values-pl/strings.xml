@@ -61,4 +61,6 @@
     <string name="unpin_description">Dane dotyczące obecności powiązane z tym przedmiotem nie zostaną utracone</string>
     <string name="summer_semester">Semestr letni</string>
     <string name="winter_semester">Semestr zimowy</string>
+    <string name="paid_debts">Rozliczone\npłatności</string>
+    <string name="unpaid_debts">Nierozliczone\npłatności</string>
 </resources>

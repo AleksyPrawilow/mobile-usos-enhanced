@@ -40,6 +40,7 @@ import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.models.Schedule
+import com.cdkentertainment.mobilny_usos_enhanced.spToDp
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.SchedulePageViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.Screens
 import kotlinx.coroutines.CoroutineScope

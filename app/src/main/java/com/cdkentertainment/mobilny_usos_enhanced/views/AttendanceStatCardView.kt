@@ -19,6 +19,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
+import com.cdkentertainment.mobilny_usos_enhanced.scaleIndependent
 
 @Composable
 fun AttendanceStatCardView(
@@ -57,7 +58,7 @@ fun AttendanceStatCardView(
             Text(
                 text = statValue,
                 color = UISingleton.textColor4,
-                fontSize = 14.sp.scaleIndependent(),
+                fontSize = 14.sp.scaleIndependent,
                 fontWeight = FontWeight.ExtraBold,
                 modifier = Modifier
                     .align(Alignment.Center)
