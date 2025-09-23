@@ -91,6 +91,16 @@ fun UnpinnedCoursePopupView(
                     PopupHeaderView(viewModel.popupData?.classGroupData?.course_name?.getLocalized(context) ?: "N/A")
                 }
                 item {
+                    TextAndIconCardView(
+                        title = stringResource(R.string.add_pin),
+                        icon = ImageVector.vectorResource(R.drawable.rounded_pin_24),
+                        modifier = Modifier.padding(top = 12.dp, start = 12.dp, end = 12.dp),
+                        backgroundColor = UISingleton.color1
+                    ) {
+                        showPinDialog = true
+                    }
+                }
+                item {
                     GroupedContentContainerView(
                         title = stringResource(R.string.subject),
                         backgroundColor = UISingleton.color1,
@@ -112,14 +122,9 @@ fun UnpinnedCoursePopupView(
                     }
                 }
                 item {
-                    TextAndIconCardView(
-                        title = stringResource(R.string.add_pin),
-                        icon = ImageVector.vectorResource(R.drawable.rounded_pin_24),
-                        modifier = Modifier.padding(12.dp),
-                        backgroundColor = UISingleton.color1
-                    ) {
-                        showPinDialog = true
-                    }
+                    Spacer(
+                        modifier = Modifier.height(12.dp)
+                    )
                 }
                 if (meetings != null) {
                     item {

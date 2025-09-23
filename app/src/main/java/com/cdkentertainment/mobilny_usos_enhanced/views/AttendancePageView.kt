@@ -236,6 +236,7 @@ fun AttendancePageView() {
                                             grade = courseUnits.first().group_number.toString(),
                                             showArrow = true,
                                             showGrade = false,
+                                            sideIcon = ImageVector.vectorResource(UIHelper.activityTypeIconMapping[course.class_type_id] ?: UIHelper.otherIcon)
                                         ) {
                                             attendancePageViewModel.showUnpinnedPopup(course)
                                         }

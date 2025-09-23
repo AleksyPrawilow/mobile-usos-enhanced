@@ -57,7 +57,6 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.DatabaseSingleton
@@ -66,7 +65,6 @@ import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.models.findActivity
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.LoginPageViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.ScreenManagerViewModel
-import com.cdkentertainment.mobilny_usos_enhanced.view_models.Screens
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
@@ -480,22 +478,4 @@ private fun SuccessView(screenManagerViewModel: ScreenManagerViewModel) {
         textAlign = TextAlign.Center,
         modifier = Modifier.fillMaxWidth()
     )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun LoginPreview() {
-    val currentScreen: Screens = Screens.LOGIN
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(UISingleton.color1)
-            .padding(12.dp)
-    ) {
-        AnimatedContent(targetState = currentScreen) { target ->
-            if (currentScreen == target) {
-                LoginPageView()
-            }
-        }
-    }
 }
