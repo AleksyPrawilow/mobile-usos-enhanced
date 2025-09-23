@@ -131,11 +131,17 @@ fun AttendancePageView() {
     }
 
     if (attendancePageViewModel.showPopup) {
-        AttendancePopupView(viewModel = attendancePageViewModel, onDismissRequest = onPopupDismissRequest, onRemovePin = onRemovePin)
+        AttendancePopupView(
+            onDismissRequest = onPopupDismissRequest,
+            onRemovePin = onRemovePin
+        )
     }
 
     if (attendancePageViewModel.showUnpinnedPopup) {
-        UnpinnedCoursePopupView(viewModel = attendancePageViewModel, onDismissRequest = onUnpinnedPopupDismissRequest, onAddPin = onAddPin)
+        UnpinnedCoursePopupView(
+            onDismissRequest = onUnpinnedPopupDismissRequest,
+            onAddPin = onAddPin
+        )
     }
 
     LazyColumn(

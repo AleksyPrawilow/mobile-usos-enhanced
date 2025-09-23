@@ -4,11 +4,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
@@ -20,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -34,6 +39,7 @@ fun GradeCardView(
     showGrade: Boolean = true,
     showArrow: Boolean = false,
     backgroundColor: Color = UISingleton.color1,
+    sideIcon: ImageVector? = null,
     onClick: (() -> Unit)? = null
 ) {
     Row(
@@ -41,13 +47,32 @@ fun GradeCardView(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
+            .height(intrinsicSize = IntrinsicSize.Min)
             .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
             .background(
                 backgroundColor,
             )
             .clickable(onClick = onClick ?: {}, enabled = onClick != null)
-            .padding(12.dp)
     ) {
+        if (sideIcon != null) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .padding(end = 6.dp)
+                    .width(36.dp)
+                    .background(UISingleton.color3)
+            ) {
+                Icon(
+                    imageVector = sideIcon,
+                    contentDescription = "Icon",
+                    tint = UISingleton.textColor4,
+                    modifier = Modifier
+                        .size(36.dp)
+                        .padding(6.dp)
+                )
+            }
+        }
         Text(
             text = courseName,
             color = UISingleton.textColor1,
@@ -55,7 +80,7 @@ fun GradeCardView(
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             fontWeight = FontWeight.Medium,
-            modifier = Modifier.weight(1f).padding(end = 6.dp)
+            modifier = Modifier.weight(1f).padding(top = 12.dp, bottom = 12.dp, end = 6.dp)
         )
         if (showArrow) {
             Icon(
@@ -63,13 +88,14 @@ fun GradeCardView(
                 contentDescription = "More",
                 tint = UISingleton.textColor1,
                 modifier = Modifier
-                    .padding(horizontal = 6.dp)
+                    .padding(horizontal = 6.dp, vertical = 12.dp)
             )
         }
         if (showGrade) {
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
+                    .padding(top = 12.dp, bottom = 12.dp, end = 12.dp)
                     .defaultMinSize(minWidth = 40.dp)
                     .height(40.dp)
                     .background(UISingleton.color3, RoundedCornerShape(50.dp))

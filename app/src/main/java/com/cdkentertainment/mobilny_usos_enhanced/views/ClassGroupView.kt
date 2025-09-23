@@ -25,7 +25,6 @@ fun ClassGroupView(
     if (viewModel.groupDetails[groupKey]?.showDetails == true) {
         ClassGroupPopupView(
             data = data,
-            viewModel = viewModel,
             groupKey = groupKey,
             onDismissRequest = onDismissRequest
         )

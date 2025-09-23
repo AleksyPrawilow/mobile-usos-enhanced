@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 
@@ -30,6 +31,9 @@ fun TextAndIconCardView(
     modifier: Modifier = Modifier,
     backgroundColor: Color = UISingleton.color2,
     icon: ImageVector = Icons.Rounded.Refresh,
+    elevation: Dp = 3.dp,
+    iconSize: Dp = 48.dp,
+    iconPadding: Dp = 8.dp,
     onClick: (() -> Unit)? = null
 ) {
     val shape: RoundedCornerShape = remember { RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp) }
@@ -40,7 +44,10 @@ fun TextAndIconCardView(
             contentColor = UISingleton.textColor1,
             disabledContentColor = UISingleton.textColor1
         ),
-        elevation = CardDefaults.cardElevation(3.dp, disabledElevation = 3.dp),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = elevation,
+            disabledElevation = elevation
+        ),
         shape = shape,
         onClick = onClick ?: {},
         enabled = onClick != null,
@@ -66,9 +73,9 @@ fun TextAndIconCardView(
                 contentDescription = null,
                 tint = UISingleton.textColor4,
                 modifier = Modifier
-                    .size(48.dp)
+                    .size(iconSize)
                     .background(UISingleton.color3, CircleShape)
-                    .padding(8.dp)
+                    .padding(iconPadding)
             )
         }
     }

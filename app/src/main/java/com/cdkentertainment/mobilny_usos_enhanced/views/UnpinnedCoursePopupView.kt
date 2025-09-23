@@ -33,6 +33,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
@@ -44,12 +45,13 @@ import java.util.Locale
 
 @Composable
 fun UnpinnedCoursePopupView(
-    viewModel: AttendancePageViewModel,
     onDismissRequest: () -> Unit,
     onAddPin: () -> Unit
 ) {
+    val viewModel: AttendancePageViewModel = viewModel<AttendancePageViewModel>()
     val formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale.getDefault())
     val context: Context = LocalContext.current
+    val classType: String? = viewModel.popupData?.classGroupData?.class_type_id
     var showPinDialog: Boolean by rememberSaveable { mutableStateOf(false) }
     val meetings: List<AttendanceDatesObject>? = viewModel.unitMeetings[viewModel.popupData!!.classGroupData.course_unit_id.toString()]
 
@@ -100,11 +102,12 @@ fun UnpinnedCoursePopupView(
                             showArrow = false,
                             backgroundColor = UISingleton.color2
                         )
-                        GradeCardView(
-                            courseName = UIHelper.classTypeIds[viewModel.popupData?.classGroupData?.class_type_id]?.name?.getLocalized(context) ?: "N/A",
-                            showArrow = false,
-                            showGrade = false,
-                            backgroundColor = UISingleton.color2
+                        TextAndIconCardView(
+                            title = UIHelper.classTypeIds[classType]?.name?.getLocalized(context) ?: (classType ?: "N/A"),
+                            icon = ImageVector.vectorResource(UIHelper.activityTypeIconMapping[classType] ?: UIHelper.otherIcon),
+                            iconSize = 40.dp,
+                            iconPadding = 6.dp,
+                            elevation = 0.dp
                         )
                     }
                 }
