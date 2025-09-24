@@ -32,7 +32,7 @@ class SchedulePageModel {
     public suspend fun getWeekSchedule(date: LocalDate = LocalDate.now()): Schedule {
         return withContext(Dispatchers.IO) {
             val firstDayOFWeekString = getDayOfWeekDate(date, true)
-            val response: BackendDataSender.BackendResponse = BackendDataSender.get("$requestWeekUrl?date=$firstDayOFWeekString", null)
+            val response: BackendDataSender.BackendResponse = BackendDataSender.get("$requestWeekUrl?date=$firstDayOFWeekString")
             if (response.statusCode == 200) {
                 val responseString: String = response.body
                 val parsedSchedule: Schedule = parser.decodeFromString<Schedule>(responseString)
@@ -45,7 +45,7 @@ class SchedulePageModel {
     public suspend fun getSingleDaySchedule(date: LocalDate = LocalDate.now()): Schedule {
         return withContext(Dispatchers.IO) {
             val dayString: String = getFormattedDateString(date)
-            val response: BackendDataSender.BackendResponse = BackendDataSender.get("$requestDayUrl?date=$dayString", null)
+            val response: BackendDataSender.BackendResponse = BackendDataSender.get("$requestDayUrl?date=$dayString")
             if (response.statusCode == 200) {
                 val responseString: String = response.body
                 val parsedSchedule: Schedule = parser.decodeFromString<Schedule>(responseString)

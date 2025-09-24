@@ -11,20 +11,18 @@ import javax.security.auth.Subject
 
 class TestsPageModel {
     private val parser: Json = Json { ignoreUnknownKeys = true }
-    private val allTestsUrl: String = "crstests/participant"
-    private val singleSubjectFields: String
-    = "name|description|id|students_points|grade_node_details[students_grade]|task_node_details|folder_node_details|subnodes_deep"
-    private val singleSubjectUrl: String = "crstests/node2"
+    private val allTestsUrl: String = "Tests"
+    private val singleSubjectUrl: String = "Tests/Details"
     private fun parseAllTests(responseString: String): TestsContainer {
         val participantTests: TestsContainer = parser.decodeFromString<TestsContainer>(responseString)
         return participantTests
     }
     public suspend fun getAllTests(): TestsContainer {
         return withContext(Dispatchers.IO) {
-            val response: Map<String, String> = OAuthSingleton.get(allTestsUrl)
-            if (response.containsKey("response") && response["response"] != null) {
-                val responseString: String = response["response"]!!
-                val parsedParticipantsTests: TestsContainer = parseAllTests(responseString)
+            val response: BackendDataSender.BackendResponse = BackendDataSender.get(allTestsUrl)
+            if (response.statusCode == 200) {
+                val responseString: String = response.body
+                val parsedParticipantsTests: TestsContainer = parser.decodeFromString<TestsContainer>(responseString)
                 return@withContext parsedParticipantsTests
             } else {
                 throw(Exception("API Error"))
@@ -33,9 +31,9 @@ class TestsPageModel {
     }
     public suspend fun getSingleTestInfo(nodeId: Int): SubjectTestContainer {
         return withContext(Dispatchers.IO) {
-            val response: Map<String, String> = OAuthSingleton.get("$singleSubjectUrl?node_id=$nodeId&fields=$singleSubjectFields")
-            if (response.containsKey("response") && response["response"] != null) {
-                val parsedTests: SubjectTestContainer = parser.decodeFromString<SubjectTestContainer>(response["response"]!!)
+            val response: BackendDataSender.BackendResponse = BackendDataSender.get("$singleSubjectUrl?id=$nodeId")
+            if (response.statusCode == 200) {
+                val parsedTests: SubjectTestContainer = parser.decodeFromString<SubjectTestContainer>(response.body)
                 return@withContext parsedTests
             } else {
                 throw(Exception("API Error"))

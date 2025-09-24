@@ -8,32 +8,8 @@ import kotlinx.serialization.json.Json
 
 class LessonGroupPageModel {
     private val parser = Json {ignoreUnknownKeys = true}
-    private val fields = "course_id|course_name|lecturers|group_number|course_unit_id|class_type_id"
-    private val requestUrl = "groups/user"
-    private val participantUrl = "groups/group"
-    private val participantField = "participants"
-    @Serializable
-    private data class SeasonGroups (
-        val groups: Map<String, List<LessonGroup>>
-    )
-    private fun parseLessonGroupApiResponse(responseString: String): SeasonGroupsGroupedBySubject {
-        val parsedSeasonGroups: SeasonGroups = parser.decodeFromString<SeasonGroups>(responseString)
-        val groupsGroupedBySubjects: SeasonGroupsGroupedBySubject =
-            SeasonGroupsGroupedBySubject(mutableMapOf<String, Map<String, List<LessonGroup>>>())
-        for (season in parsedSeasonGroups.groups.keys) {
-            val seasonGroups = parsedSeasonGroups.groups[season]
-            if (seasonGroups != null) {
-                groupsGroupedBySubjects.groups.put(season, mergeGroupsBySubjects(seasonGroups))
-            } else {
-                print("todo")
-            }
-        }
-        return groupsGroupedBySubjects
-    }
-    private fun parseParticipantsApiResponse(responseString: String): Participants {
-        val parsedParticipants: Participants = parser.decodeFromString(responseString)
-        return parsedParticipants
-    }
+    private val requestUrl = "LessonGroups/Groups"
+    private val participantUrl = "LessonGroups/Participants"
     public fun mergeGroupsBySubjects(seasonGroups: List<LessonGroup>): Map<String, List<LessonGroup>> {
         val groupedBySubjects = seasonGroups.groupBy { group ->
             group.course_id
@@ -42,9 +18,9 @@ class LessonGroupPageModel {
     }
     public suspend fun getLessonGroups(): SeasonGroupsGroupedBySubject {
         return withContext(Dispatchers.IO) {
-            val response: Map<String, String> = OAuthSingleton.get("$requestUrl?fields=$fields")
-            if (response.containsKey("response") && response["response"] != null) {
-                val parsedLessonGroups: SeasonGroupsGroupedBySubject = parseLessonGroupApiResponse(response["response"]!!)
+            val response: BackendDataSender.BackendResponse = BackendDataSender.get(requestUrl)
+            if (response.statusCode == 200) {
+                val parsedLessonGroups: SeasonGroupsGroupedBySubject = parser.decodeFromString<SeasonGroupsGroupedBySubject>(response.body)
                 return@withContext parsedLessonGroups
             } else {
                 throw(Exception("API Error"))
@@ -53,13 +29,13 @@ class LessonGroupPageModel {
     }
     public suspend fun getParticipantOfGivenGroup(groupNumber: String, courseUnitId: String): Participants {
        return withContext(Dispatchers.IO) {
-           val apiRequest: String = "$participantUrl?course_unit_id=$courseUnitId&group_number=$groupNumber&fields=$participantField"
-           val response: Map<String, String> = OAuthSingleton.get(apiRequest)
-           if (response.containsKey("response") && response["response"] != null) {
-               val parsedParticipants = parseParticipantsApiResponse(response["response"]!!)
-               return@withContext parsedParticipants
+           val apiRequest: String = "$participantUrl?courseUnitId=$courseUnitId&groupNumber=$groupNumber"
+           val response: BackendDataSender.BackendResponse = BackendDataSender.get(apiRequest)
+           if (response.statusCode == 200) {
+               val parsedLessonGroups: Participants = parser.decodeFromString<Participants>(response.body)
+               return@withContext parsedLessonGroups
            } else {
-               throw(Exception("API Error"))
+               throw (Exception("API Error"))
            }
        }
     }

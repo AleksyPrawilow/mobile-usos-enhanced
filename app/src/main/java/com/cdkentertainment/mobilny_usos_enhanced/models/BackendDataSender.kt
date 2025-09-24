@@ -2,6 +2,7 @@ package com.cdkentertainment.mobilny_usos_enhanced.models
 
 
 import com.cdkentertainment.mobilny_usos_enhanced.BuildConfig
+import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
@@ -19,30 +20,22 @@ object BackendDataSender {
         var body: String
     )
 
-    public suspend fun get(requestUrl: String, pathParams: Map<String, String>?): BackendResponse  {
+    public suspend fun get(requestUrl: String): BackendResponse  {
         return withContext(Dispatchers.IO) {
-            var pathParamString = ""
-
-            if (pathParams != null) {
-                pathParamString = pathParams.entries.joinToString("&") {
-                    "${it.key}=${it.value}"
-                } .let { if (it.isNotEmpty()) "?$it" else ""}
-            }
-
-            val requestUrl = "$developmentUrl/$requestUrl$pathParamString"
+             val requestUrl = "$developmentUrl/$requestUrl"
             println(requestUrl)
             val request = Request.Builder()
                 .url(requestUrl)
                 .header("Authorization", authHeader)
-                .header("OAuth-Key", BuildConfig.testAccessToken)
-                .header("OAuth-Secret", BuildConfig.testAccessSecret)
+                .header("OAuth-Key", OAuthSingleton.oAuth1AccessToken?.token ?: "")
+                .header("OAuth-Secret", OAuthSingleton.oAuth1AccessToken?.tokenSecret ?: "")
                 .build()
 
             println(authHeader)
             val resp = BackendResponse(0, "")
             client.newCall(request).execute().use { response ->
                 println(response)
-                resp.body = response.body!!.string()
+                resp.body = response.body?.string() ?: ""
                 resp.statusCode = response.code
             }
 

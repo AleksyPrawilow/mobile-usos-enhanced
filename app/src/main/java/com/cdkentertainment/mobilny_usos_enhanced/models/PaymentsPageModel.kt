@@ -18,7 +18,7 @@ class PaymentsPageModel {
     }
     public suspend fun getAllPayments(): List<Payment> {
         return withContext(Dispatchers.IO) {
-            val response = BackendDataSender.get(paymentsUrl, null)
+            val response = BackendDataSender.get(paymentsUrl)
             if (response.statusCode == 200) {
                 val parsedPayments: List<Payment> = parsePayments(response.body)
                 return@withContext parsedPayments

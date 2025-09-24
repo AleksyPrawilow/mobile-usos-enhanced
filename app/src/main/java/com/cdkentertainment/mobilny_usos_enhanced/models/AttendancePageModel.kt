@@ -17,24 +17,13 @@ class AttendancePageModel {
         val end_time: String,
     )
     private val parser: Json = Json {ignoreUnknownKeys = true}
-    private val attendanceUrl: String = "tt/classgroup_dates2"
-    private val fields: String = "start_time|end_time"
+    private val attendanceUrl: String = "Attendance"
     private val timeFormat: String = "yyyy-MM-dd HH:mm:ss"
+
     private fun parseToLocalDateTime(format: String, date: String): LocalDateTime { //it could be public.
         val formatter = DateTimeFormatter.ofPattern(format)
         return LocalDateTime.parse(date, formatter)
     }
-    private fun parseAttendanceDates(responseString: String): List<AttendanceDatesObject> {
-        val parsedAttendanceDates: List<AttendanceDates> = parser.decodeFromString(responseString)
-        val datesList: MutableList<AttendanceDatesObject> = mutableListOf<AttendanceDatesObject>()
-        for(dates in parsedAttendanceDates) {
-            val startDate: LocalDateTime = parseToLocalDateTime(timeFormat, dates.start_time)
-            val endDate: LocalDateTime = parseToLocalDateTime(timeFormat, dates.end_time)
-            datesList.add(AttendanceDatesObject(startDate, endDate))
-        }
-        return datesList
-    }
-
     public fun filterPastAttendanceDates(dates: List<AttendanceDatesObject>): List<AttendanceDatesObject> {
         val currentDateTime: LocalDateTime = LocalDateTime.now()
         val pastDates = dates.filter {
@@ -42,13 +31,12 @@ class AttendancePageModel {
         }
         return pastDates
     }
-
     public suspend fun getGivenSubjectAttendanceDates(courseUnitId: String, groupNumber: String): List<AttendanceDatesObject> {
         return withContext(Dispatchers.IO) {
-            val response = OAuthSingleton.get("$attendanceUrl?unit_id=$courseUnitId&group_number=$groupNumber&fields=$fields")
-            if (response.containsKey("response") && response["response"] != null) {
-                val responseString = response["response"]!!
-                val dates: List<AttendanceDatesObject> = parseAttendanceDates(responseString)
+            val response: BackendDataSender.BackendResponse = BackendDataSender.get("$attendanceUrl?courseUnitId=$courseUnitId&groupNumber=$groupNumber")
+            if (response.statusCode == 200) {
+                val responseString = response.body
+                val dates: List<AttendanceDatesObject> = parser.decodeFromString<List<AttendanceDatesObject>>(responseString)
                 return@withContext dates
             } else {
                 throw(Exception("API Error"))
