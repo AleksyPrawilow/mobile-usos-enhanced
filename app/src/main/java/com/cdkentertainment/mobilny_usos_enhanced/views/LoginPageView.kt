@@ -20,10 +20,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -53,10 +55,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.DatabaseSingleton
@@ -87,6 +91,12 @@ fun LoginPageView(screenManagerViewModel: ScreenManagerViewModel = viewModel<Scr
         targetValue = if (showLoginStuff) 0.3f else 0.01f,
         spring(stiffness = Spring.StiffnessLow)
     )
+    val density: Density = LocalDensity.current
+    val insets = WindowInsets.systemBars
+    val topInset = insets.getTop(density)
+    val bottomInset = insets.getBottom(density)
+    val topPadding = with(density) { topInset.toDp() }
+    val bottomPadding = with(density) { bottomInset.toDp() }
 
     LaunchedEffect(Unit) {
         pageViewModel.tryGoogleAutoLogIn(context, activity!!)
@@ -97,7 +107,7 @@ fun LoginPageView(screenManagerViewModel: ScreenManagerViewModel = viewModel<Scr
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize().padding(top = topPadding, bottom = bottomPadding)
     ) {
         SplashScreenView(
             modifier = Modifier.weight(1f)
@@ -153,12 +163,12 @@ fun LoginPageView(screenManagerViewModel: ScreenManagerViewModel = viewModel<Scr
     }
 
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize().padding(top = topPadding, bottom = bottomPadding)
     ) {
         AnimatedVisibility(
             pageViewModel.loginState == LoginPageViewModel.LoginState.USOS_RETREIVING_OAUTH_VERIFIER,
-            enter = slideInHorizontally(spring(Spring.DampingRatioMediumBouncy)) + fadeIn(),
-            exit = slideOutHorizontally(spring(Spring.DampingRatioMediumBouncy)) + fadeOut(),
+            enter = slideInHorizontally() + fadeIn(),
+            exit = slideOutHorizontally() + fadeOut(),
             modifier = Modifier.fillMaxSize()
         ) {
             UsosLoginView(pageViewModel.oauthUrl)

@@ -129,7 +129,7 @@ fun PaymentsPageView() {
                     .fillMaxWidth()
                     .padding(horizontal = 6.dp)
             ) {
-                AnimatedVisibility(showElements, enter = scaleEnterTransition(1)) {
+                AnimatedVisibility(showTexts, enter = scaleEnterTransition(1)) {
                     LatestSomethingView(
                         icon = cardLabels[0].second,
                         title = cardLabels[0].first,
@@ -147,7 +147,7 @@ fun PaymentsPageView() {
                         }
                     }
                 }
-                AnimatedVisibility(showElements, enter = scaleEnterTransition(2)) {
+                AnimatedVisibility(showTexts, enter = scaleEnterTransition(2)) {
                     LatestSomethingView(
                         icon = cardLabels[1].second,
                         title = cardLabels[1].first,

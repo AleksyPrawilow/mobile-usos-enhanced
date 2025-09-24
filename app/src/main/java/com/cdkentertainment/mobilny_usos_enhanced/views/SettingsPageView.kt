@@ -1,8 +1,10 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
 import android.app.Activity
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
@@ -205,11 +207,14 @@ fun SettingsPageView() {
                     fontWeight = fontWeight,
                     textStyle = textStyle
                 ) {
-                    val intent = Intent(Intent.ACTION_SEND)
-                    intent.putExtra(Intent.EXTRA_EMAIL, arrayOf("mobile.usos.enhanced.app@gmail.com"))
-                    intent.putExtra(Intent.EXTRA_SUBJECT, "Bug report")
-                    intent.type = "message/rfc822"
-                    context.startActivity(Intent.createChooser(intent,"Choose an Email client: "))
+                    val subject = Uri.encode("Bug report")
+                    val uri = "mailto:mobile.usos.enhanced.app@gmail.com?subject=$subject".toUri()
+                    val intent = Intent(Intent.ACTION_SENDTO, uri)
+                    try {
+                        context.startActivity(Intent.createChooser(intent, "Choose an email client"))
+                    } catch (e: ActivityNotFoundException) {
+                        Toast.makeText(context, "No email client installed", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }
