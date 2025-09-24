@@ -45,15 +45,16 @@ fun ActivityInfoPopupView(
     onDismissRequest: () -> Unit
 ) {
     val context: Context = LocalContext.current
+    val viewModel: SchedulePageViewModel = viewModel<SchedulePageViewModel>()
+    val classType: String = data.classtype_id
+    val address: String = data.building_name.getLocalized(context)
+    val room: String = "${stringResource(R.string.room)}: ${data.room_number}"
+    val time: String = "${viewModel.getTimeFromDate(data.start_time)} - ${viewModel.getTimeFromDate(data.end_time)}"
+
     Dialog(
         onDismissRequest = onDismissRequest,
         properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true)
     ) {
-        val viewModel: SchedulePageViewModel = viewModel<SchedulePageViewModel>()
-        val address: String = data.building_name.getLocalized(context)
-        val room: String = "${stringResource(R.string.room)}: ${data.room_number}"
-        val time: String = "${viewModel.getTimeFromDate(data.start_time)} - ${viewModel.getTimeFromDate(data.end_time)}"
-
         Box(
             contentAlignment = Alignment.TopCenter,
             modifier = Modifier
@@ -75,11 +76,12 @@ fun ActivityInfoPopupView(
                     backgroundColor = UISingleton.color1,
                     modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 12.dp, bottom = 0.dp)
                 ) {
-                    GradeCardView(
-                        courseName = UIHelper.classTypeIds[data.classtype_id]?.name?.getLocalized(context) ?: data.classtype_id,
-                        showArrow = false,
-                        showGrade = false,
-                        backgroundColor = UISingleton.color2
+                    TextAndIconCardView(
+                        title = UIHelper.classTypeIds[classType]?.name?.getLocalized(context) ?: classType,
+                        icon = ImageVector.vectorResource(UIHelper.activityTypeIconMapping[classType] ?: UIHelper.otherIcon),
+                        iconSize = 40.dp,
+                        iconPadding = 6.dp,
+                        elevation = 0.dp
                     )
                 }
                 GroupedContentContainerView(

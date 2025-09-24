@@ -21,12 +21,15 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
@@ -37,11 +40,12 @@ import com.cdkentertainment.mobilny_usos_enhanced.view_models.LessonGroupPageVie
 @Composable
 fun ClassGroupPopupView(
     data: LessonGroup,
-    viewModel: LessonGroupPageViewModel,
     groupKey: String,
     onDismissRequest: () -> Unit
 ) {
     val context: Context = LocalContext.current
+    val viewModel: LessonGroupPageViewModel = viewModel<LessonGroupPageViewModel>()
+    val classType: String = data.class_type_id
     Dialog(
         onDismissRequest = onDismissRequest,
         properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true)
@@ -78,11 +82,12 @@ fun ClassGroupPopupView(
                             showArrow = false,
                             backgroundColor = UISingleton.color2
                         )
-                        GradeCardView(
-                            courseName = UIHelper.classTypeIds[data.class_type_id]?.name?.getLocalized(context) ?: "N/A",
-                            showArrow = false,
-                            showGrade = false,
-                            backgroundColor = UISingleton.color2
+                        TextAndIconCardView(
+                            title = UIHelper.classTypeIds[classType]?.name?.getLocalized(context) ?: classType,
+                            icon = ImageVector.vectorResource(UIHelper.activityTypeIconMapping[classType] ?: UIHelper.otherIcon),
+                            iconSize = 40.dp,
+                            iconPadding = 6.dp,
+                            elevation = 0.dp
                         )
                     }
                 }

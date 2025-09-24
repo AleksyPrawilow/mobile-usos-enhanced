@@ -5,22 +5,27 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -50,11 +55,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.DatabaseSingleton
@@ -63,7 +69,6 @@ import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.models.findActivity
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.LoginPageViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.ScreenManagerViewModel
-import com.cdkentertainment.mobilny_usos_enhanced.view_models.Screens
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
@@ -86,17 +91,23 @@ fun LoginPageView(screenManagerViewModel: ScreenManagerViewModel = viewModel<Scr
         targetValue = if (showLoginStuff) 0.3f else 0.01f,
         spring(stiffness = Spring.StiffnessLow)
     )
+    val density: Density = LocalDensity.current
+    val insets = WindowInsets.systemBars
+    val topInset = insets.getTop(density)
+    val bottomInset = insets.getBottom(density)
+    val topPadding = with(density) { topInset.toDp() }
+    val bottomPadding = with(density) { bottomInset.toDp() }
 
     LaunchedEffect(Unit) {
+        pageViewModel.tryGoogleAutoLogIn(context, activity!!)
         delay(3000)
         showLoginStuff = true
-        pageViewModel.tryGoogleAutoLogIn(context, activity!!)
     }
 
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize().padding(top = topPadding, bottom = bottomPadding)
     ) {
         SplashScreenView(
             modifier = Modifier.weight(1f)
@@ -141,12 +152,26 @@ fun LoginPageView(screenManagerViewModel: ScreenManagerViewModel = viewModel<Scr
                             }
                         }
                         LoginPageViewModel.LoginState.USOS_RETREIVING_REQUEST_TOKEN -> UsosRequestTokenView()
+                        LoginPageViewModel.LoginState.USOS_RETREIVING_OAUTH_VERIFIER -> {}
                         LoginPageViewModel.LoginState.USOS_OAUTH_VERIFIER -> UsosOauthVerifierView(pageViewModel)
                         LoginPageViewModel.LoginState.DATABASE_SAVING_SESSION -> DatabaseSavingSessionView(pageViewModel)
                         LoginPageViewModel.LoginState.SUCCESS -> SuccessView(screenManagerViewModel)
                     }
                 }
             }
+        }
+    }
+
+    Box(
+        modifier = Modifier.fillMaxSize().padding(top = topPadding, bottom = bottomPadding)
+    ) {
+        AnimatedVisibility(
+            pageViewModel.loginState == LoginPageViewModel.LoginState.USOS_RETREIVING_OAUTH_VERIFIER,
+            enter = slideInHorizontally() + fadeIn(),
+            exit = slideOutHorizontally() + fadeOut(),
+            modifier = Modifier.fillMaxSize()
+        ) {
+            UsosLoginView(pageViewModel.oauthUrl)
         }
     }
 }
@@ -166,6 +191,22 @@ private fun GoogleAutoLoginView() {
             modifier = Modifier.fillMaxWidth()
         )
         CircularProgressIndicator(color = UISingleton.textColor2)
+    }
+}
+
+@Composable
+private fun UsosLoginView(authUrl: String) {
+    val coroutineScope: CoroutineScope = rememberCoroutineScope()
+    val viewModel: LoginPageViewModel = viewModel<LoginPageViewModel>()
+    val authUrl = authUrl
+    val context: Context = LocalContext.current
+
+    OAuthWebView(url = authUrl) { uri ->
+        val oauthToken = uri.getQueryParameter("oauth_token")
+        val oauthVerifier = uri.getQueryParameter("oauth_verifier")
+        coroutineScope.launch {
+            viewModel.onOAuthRedirect(oauthToken, oauthVerifier, context)
+        }
     }
 }
 
@@ -447,22 +488,4 @@ private fun SuccessView(screenManagerViewModel: ScreenManagerViewModel) {
         textAlign = TextAlign.Center,
         modifier = Modifier.fillMaxWidth()
     )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun LoginPreview() {
-    val currentScreen: Screens = Screens.LOGIN
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(UISingleton.color1)
-            .padding(12.dp)
-    ) {
-        AnimatedContent(targetState = currentScreen) { target ->
-            if (currentScreen == target) {
-                LoginPageView()
-            }
-        }
-    }
 }

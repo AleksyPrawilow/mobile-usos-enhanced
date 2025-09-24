@@ -65,7 +65,11 @@ class SchedulePageViewModel: ViewModel() {
         return localTime.toString()
     }
 
-    fun groupLessonsByHour(lessons: List<Lesson>) {
+    fun groupLessonsByHour(lessons: List<Lesson>?) {
+        if (lessons == null) {
+            groupedByHours = mapOf()
+            return
+        }
         groupedByHours = lessons.groupBy {
             getTimeFromDate(it.start_time).substring(0, 2).toInt()
         }

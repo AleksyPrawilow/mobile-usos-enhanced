@@ -25,8 +25,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
@@ -38,6 +40,7 @@ import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.models.Schedule
+import com.cdkentertainment.mobilny_usos_enhanced.spToDp
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.SchedulePageViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.Screens
 import kotlinx.coroutines.CoroutineScope
@@ -70,7 +73,7 @@ fun SchedulePageView() {
     var schedule: Schedule? = schedulePageViewModel.schedule
     val onDaySelected: (Int) -> Unit = { index ->
         if (schedule != null) {
-            schedulePageViewModel.groupLessonsByHour(schedule!!.lessons[index]!!)
+            schedulePageViewModel.groupLessonsByHour(schedule!!.lessons[index])
         }
         try {
             val firstActivityHour: Int = schedulePageViewModel.groupedByHours.keys.sorted()[0]
@@ -106,7 +109,10 @@ fun SchedulePageView() {
             )
     ) {
         item {
-            PageHeaderView(stringResource(R.string.schedule_page_header))
+            PageHeaderView(
+                text = stringResource(R.string.schedule_page_header),
+                icon = ImageVector.vectorResource(R.drawable.rounded_calendar_month_24)
+            )
         }
         item {
             Spacer(modifier = Modifier.height(8.dp))

@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
+import com.cdkentertainment.mobilny_usos_enhanced.scaleIndependent
 import kotlinx.coroutines.delay
 
 @Composable
@@ -62,7 +63,7 @@ fun SplashScreenView(modifier: Modifier) {
     val textMeasurer: TextMeasurer = rememberTextMeasurer()
     val appName: String = "Mobilny\nUSOS"
     val titleStyle: TextStyle = TextStyle(
-        fontSize = 48.sp.scaleIndependent(),
+        fontSize = 48.sp.scaleIndependent,
         color = UISingleton.textColor1,
         fontWeight = FontWeight.ExtraBold,
         textAlign = TextAlign.Start
@@ -166,7 +167,7 @@ fun SplashScreenView(modifier: Modifier) {
                     ) {
                         Text(
                             text = "Enhanced",
-                            fontSize = 24.sp.scaleIndependent(),
+                            fontSize = 24.sp.scaleIndependent,
                             color = UISingleton.textColor2,
                             fontWeight = FontWeight.Bold,
                             textAlign = TextAlign.Right,

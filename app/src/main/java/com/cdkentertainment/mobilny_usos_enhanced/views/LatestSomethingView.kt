@@ -72,7 +72,7 @@ fun LatestSomethingView(
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(12.dp, alignment = Alignment.CenterVertically),
-                modifier = Modifier.padding(12.dp)
+                modifier = Modifier.padding(vertical = 12.dp, horizontal = 6.dp)
             ) {
                 Icon(
                     imageVector = icon,
