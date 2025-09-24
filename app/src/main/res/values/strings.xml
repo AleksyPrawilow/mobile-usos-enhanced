@@ -62,4 +62,17 @@
     <string name="winter_semester">Winter semester</string>
     <string name="paid_debts">Paid\ndebts</string>
     <string name="unpaid_debts">Unpaid\ndebts</string>
+    <string name="theme">Theme</string>
+    <string name="app_preferences">App preferences</string>
+    <string name="support_n_feedback">Support and feedback</string>
+    <string name="about_app">About app</string>
+    <string name="profile">Profile</string>
+    <string name="app_version">App version</string>
+    <string name="privacy_policy">Privacy policy</string>
+    <string name="app_language">App language</string>
+    <string name="log_out">Log out</string>
+    <string name="bug_report">Report a bug</string>
+    <string name="leave_a_review">Enjoying the app? Leave us a review!</string>
+    <string name="log_out_confirm">Are you sure you want to log out?</string>
+    <string name="something_went_wrong">Something went wrong</string>
 </resources>

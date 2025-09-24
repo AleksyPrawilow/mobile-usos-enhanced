@@ -1,11 +1,12 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
+import android.content.Context
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -27,34 +28,30 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
-import com.cdkentertainment.mobilny_usos_enhanced.UISingleton.color1
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton.color2
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton.color3
-import com.cdkentertainment.mobilny_usos_enhanced.UISingleton.color4
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton.textColor1
+import com.cdkentertainment.mobilny_usos_enhanced.UISingleton.textColor4
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.SettingsPageViewModel
 
 @Composable
-fun ThemeSelectionButtonView(modifier: Modifier = Modifier) {
+fun LanguageSelectionButtonView(modifier: Modifier) {
     val settingsPageViewModel: SettingsPageViewModel = viewModel<SettingsPageViewModel>()
     val shape: RoundedCornerShape = remember { RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp) }
     var expanded by remember { mutableStateOf(false) }
-    val themeBrush = Brush.horizontalGradient(
-        0f to color1,
-        0.25f to color1,
-        0.25f to color2,
-        0.5f to color2,
-        0.5f to color3,
-        0.75f to color3,
-        0.75f to color4,
-        1f to color4
+    val context: Context = LocalContext.current
+    val languages: List<Pair<String, String>> = listOf(
+        Pair("en", "English"),
+        Pair("pl", "Polski")
     )
     Card(
         colors = CardDefaults.cardColors(
@@ -76,7 +73,7 @@ fun ThemeSelectionButtonView(modifier: Modifier = Modifier) {
                 .padding(12.dp)
         ) {
             Text(
-                text = stringResource(R.string.theme),
+                text = stringResource(R.string.app_language),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = textColor1,
@@ -93,46 +90,36 @@ fun ThemeSelectionButtonView(modifier: Modifier = Modifier) {
             Box(
                 modifier = Modifier
                     .size(40.dp)
-                    .background(themeBrush, CircleShape)
-                    .border(5.dp, color3, CircleShape)
+                    .background(color3, CircleShape)
             ) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(R.drawable.rounded_language_24),
+                    contentDescription = "Language",
+                    tint = textColor4,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(6.dp)
+                        .align(Alignment.Center)
+                )
                 DropdownMenu(
                     expanded = expanded,
                     onDismissRequest = { expanded = false },
                     containerColor = color2,
                     shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp)
                 ) {
-                    for ((themeName, theme) in UISingleton.themes) {
-                        val previewBrush = Brush.horizontalGradient(
-                            0f to theme.color1,
-                            0.25f to theme.color1,
-                            0.25f to theme.color2,
-                            0.5f to theme.color2,
-                            0.5f to theme.color3,
-                            0.75f to theme.color3,
-                            0.75f to theme.color4,
-                            1f to theme.color4
-                        )
+                    for (language in languages) {
                         DropdownMenuItem(
                             contentPadding = PaddingValues(12.dp),
                             text = {
                                 Text(
-                                    text = themeName,
+                                    text = language.second,
                                     style = MaterialTheme.typography.titleMedium,
                                     color = textColor1
                                 )
                             },
-                            trailingIcon = {
-                                Box(
-                                    modifier = Modifier
-                                        .size(32.dp)
-                                        .background(previewBrush, CircleShape)
-                                        .border(3.dp, color3, CircleShape)
-                                )
-                            },
                             onClick = {
                                 expanded = false
-                                settingsPageViewModel.chooseTheme(theme)
+                                //TODO
                             }
                         )
                     }

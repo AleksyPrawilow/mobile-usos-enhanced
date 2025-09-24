@@ -1,6 +1,8 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
 import android.net.Uri
+import android.view.View
+import android.webkit.CookieManager
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -24,7 +26,13 @@ fun OAuthWebView(
     AndroidView(
         factory = { context ->
             WebView(context).apply {
+                this.clearHistory()
+                this.clearCache(true)
+                this.clearFormData()
                 settings.javaScriptEnabled = true
+                importantForAutofill = View.IMPORTANT_FOR_AUTOFILL_NO_EXCLUDE_DESCENDANTS
+                CookieManager.getInstance().removeAllCookies(null)
+                CookieManager.getInstance().flush()
                 webViewClient = object : WebViewClient() {
                     override fun shouldOverrideUrlLoading(
                         view: WebView?,

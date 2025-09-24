@@ -63,4 +63,17 @@
     <string name="winter_semester">Semestr zimowy</string>
     <string name="paid_debts">Rozliczone\npłatności</string>
     <string name="unpaid_debts">Nierozliczone\npłatności</string>
+    <string name="theme">Motyw</string>
+    <string name="app_preferences">Ustawienia aplikacji</string>
+    <string name="support_n_feedback">Pomoc</string>
+    <string name="about_app">O aplikacji</string>
+    <string name="profile">Profil</string>
+    <string name="app_version">Wersja aplikacji</string>
+    <string name="privacy_policy">Polityka prywatności</string>
+    <string name="app_language">Język aplikacji</string>
+    <string name="log_out">Wyloguj się</string>
+    <string name="bug_report">Zgłoś błąd</string>
+    <string name="leave_a_review">Lubisz aplikację? Oceń ją w Google Play!</string>
+    <string name="log_out_confirm">Czy na pewno chcesz się wylogować</string>
+    <string name="something_went_wrong">Coś poszło nie tak</string>
 </resources>

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -21,6 +22,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
@@ -33,6 +36,9 @@ fun TextAndIconCardView(
     icon: ImageVector = Icons.Rounded.Refresh,
     elevation: Dp = 3.dp,
     iconSize: Dp = 48.dp,
+    showArrow: Boolean = false,
+    textStyle: TextStyle = MaterialTheme.typography.titleMedium,
+    fontWeight: FontWeight = FontWeight.Medium,
     iconPadding: Dp = 8.dp,
     onClick: (() -> Unit)? = null
 ) {
@@ -64,10 +70,18 @@ fun TextAndIconCardView(
         ) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.titleMedium,
+                style = textStyle,
+                fontWeight = fontWeight,
                 color = UISingleton.textColor1,
                 modifier = Modifier.weight(1f)
             )
+            if (showArrow) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
+                    contentDescription = "More",
+                    tint = UISingleton.textColor1,
+                )
+            }
             Icon(
                 imageVector = icon,
                 contentDescription = null,
