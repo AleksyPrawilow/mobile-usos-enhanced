@@ -11,18 +11,16 @@ import java.time.LocalDate
 
 class PaymentsPageModel {
     private val parser: Json = Json { ignoreUnknownKeys = true }
-    private val paymentsUrl: String = "payments/user_payments"
-    private val paymentsFields: String
-    = "id|user|saldo_amount|type|description|state|account_number|payment_deadline|interest|total_amount|currency|faculty|default_choice_date"
+    private val paymentsUrl: String = "Payments"
     private fun parsePayments(responseString: String): List<Payment> {
         val parsedPayments: List<Payment> = parser.decodeFromString<List<Payment>>(responseString)
         return parsedPayments
     }
     public suspend fun getAllPayments(): List<Payment> {
         return withContext(Dispatchers.IO) {
-            val response = OAuthSingleton.get("$paymentsUrl?fields=$paymentsFields")
-            if (response.containsKey("response") && response["response"] != null) {
-                val parsedPayments: List<Payment> = parsePayments(response["response"]!!)
+            val response = BackendDataSender.get(paymentsUrl, null)
+            if (response.statusCode == 200) {
+                val parsedPayments: List<Payment> = parsePayments(response.body)
                 return@withContext parsedPayments
             } else {
                 throw(Exception("API Error"))
