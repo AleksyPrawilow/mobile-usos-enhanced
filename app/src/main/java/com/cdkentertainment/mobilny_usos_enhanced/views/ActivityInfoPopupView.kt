@@ -48,7 +48,7 @@ fun ActivityInfoPopupView(
     val viewModel: SchedulePageViewModel = viewModel<SchedulePageViewModel>()
     val classType: String = data.classtype_id
     val address: String = data.building_name.getLocalized(context)
-    val room: String = "${stringResource(R.string.room)}: ${data.room_number}"
+    val room: String = data.room_number
     val time: String = "${viewModel.getTimeFromDate(data.start_time)} - ${viewModel.getTimeFromDate(data.end_time)}"
 
     Dialog(

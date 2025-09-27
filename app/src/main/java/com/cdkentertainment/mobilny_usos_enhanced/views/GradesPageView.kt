@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,7 +33,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
-import com.cdkentertainment.mobilny_usos_enhanced.models.Course
 import com.cdkentertainment.mobilny_usos_enhanced.models.Season
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.GradesPageViewModel
 import kotlinx.coroutines.delay
@@ -52,12 +53,14 @@ fun GradesPageView() {
     val bottomPadding = with(density) { bottomInset.toDp() }
 
     LaunchedEffect(Unit) {
-        if (gradesPageViewModel.userGrades == null) {
-            gradesPageViewModel.fetchUserGrades()
-        }
+        gradesPageViewModel.suspendFetchSemesterGrades(UIHelper.termIds.last())
         delay(150)
         showElements = true
+        for (semester in UIHelper.termIds.reversed()) {
+            gradesPageViewModel.fetchSemesterGrades(semester)
+        }
     }
+
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(0.dp),
         modifier = Modifier
@@ -77,39 +80,67 @@ fun GradesPageView() {
             Spacer(modifier = Modifier.height(8.dp))
         }
         item {
-            AnimatedVisibility(gradesPageViewModel.userGrades == null, modifier = paddingModifier) {
+            AnimatedVisibility(!gradesPageViewModel.userSubjects.contains(UIHelper.termIds.last()), modifier = paddingModifier) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     CircularProgressIndicator(color = UISingleton.textColor2, modifier = Modifier.align(Alignment.Center))
                 }
             }
         }
-        if (gradesPageViewModel.userGrades != null) {
-            for (iteration in gradesPageViewModel.userGrades!!.size - 1 downTo  0) {
-                val season: Season = gradesPageViewModel.userGrades!![iteration]
-                val subjectCount: Int = season.courseList.size
-                stickyHeader {
-                    AnimatedVisibility(showElements, enter = enterTransition(1)) {
-                        SemesterCardView(season.seasonId, modifier = paddingModifier)
-                    }
-                }
-                item {
-                    AnimatedVisibility(showElements, enter = enterTransition(2)) {
-                        GradeAverageView(season.avgGrade, modifier = paddingModifier)
-                    }
-                }
-                items(subjectCount) { courseIndex ->
-                    val course: Course = season.courseList[courseIndex]
-                    AnimatedVisibility(showElements, enter = enterTransition(3 + courseIndex)){
-                        CourseGradesView(course, gradesPageViewModel.userSubjects!!, gradesPageViewModel.classtypeIdInfo, modifier = paddingModifier)
-                    }
-                }
-                item {
-                    Spacer(modifier = Modifier.height(24.dp))
+        for (semester in UIHelper.termIds.reversed()) {
+            val season: Season? = gradesPageViewModel.userSubjects[semester]
+            stickyHeader {
+                AnimatedVisibility(showElements && season != null, enter = enterTransition(1)) {
+                    SemesterCardView(semester, modifier = paddingModifier)
                 }
             }
             item {
-                Spacer(modifier = Modifier.height(64.dp))
+                AnimatedVisibility(
+                    visible = gradesPageViewModel.loadingMap[semester] == true && showElements
+                ) {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        CircularProgressIndicator(color = UISingleton.textColor2, modifier = Modifier.align(Alignment.Center))
+                    }
+                }
             }
+            item {
+                AnimatedVisibility(
+                    visible = gradesPageViewModel.errorMap[semester] == true && showElements
+                ) {
+                    TextAndIconCardView(
+                        title = stringResource(R.string.failed_to_fetch),
+                        icon = Icons.Rounded.Refresh,
+                        modifier = paddingModifier
+                    )
+                }
+            }
+            item {
+                AnimatedVisibility(
+                    visible = gradesPageViewModel.loadedMap[semester] == true && showElements,
+                    enter = enterTransition(2)
+                ) {
+                    if (season != null) {
+                        GradeAverageView(season.avgGrade, modifier = paddingModifier)
+                    }
+                }
+            }
+            if (season != null) {
+                for (course in 0 until season.courseList.size) {
+                    item {
+                        AnimatedVisibility(
+                            visible = gradesPageViewModel.loadedMap[semester] == true && showElements,
+                            enter = enterTransition(3 + course)
+                        ) {
+                            CourseGradesView(season.courseList[course], gradesPageViewModel.userSubjects[semester]!!.courseUnitIds!!, gradesPageViewModel.classtypeIdInfo, modifier = paddingModifier)
+                        }
+                    }
+                }
+            }
+            item {
+                Spacer(modifier = Modifier.height(24.dp))
+            }
+        }
+        item {
+            Spacer(modifier = Modifier.height(64.dp))
         }
     }
 }

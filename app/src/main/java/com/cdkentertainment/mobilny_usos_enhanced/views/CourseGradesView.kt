@@ -14,7 +14,7 @@ import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.getLocalized
 import com.cdkentertainment.mobilny_usos_enhanced.models.Course
-import com.cdkentertainment.mobilny_usos_enhanced.models.CourseUnitIds
+import com.cdkentertainment.mobilny_usos_enhanced.models.CourseUnitData
 import com.cdkentertainment.mobilny_usos_enhanced.models.SharedDataClasses
 import com.cdkentertainment.mobilny_usos_enhanced.models.TermGrade
 
@@ -22,7 +22,7 @@ import com.cdkentertainment.mobilny_usos_enhanced.models.TermGrade
 @Composable
 fun CourseGradesView(
     data: Course,
-    nameMap: Map<String, CourseUnitIds>,
+    nameMap: Map<String, CourseUnitData>,
     classtypeIdInfo: Map<String, SharedDataClasses.IdAndName>?,
     modifier: Modifier = Modifier
 ) {
@@ -49,7 +49,7 @@ fun CourseGradesView(
             val unitClassType: String = nameMap[courseUnit]?.classtype_id ?: "N/A"
             val condition: Boolean = data.courseGrades.course_units_grades[courseUnit] != null && data.courseGrades.course_units_grades[courseUnit]!![0]["1"] != null
             GradeCardView(
-                courseName = classtypeIdInfo?.get(unitClassType)?.name?.getLocalized(context) ?: "N/A",
+                courseName = UIHelper.classTypeIds[unitClassType]?.name?.getLocalized(context) ?: "N/A",
                 grade = if (condition) data.courseGrades.course_units_grades[courseUnit]!![0]["1"]!!.value_symbol else "—",
                 showArrow = condition,
                 backgroundColor = UISingleton.color1,

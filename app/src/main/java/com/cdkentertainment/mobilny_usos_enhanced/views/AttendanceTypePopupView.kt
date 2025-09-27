@@ -129,7 +129,8 @@ fun AttendanceTypePopupView(
                     Text(
                         text = stringResource(R.string.confirm),
                         style = MaterialTheme.typography.titleLarge,
-                        color = UISingleton.textColor1
+                        fontWeight = FontWeight.Bold,
+                        color = UISingleton.textColor4
                     )
                 }
             }

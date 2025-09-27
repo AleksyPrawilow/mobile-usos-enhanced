@@ -2,6 +2,7 @@ package com.cdkentertainment.mobilny_usos_enhanced.views
 
 import android.net.Uri
 import android.view.View
+import android.view.ViewGroup
 import android.webkit.CookieManager
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
@@ -26,6 +27,10 @@ fun OAuthWebView(
     AndroidView(
         factory = { context ->
             WebView(context).apply {
+                layoutParams = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+                )
                 this.clearHistory()
                 this.clearCache(true)
                 this.clearFormData()

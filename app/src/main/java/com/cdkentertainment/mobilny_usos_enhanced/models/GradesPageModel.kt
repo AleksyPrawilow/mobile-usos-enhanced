@@ -1,6 +1,5 @@
 package com.cdkentertainment.mobilny_usos_enhanced.models
 
-import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
@@ -15,7 +14,7 @@ class GradesPageModel {
 
     public suspend fun fetchClasstypeIds(): Map<String, SharedDataClasses.IdAndName> {
         return withContext(Dispatchers.IO) {
-            val apiResponse: BackendDataSender.BackendResponse = BackendDataSender.get(classtypeUrl)
+            val apiResponse: BackendDataSender.BackendResponse = BackendDataSender.get("$gradesUrl/$classtypeUrl")
             if (apiResponse.statusCode == 200)  {
                 val responseString: String = apiResponse.body
                 val parsedResponse: Map<String, SharedDataClasses.IdAndName> = parser.decodeFromString<Map<String, SharedDataClasses.IdAndName>>(responseString)
@@ -39,7 +38,7 @@ class GradesPageModel {
     }
     public suspend fun getGivenExamGradesDistribution(examId: Int): GradesDistribution {
         return withContext(Dispatchers.IO) {
-            val response: BackendDataSender.BackendResponse = BackendDataSender.get("$examDistributionUrl?id=$examId")
+            val response: BackendDataSender.BackendResponse = BackendDataSender.get("$gradesUrl/$examDistributionUrl?id=$examId")
             if (response.statusCode == 200) {
                 val responseString: String = response.body
                 val parsedExamDistribution: GradesDistribution = parser.decodeFromString<GradesDistribution>(responseString)
@@ -52,7 +51,7 @@ class GradesPageModel {
 
     public suspend fun getTermIds(): List<String> {
         return withContext(Dispatchers.IO) {
-            val response: BackendDataSender.BackendResponse = BackendDataSender.get(termIdsUrl)
+            val response: BackendDataSender.BackendResponse = BackendDataSender.get("$gradesUrl/$termIdsUrl")
             if (response.statusCode == 200) {
                 val responseString: String = response.body
                 val parsedResponse: List<String> = parser.decodeFromString<List<String>>(responseString)
@@ -72,7 +71,7 @@ data class CourseGrades (
 data class Season ( //Final structure for grades per season
     val seasonId: String,
     val avgGrade: Float ? = null,
-    val courseList: List<Course?>,
+    val courseList: List<Course>,
     var courseUnitIds: Map<String, CourseUnitData>? = null
 )
 @Serializable

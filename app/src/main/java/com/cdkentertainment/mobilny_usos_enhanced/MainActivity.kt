@@ -14,24 +14,22 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.requiredHeight
-import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.cdkentertainment.mobilny_usos_enhanced.UISingleton.color1
 import com.cdkentertainment.mobilny_usos_enhanced.ui.theme.MobilnyUSOSEnhancedTheme
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.FloatingButtonViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.ScreenManagerViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.views.FloatingButtonView
 import com.cdkentertainment.mobilny_usos_enhanced.views.ScreenManager
+import kotlinx.coroutines.runBlocking
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,7 +37,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val context = LocalContext.current
-            LaunchedEffect(Unit) {
+            runBlocking {
                 UserDataSingleton.readSettings(context)
             }
             MobilnyUSOSEnhancedTheme {
@@ -76,12 +74,6 @@ fun ContentView() {
     )
     val bgOverlayColor: Color by animateColorAsState(targetValue = if (fabViewModel.expanded) Color(0x32000000) else Color(TRANSPARENT))
 
-//    val blurRadius: Dp by animateDpAsState(UISingleton.blurRadius)
-    val color1: Color by animateColorAsState(UISingleton.color1)
-    val color2: Color by animateColorAsState(UISingleton.color2)
-    val color3: Color by animateColorAsState(UISingleton.color3)
-    val color4: Color by animateColorAsState(UISingleton.color4)
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -92,9 +84,7 @@ fun ContentView() {
         if (fabViewModel.expanded) {
             Box(
                 modifier = Modifier
-                    //TODO: What even is this kind of logic?? Extremelly hacky and needs to be fixed
-                    .requiredWidth(LocalConfiguration.current.screenWidthDp.dp + 32.dp)
-                    .requiredHeight(LocalConfiguration.current.screenHeightDp.dp + 128.dp)
+                    .fillMaxSize()
                     .background(bgOverlayColor)
                     .clickable(
                         onClick = {
