@@ -80,7 +80,7 @@ fun GradesPageView() {
             Spacer(modifier = Modifier.height(8.dp))
         }
         item {
-            AnimatedVisibility(!gradesPageViewModel.userSubjects.contains(UIHelper.termIds.last()), modifier = paddingModifier) {
+            AnimatedVisibility(!showElements, modifier = paddingModifier) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     CircularProgressIndicator(color = UISingleton.textColor2, modifier = Modifier.align(Alignment.Center))
                 }
@@ -109,8 +109,11 @@ fun GradesPageView() {
                     TextAndIconCardView(
                         title = stringResource(R.string.failed_to_fetch),
                         icon = Icons.Rounded.Refresh,
+                        showArrow = true,
                         modifier = paddingModifier
-                    )
+                    ) {
+                        gradesPageViewModel.fetchSemesterGrades(semester)
+                    }
                 }
             }
             item {

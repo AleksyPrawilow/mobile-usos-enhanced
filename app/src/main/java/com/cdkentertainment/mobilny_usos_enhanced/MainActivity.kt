@@ -1,7 +1,9 @@
 package com.cdkentertainment.mobilny_usos_enhanced
 
+import android.app.Activity
 import android.graphics.Color.TRANSPARENT
 import android.os.Bundle
+import android.view.Window
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -21,7 +23,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton.color1
 import com.cdkentertainment.mobilny_usos_enhanced.ui.theme.MobilnyUSOSEnhancedTheme
@@ -48,7 +52,23 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
+fun SetStatusBarIconsLight(window: Window, lightIcons: Boolean) {
+    val view = LocalView.current
+    if (!view.isInEditMode) {
+        val insetsController = WindowInsetsControllerCompat(window, view)
+        insetsController.isAppearanceLightStatusBars = !lightIcons
+    }
+}
+
+@Composable
+fun currentWindow(): Window? {
+    val context = LocalContext.current
+    return (context as? Activity)?.window
+}
+
+@Composable
 fun ContentView() {
+    val window: Window? = currentWindow()
     val screenManagerViewModel: ScreenManagerViewModel = viewModel<ScreenManagerViewModel>()
     val fabViewModel: FloatingButtonViewModel = viewModel<FloatingButtonViewModel>()
     val fabHorizonalBias: Float by animateFloatAsState(
@@ -73,12 +93,13 @@ fun ContentView() {
         )
     )
     val bgOverlayColor: Color by animateColorAsState(targetValue = if (fabViewModel.expanded) Color(0x32000000) else Color(TRANSPARENT))
-
+    if (window != null) {
+        SetStatusBarIconsLight(window, lightIcons = UISingleton.isDarkTheme)
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(color = color1)
-//            .blur(blurRadius)
     ) {
         ScreenManager(screenManagerViewModel.selectedScreen, screenManagerViewModel)
         if (fabViewModel.expanded) {
