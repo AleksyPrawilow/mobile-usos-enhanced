@@ -13,10 +13,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Done
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -61,6 +64,11 @@ fun AttendancePopupView(
             onDismiss = { showRemoveDialog = false }
         )
     }
+
+    LaunchedEffect(Unit) {
+        viewModel.readAllCourseMeetings(viewModel.popupData!!.classGroupData)
+    }
+
     Dialog(
         onDismissRequest = onDismissRequest,
         properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true)
@@ -109,6 +117,13 @@ fun AttendancePopupView(
                     ) {
                         AttendanceStatCardView(stringResource(R.string.frequency), "100%")
                         AttendanceStatCardView(stringResource(R.string.absences), "0")
+                        TextAndIconCardView(
+                            title = "All meetings are up to date",
+                            icon = Icons.Rounded.Done,
+                            backgroundColor = UISingleton.color2,
+                            showArrow = false,
+                            elevation = 0.dp
+                        )
                     }
                 }
                 if (true) {
