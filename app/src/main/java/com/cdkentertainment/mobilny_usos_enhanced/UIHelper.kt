@@ -8,10 +8,15 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.slideInHorizontally
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.sp
 import com.cdkentertainment.mobilny_usos_enhanced.models.SharedDataClasses
 
 object UIHelper {
@@ -25,6 +30,7 @@ object UIHelper {
     val slideEnterTransition: (Int) -> EnterTransition = { delayIndex: Int -> slideInHorizontally(tweenSlideSpec(delayIndex)) + fadeIn(tweenFadeSpec(delayIndex)) }
     val scaleEnterTransition: (Int) -> EnterTransition = { delayIndex: Int -> scaleIn(tweenFadeSpec(delayIndex)) + fadeIn(tweenFadeSpec(delayIndex)) }
     var classTypeIds: Map<String, SharedDataClasses.IdAndName> by mutableStateOf(emptyMap())
+    var termIds: List<String> = mutableListOf()
 
     private val lectureIcon: Int = R.drawable.rounded_school_24
     private val labsIcon: Int = R.drawable.rounded_science_24
@@ -70,4 +76,12 @@ object UIHelper {
         "TUT" to tutorialIcon, // Tutorial
         "KCW" to labsIcon, // kcw
     )
+}
+
+val TextUnit.scaleIndependent @Composable get() = (this.value / LocalDensity.current.fontScale).sp
+
+@Composable
+fun spToDp(sp: TextUnit): Dp {
+    val density = LocalDensity.current
+    return with(density) { sp.toDp() }
 }

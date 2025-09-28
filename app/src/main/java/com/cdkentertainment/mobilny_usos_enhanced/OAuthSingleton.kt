@@ -29,6 +29,7 @@ object OAuthSingleton {
     var baseUrl: String = "https://usosapps.amu.edu.pl/services/"
     val service: OAuth10aService = ServiceBuilder(apiKey)
         .apiSecret(apiSecret)
+        .callback("mobile-usos-enhanced://login")
         .build(UsosAPI.instance())
     var oAuth1AccessToken: OAuth1AccessToken? = null
     var userData: UserInfoClass? by mutableStateOf(null)

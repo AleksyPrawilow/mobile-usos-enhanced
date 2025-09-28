@@ -111,9 +111,9 @@ fun AttendanceTypePopupView(
                 }
                 Button(
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = UISingleton.color1,
+                        containerColor = UISingleton.color3,
                         contentColor = UISingleton.textColor1,
-                        disabledContainerColor = UISingleton.color1,
+                        disabledContainerColor = UISingleton.color3,
                         disabledContentColor = UISingleton.textColor1
                     ),
                     onClick = {
@@ -129,7 +129,8 @@ fun AttendanceTypePopupView(
                     Text(
                         text = stringResource(R.string.confirm),
                         style = MaterialTheme.typography.titleLarge,
-                        color = UISingleton.textColor1
+                        fontWeight = FontWeight.Bold,
+                        color = UISingleton.textColor4
                     )
                 }
             }

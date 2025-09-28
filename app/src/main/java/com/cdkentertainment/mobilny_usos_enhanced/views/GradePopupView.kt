@@ -233,7 +233,7 @@ fun GradeChart(gradeData: Map<String, Int>, modifier: Modifier = Modifier) {
             columnProvider = ColumnCartesianLayer.ColumnProvider.series(
                 rememberLineComponent(
                     fill = Fill(UISingleton.color3.toArgb()),
-                    thickness = 12.dp,
+                    thickness = 18.dp,
                     shape = CorneredShape.rounded(topLeftPercent = UISingleton.uiElementsCornerRadius, topRightPercent = UISingleton.uiElementsCornerRadius),
                 )
             ),

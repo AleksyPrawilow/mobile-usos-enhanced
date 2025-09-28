@@ -13,10 +13,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Done
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -32,6 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
@@ -40,11 +44,12 @@ import com.cdkentertainment.mobilny_usos_enhanced.view_models.AttendancePageView
 
 @Composable
 fun AttendancePopupView(
-    viewModel: AttendancePageViewModel,
     onDismissRequest: () -> Unit,
     onRemovePin: () -> Unit
 ) {
+    val viewModel: AttendancePageViewModel = viewModel<AttendancePageViewModel>()
     val context: Context = LocalContext.current
+    val classType: String? = viewModel.popupData?.classGroupData?.class_type_id
     var showRemoveDialog: Boolean by rememberSaveable { mutableStateOf(false) }
     if (showRemoveDialog) {
         ConfirmDialogPopupView(
@@ -59,6 +64,11 @@ fun AttendancePopupView(
             onDismiss = { showRemoveDialog = false }
         )
     }
+
+    LaunchedEffect(Unit) {
+        viewModel.readAllCourseMeetings(viewModel.popupData!!.classGroupData)
+    }
+
     Dialog(
         onDismissRequest = onDismissRequest,
         properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true)
@@ -90,11 +100,12 @@ fun AttendancePopupView(
                             showArrow = false,
                             backgroundColor = UISingleton.color2
                         )
-                        GradeCardView(
-                            courseName = UIHelper.classTypeIds[viewModel.popupData?.classGroupData?.class_type_id]?.name?.getLocalized(context) ?: "N/A",
-                            showArrow = false,
-                            showGrade = false,
-                            backgroundColor = UISingleton.color2
+                        TextAndIconCardView(
+                            title = UIHelper.classTypeIds[classType]?.name?.getLocalized(context) ?: (classType ?: "N/A"),
+                            icon = ImageVector.vectorResource(UIHelper.activityTypeIconMapping[classType] ?: UIHelper.otherIcon),
+                            iconSize = 40.dp,
+                            iconPadding = 6.dp,
+                            elevation = 0.dp
                         )
                     }
                 }
@@ -106,6 +117,13 @@ fun AttendancePopupView(
                     ) {
                         AttendanceStatCardView(stringResource(R.string.frequency), "100%")
                         AttendanceStatCardView(stringResource(R.string.absences), "0")
+                        TextAndIconCardView(
+                            title = "All meetings are up to date",
+                            icon = Icons.Rounded.Done,
+                            backgroundColor = UISingleton.color2,
+                            showArrow = false,
+                            elevation = 0.dp
+                        )
                     }
                 }
                 if (true) {

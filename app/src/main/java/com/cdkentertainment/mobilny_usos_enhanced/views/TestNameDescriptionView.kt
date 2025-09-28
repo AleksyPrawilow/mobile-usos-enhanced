@@ -38,57 +38,59 @@ fun TestNameDescriptionView(name: String, description: String) {
         if (expanded) 180f else 0f
     )
     val onClick: () -> Unit = { expanded = !expanded }
-    Column {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
-                .background(UISingleton.color1)
-                .clickable(onClick = onClick)
-                .zIndex(1f)
-        ) {
-            Text(
-                name,
-                style = MaterialTheme.typography.titleMedium,
-                color = UISingleton.textColor1,
-                modifier = Modifier
-                    .padding(12.dp)
-                    .weight(1f)
-            )
-            Icon(
-                imageVector = Icons.Rounded.KeyboardArrowDown,
-                contentDescription = "More",
-                tint = UISingleton.textColor1,
-                modifier = Modifier
-                    .graphicsLayer(
-                        rotationZ = arrowRotation
-                    )
-                    .padding(12.dp)
-            )
-        }
-        AnimatedVisibility(expanded, enter = expandVertically(), exit = shrinkVertically(), modifier = Modifier.offset(y = -UISingleton.uiElementsCornerRadius.dp)) {
-            Box(
+    if (description.isNotEmpty()) {
+        Column {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(
-                        UISingleton.color3,
-                        RoundedCornerShape(
-                            topStart = 0.dp,
-                            topEnd = 0.dp,
-                            bottomStart = UISingleton.uiElementsCornerRadius.dp,
-                            bottomEnd = UISingleton.uiElementsCornerRadius.dp
-                        )
-                    )
-                    .zIndex(0.75f)
-                    .padding(top = 12.dp + UISingleton.uiElementsCornerRadius.dp, bottom = 12.dp)
-                    .padding(horizontal = 6.dp)
+                    .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
+                    .background(UISingleton.color1)
+                    .clickable(onClick = onClick)
+                    .zIndex(1f)
             ) {
                 Text(
-                    description,
+                    name,
                     style = MaterialTheme.typography.titleMedium,
-                    color = UISingleton.textColor4
+                    color = UISingleton.textColor1,
+                    modifier = Modifier
+                        .padding(12.dp)
+                        .weight(1f)
                 )
+                Icon(
+                    imageVector = Icons.Rounded.KeyboardArrowDown,
+                    contentDescription = "More",
+                    tint = UISingleton.textColor1,
+                    modifier = Modifier
+                        .graphicsLayer(
+                            rotationZ = arrowRotation
+                        )
+                        .padding(12.dp)
+                )
+            }
+            AnimatedVisibility(expanded, enter = expandVertically(), exit = shrinkVertically(), modifier = Modifier.offset(y = -UISingleton.uiElementsCornerRadius.dp)) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            UISingleton.color3,
+                            RoundedCornerShape(
+                                topStart = 0.dp,
+                                topEnd = 0.dp,
+                                bottomStart = UISingleton.uiElementsCornerRadius.dp,
+                                bottomEnd = UISingleton.uiElementsCornerRadius.dp
+                            )
+                        )
+                        .zIndex(0.75f)
+                        .padding(top = 12.dp + UISingleton.uiElementsCornerRadius.dp, bottom = 12.dp)
+                        .padding(horizontal = 6.dp)
+                ) {
+                    Text(
+                        description,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = UISingleton.textColor4
+                    )
+                }
             }
         }
     }

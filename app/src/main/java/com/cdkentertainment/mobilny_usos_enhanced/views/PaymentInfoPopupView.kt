@@ -5,7 +5,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -68,6 +70,7 @@ fun PaymentInfoPopupView(
                     )
                 }
                 PaymentInfoView(data)
+                Spacer(modifier = Modifier.height(12.dp))
                 if (data.state == "unpaid") {
                     GroupedContentContainerView(
                         title = "Konto bankowe",
@@ -75,7 +78,7 @@ fun PaymentInfoPopupView(
                         onClick = {
                             clipboard.setText(AnnotatedString(data.account_number))
                         },
-                        modifier = Modifier.padding(12.dp)
+                        modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 12.dp)
                     ) {
                         Text(
                             text = data.account_number,

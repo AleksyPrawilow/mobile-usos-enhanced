@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -159,9 +158,6 @@ fun TimetableActivityView(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .offset(y = -(UISingleton.uiElementsCornerRadius.dp) / 2)
-                        .background(UISingleton.color4)
-                        .offset(y = UISingleton.uiElementsCornerRadius.dp / 2)
                         .background(UISingleton.color3)
                 ) {
                     Text(
@@ -201,31 +197,6 @@ fun TimetableActivityView(
                             .padding(top = 4.dp, bottom = 4.dp, start = (12 + UISingleton.uiElementsCornerRadius).dp, end = 12.dp)
                     )
                 }
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .width(UISingleton.uiElementsCornerRadius.dp)
-                        .height(UISingleton.uiElementsCornerRadius.dp)
-                        .zIndex(1f)
-                        .offset(y = -(UISingleton.uiElementsCornerRadius.dp) / 2)
-                        .background(
-                            UISingleton.color3
-                        )
-                        .offset(y = 0.dp)
-                        .background(
-                            UISingleton.color4,
-                            RoundedCornerShape(
-                                topEnd = UISingleton.uiElementsCornerRadius.dp
-                            )
-                        )
-                        .offset(y = UISingleton.uiElementsCornerRadius.dp / 2)
-                        .background(
-                            UISingleton.color3,
-                            RoundedCornerShape(
-                                topEnd = UISingleton.uiElementsCornerRadius.dp
-                            )
-                        )
-                )
             }
         }
         Column(

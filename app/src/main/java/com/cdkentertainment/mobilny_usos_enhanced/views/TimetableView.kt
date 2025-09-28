@@ -26,15 +26,15 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.models.Schedule
+import com.cdkentertainment.mobilny_usos_enhanced.scaleIndependent
+import com.cdkentertainment.mobilny_usos_enhanced.spToDp
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.SchedulePageViewModel
 import kotlinx.coroutines.delay
 
@@ -84,7 +84,7 @@ fun TimetableView(
                         ) {
                             Text(
                                 text = "$hour:00",
-                                fontSize = 18.sp.scaleIndependent(),
+                                fontSize = 18.sp.scaleIndependent,
                                 textAlign = TextAlign.Center,
                                 color = UISingleton.textColor2,
                                 modifier = Modifier
@@ -138,15 +138,4 @@ fun TimetableView(
             }
         }
     }
-}
-
-@Composable
-fun spToDp(sp: TextUnit): Dp {
-    val density = LocalDensity.current
-    return with(density) { sp.toDp() }
-}
-
-@Composable
-fun TextUnit.scaleIndependent(): TextUnit {
-    return this / LocalDensity.current.fontScale
 }

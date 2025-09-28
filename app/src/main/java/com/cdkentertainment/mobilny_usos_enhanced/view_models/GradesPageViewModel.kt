@@ -5,52 +5,60 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
-import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
-import com.cdkentertainment.mobilny_usos_enhanced.models.CourseUnitIds
+import androidx.lifecycle.viewModelScope
 import com.cdkentertainment.mobilny_usos_enhanced.models.GradesDistribution
 import com.cdkentertainment.mobilny_usos_enhanced.models.GradesPageModel
 import com.cdkentertainment.mobilny_usos_enhanced.models.Season
 import com.cdkentertainment.mobilny_usos_enhanced.models.SharedDataClasses
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-
-fun main(): Unit = runBlocking {
-    OAuthSingleton.setTestAccessToken()
-    val gradesPageViewModel: GradesPageViewModel = GradesPageViewModel()
-    launch {
-        gradesPageViewModel.fetchUserGrades()
-    }
-}
 
 class GradesPageViewModel: ViewModel() {
     var gradesDistribution: MutableMap<Int, Map<String, Int>> = mutableStateMapOf()
-    var userGrades: List<Season>? by mutableStateOf(null)
-    var userSubjects: Map<String, CourseUnitIds>? by mutableStateOf(null)
+    var userSubjects: MutableMap<String, Season> = mutableStateMapOf<String, Season>()
+    var loadingMap: MutableMap<String, Boolean> = mutableStateMapOf<String, Boolean>()
+    var errorMap: MutableMap<String, Boolean> = mutableStateMapOf<String, Boolean>()
+    var loadedMap: MutableMap<String, Boolean> = mutableStateMapOf<String, Boolean>()
     var classtypeIdInfo: Map<String, SharedDataClasses.IdAndName>? by mutableStateOf(null)
     val gradesPageModel: GradesPageModel = GradesPageModel()
 
-    suspend fun fetchUserGrades() {
+    suspend fun suspendFetchSemesterGrades(semester: String) {
+        if (userSubjects.containsKey(semester) || loadingMap[semester] == true) return
+        loadingMap[semester] = true
+        errorMap[semester] = false
+        loadedMap[semester] = false
         withContext(Dispatchers.IO) {
-            if (UIHelper.classTypeIds.isEmpty()) {
-                try {
-                    UIHelper.classTypeIds = gradesPageModel.fetchClasstypeIds()
-                    classtypeIdInfo = UIHelper.classTypeIds
-                } catch (e: Exception) {
-                    println(e)
-                }
-            } else {
-                classtypeIdInfo = UIHelper.classTypeIds
-            }
             try {
-                val data:Pair<List<Season>, Map<String, CourseUnitIds>>? = gradesPageModel.fetchUserGrades()
-                userGrades = data!!.first
-                userSubjects = data.second
+                val semesterCourses: Season = gradesPageModel.fetchUserGrades(semester)
+                userSubjects[semester] = semesterCourses
+                errorMap[semester] = false
+                loadedMap[semester] = true
             } catch (e: Exception) {
-                println(e)
-                //return@withContext //ogarnij coś tutaj @aleksy
+                errorMap[semester] = true
+                loadedMap[semester] = false
+            }
+            loadingMap[semester] = false
+        }
+    }
+    fun fetchSemesterGrades(semester: String) {
+        if (userSubjects.containsKey(semester) || loadingMap[semester] == true) return
+        println("fetch")
+        loadingMap[semester] = true
+        errorMap[semester] = false
+        loadedMap[semester] = false
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                try {
+                    val semesterCourses: Season = gradesPageModel.fetchUserGrades(semester)
+                    userSubjects[semester] = semesterCourses
+                    errorMap[semester] = false
+                    loadedMap[semester] = true
+                } catch (e: Exception) {
+                    errorMap[semester] = true
+                    loadedMap[semester] = false
+                }
+                loadingMap[semester] = false
             }
         }
     }

@@ -60,17 +60,19 @@ fun PaymentInfoView(data: Payment) {
                     .padding(8.dp)
             )
         }
-        GradeCardView(
-            courseName = "Do zapłaty:",
-            grade = "${"%.2f".format(data.total_amount - data.saldo_amount)} zł",
-            showArrow = false,
-            backgroundColor = UISingleton.color2
-        )
-        GradeCardView(
-            courseName = "Termin płatności:",
-            grade = data.payment_deadline,
-            showArrow = false,
-            backgroundColor = UISingleton.color2
-        )
+        if (data.state == "unpaid") {
+            GradeCardView(
+                courseName = "Do zapłaty",
+                grade = "${"%.2f".format(data.total_amount - data.saldo_amount)} zł",
+                showArrow = false,
+                backgroundColor = UISingleton.color2
+            )
+            GradeCardView(
+                courseName = "Termin płatności",
+                grade = data.payment_deadline,
+                showArrow = false,
+                backgroundColor = UISingleton.color2
+            )
+        }
     }
 }

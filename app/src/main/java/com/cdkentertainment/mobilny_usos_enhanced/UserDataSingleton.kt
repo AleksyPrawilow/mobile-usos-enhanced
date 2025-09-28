@@ -26,6 +26,14 @@ object UserDataSingleton {
         }
     }
 
+    suspend fun deleteUserCredentials(context: Context) {
+        OAuthSingleton.oAuth1AccessToken = null
+        context.dataStore.edit { settings ->
+            settings[ACCESS_TOKEN_KEY] = ""
+            settings[ACCESS_TOKEN_SECRET] = ""
+        }
+    }
+
     suspend fun saveUserSettings(context: Context) {
         println("Saving user settings...")
         context.dataStore.edit { settings ->

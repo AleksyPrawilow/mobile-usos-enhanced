@@ -153,9 +153,11 @@ class AttendancePageViewModel: ViewModel() {
                     return@withContext true
                 }
                 val dates: List<AttendanceDatesObject> = attendancePageModel.getGivenSubjectAttendanceDates(group.course_unit_id.toString(), group.group_number.toString())
+                println(dates)
                 unitMeetings[group.course_unit_id.toString()] = dates
                 return@withContext true
             } catch (e: Exception) {
+                e.printStackTrace()
                 return@withContext false
             }
         }

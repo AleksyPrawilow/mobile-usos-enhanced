@@ -2,7 +2,9 @@ package com.cdkentertainment.mobilny_usos_enhanced.views
 
 import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.vectorResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.getLocalized
@@ -25,7 +27,6 @@ fun ClassGroupView(
     if (viewModel.groupDetails[groupKey]?.showDetails == true) {
         ClassGroupPopupView(
             data = data,
-            viewModel = viewModel,
             groupKey = groupKey,
             onDismissRequest = onDismissRequest
         )
@@ -35,5 +36,6 @@ fun ClassGroupView(
         grade = data.group_number.toString(),
         showArrow = true,
         onClick = onClick,
+        sideIcon = ImageVector.vectorResource(UIHelper.activityTypeIconMapping[data.class_type_id] ?: UIHelper.otherIcon)
     )
 }

@@ -1,7 +1,6 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
 import android.content.Context
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.EaseOut
 import androidx.compose.animation.core.EaseOutQuad
 import androidx.compose.animation.core.Easing
@@ -13,12 +12,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -28,7 +29,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
@@ -40,12 +40,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
+import com.cdkentertainment.mobilny_usos_enhanced.spToDp
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.FloatingButtonViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.ScreenManagerViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.Screens
@@ -76,10 +75,8 @@ fun FloatingButtonView(
             easing = EaseOut
         )
     )
-    val color1: Color by animateColorAsState(UISingleton.color1)
-    val color2: Color by animateColorAsState(UISingleton.color2)
-    val color3: Color by animateColorAsState(UISingleton.color3)
-    val color4: Color by animateColorAsState(UISingleton.textColor1)
+    val color2: Color =UISingleton.color2
+    val color4: Color = UISingleton.textColor1
     val buttonScale: Float by animateFloatAsState(if (fabViewModel.expanded) 1.25f else 1.0f)
     val subButtonDelayNormal: Int = if (fabViewModel.expanded) 150 else 0
     val subButtonDelayIncrement: Int = 25
@@ -143,12 +140,8 @@ fun FloatingButtonView(
                     .align(Alignment.Center)
             )
         }
-        Text(
-            text = stringResource(Screens.fromOrdinal(index + 1)!!.pageName),
-            fontWeight = if (screenManagerViewModel.selectedScreen.ordinal == index + 1) FontWeight.ExtraBold else FontWeight.SemiBold,
-            color = if (screenManagerViewModel.selectedScreen.ordinal == index + 1) UISingleton.textColor4 else UISingleton.textColor3,
-            textAlign = TextAlign.Center,
-            fontSize = 9.sp.scaleIndependent(),
+        Box(
+            contentAlignment = Alignment.BottomCenter,
             modifier = Modifier
                 .offset(x = x.dp * subButtonOffsetsRatios[index], y = y.dp * subButtonOffsetsRatios[index] + 26.dp)
                 .graphicsLayer(
@@ -157,11 +150,29 @@ fun FloatingButtonView(
                     scaleY = subButtonOffsetsRatios[index] * if (screenManagerViewModel.selectedScreen.ordinal == index + 1) 1.15f else 1.0f
                 )
                 .defaultMinSize(minWidth = subButtonSize.dp)
-                .height(20.dp)
-                .background(UISingleton.textColor1, RoundedCornerShape(50.dp))
-                .padding(horizontal = 4.dp)
+                .width(intrinsicSize = IntrinsicSize.Min)
                 .then(modifier)
-        )
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.Center)
+                    .height(spToDp(10.sp) * 2)
+                    .background(
+                        color = color4,
+                        shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp)
+                    )
+            )
+            Text(
+                text = stringResource(Screens.fromOrdinal(index + 1)!!.pageName),
+                fontWeight = if (screenManagerViewModel.selectedScreen.ordinal == index + 1) FontWeight.ExtraBold else FontWeight.SemiBold,
+                color = if (screenManagerViewModel.selectedScreen.ordinal == index + 1) UISingleton.textColor4 else UISingleton.textColor3,
+                textAlign = TextAlign.Center,
+                fontSize = 10.sp,
+                modifier = Modifier
+                    .padding(horizontal = 4.dp)
+            )
+        }
     }
 
     IconButton(
@@ -185,42 +196,5 @@ fun FloatingButtonView(
             .border(5.dp, color4, CircleShape)
     ) {
         FloatingButtonIconView(fabViewModel, color4)
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun FloatingButtonPreview() {
-    val fabViewModel: FloatingButtonViewModel = viewModel<FloatingButtonViewModel>()
-    val fabHorizonalBias: Float by animateFloatAsState(
-        targetValue = if (fabViewModel.expanded) 0f else 1f,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = 100f
-        )
-    )
-    val fabVerticalBias: Float by animateFloatAsState(
-        targetValue = if (fabViewModel.expanded) 0f else 1f,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioLowBouncy,
-            stiffness = 100f
-        )
-    )
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(12.dp)
-    ) {
-        FloatingButtonView(
-            fabViewModel = fabViewModel,
-            screenManagerViewModel = viewModel<ScreenManagerViewModel>(),
-            modifier = Modifier.align(
-                BiasAlignment(
-                    horizontalBias = fabHorizonalBias,
-                    verticalBias = fabHorizonalBias
-                )
-            )
-        )
     }
 }

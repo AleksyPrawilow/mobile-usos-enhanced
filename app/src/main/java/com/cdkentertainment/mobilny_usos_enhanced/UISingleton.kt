@@ -8,8 +8,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 object UISingleton {
-    // Pallete taken from https://colorhunt.co/palette/1b3c53456882d2c1b6f9f3ef
-
+    var isDarkTheme: Boolean by mutableStateOf(false)
     // Background colors
     var color1: Color by mutableStateOf(Color(0xFFF9F3EF))
         private set
@@ -60,7 +59,8 @@ object UISingleton {
         color1 = Color(0xFFF9F3EF),
         color2 = Color(0xFFD2C1B6),
         color3 = Color(0xFF456882),
-        color4 = Color(0xFF1B3C53)
+        color4 = Color(0xFF1B3C53),
+        isDark = false
     )
 
     private val lowDarkTheme: Theme = Theme(
@@ -69,6 +69,7 @@ object UISingleton {
         color2 = Color(0xFF456882),
         color3 = Color(0xFFEAEAEA),
         color4 = Color(0xFFFFFFFF),
+        isDark = true,
         textTheme = standardDarkTextTheme
     )
 
@@ -77,7 +78,8 @@ object UISingleton {
         color1 = Color(0xFFFFFFFF),
         color2 = Color(0xFFEAEAEA),
         color3 = Color(0xFF456882),
-        color4 = Color(0xFF1B3C53)
+        color4 = Color(0xFF1B3C53),
+        isDark = false
     )
 
     private val oledTheme: Theme = Theme(
@@ -86,6 +88,7 @@ object UISingleton {
         color2 = Color(0xFF2A2A2A),
         color3 = Color(0xFFFFEB3B),
         color4 = Color(0xFFE7D436),
+        isDark = true,
         textTheme = oledTextTheme
     )
 
@@ -109,6 +112,7 @@ object UISingleton {
         textColor2 = theme.textTheme.color2
         textColor3 = theme.textTheme.color3
         textColor4 = theme.textTheme.color4
+        isDarkTheme = theme.isDark
     }
 
     fun blurContent() {
@@ -133,5 +137,6 @@ data class Theme(
     val color2: Color,
     val color3: Color,
     val color4: Color,
+    val isDark: Boolean = false,
     val textTheme: TextTheme = TextTheme()
 )
