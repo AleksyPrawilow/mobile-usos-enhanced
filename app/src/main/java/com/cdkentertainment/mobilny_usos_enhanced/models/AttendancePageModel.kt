@@ -1,7 +1,6 @@
 package com.cdkentertainment.mobilny_usos_enhanced.models
 
 import android.content.Context
-import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
@@ -13,16 +12,26 @@ import java.time.format.DateTimeFormatter
 class AttendancePageModel {
     @Serializable
     private data class AttendanceDates (
-        val start_time: String,
-        val end_time: String,
+        val startDateTime: String,
+        val endDateTime: String,
     )
     private val parser: Json = Json {ignoreUnknownKeys = true}
     private val attendanceUrl: String = "Attendance"
-    private val timeFormat: String = "yyyy-MM-dd HH:mm:ss"
+    private val timeFormat: String = "yyyy-MM-dd'T'HH:mm:ss"
 
     private fun parseToLocalDateTime(format: String, date: String): LocalDateTime { //it could be public.
         val formatter = DateTimeFormatter.ofPattern(format)
         return LocalDateTime.parse(date, formatter)
+    }
+    private fun parseAttendanceDates(responseString: String): List<AttendanceDatesObject> {
+        val parsedAttendanceDates: List<AttendanceDates> = parser.decodeFromString(responseString)
+        val datesList: MutableList<AttendanceDatesObject> = mutableListOf<AttendanceDatesObject>()
+        for(dates in parsedAttendanceDates) {
+            val startDate: LocalDateTime = parseToLocalDateTime(timeFormat, dates.startDateTime)
+            val endDate: LocalDateTime = parseToLocalDateTime(timeFormat, dates.endDateTime)
+            datesList.add(AttendanceDatesObject(startDate, endDate))
+        }
+        return datesList
     }
     public fun filterPastAttendanceDates(dates: List<AttendanceDatesObject>): List<AttendanceDatesObject> {
         val currentDateTime: LocalDateTime = LocalDateTime.now()
@@ -36,7 +45,7 @@ class AttendancePageModel {
             val response: BackendDataSender.BackendResponse = BackendDataSender.get("$attendanceUrl?courseUnitId=$courseUnitId&groupNumber=$groupNumber")
             if (response.statusCode == 200) {
                 val responseString = response.body
-                val dates: List<AttendanceDatesObject> = parser.decodeFromString<List<AttendanceDatesObject>>(responseString)
+                val dates: List<AttendanceDatesObject> = parseAttendanceDates(responseString)
                 return@withContext dates
             } else {
                 throw(Exception("API Error"))

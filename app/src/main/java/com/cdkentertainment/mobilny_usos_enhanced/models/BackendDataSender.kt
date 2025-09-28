@@ -1,7 +1,6 @@
 package com.cdkentertainment.mobilny_usos_enhanced.models
 
 
-import com.cdkentertainment.mobilny_usos_enhanced.BuildConfig
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

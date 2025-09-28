@@ -57,6 +57,7 @@ fun UnpinnedCoursePopupView(
 
     LaunchedEffect(Unit) {
         viewModel.readAllCourseMeetings(viewModel.popupData!!.classGroupData)
+        println(viewModel.unitMeetings)
     }
 
     if (showPinDialog) {
