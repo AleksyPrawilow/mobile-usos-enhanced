@@ -3,6 +3,7 @@ package com.cdkentertainment.mobilny_usos_enhanced.models
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
 class LecturerRatesPageModel {
@@ -22,7 +23,6 @@ class LecturerRatesPageModel {
             }
         }
     }
-
     public suspend fun addUserRate(userRate: UserRate): String {
         return withContext(Dispatchers.IO) {
             val userRateJson = parser.encodeToString(userRate)
@@ -34,7 +34,31 @@ class LecturerRatesPageModel {
             }
         }
     }
+    public suspend fun getLecturerAvgRates(lecturerId: Int) : LecturerAvgRates? {
+        return withContext(Dispatchers.IO) {
+            val response: BackendDataSender.BackendResponse = BackendDataSender.get("$lecturerRateUrl?lecturerId=$lecturerId&universityId=1") //TEMPORARY
+            if (response.statusCode == 200 && response.body != "") {
+                val parsedResponse: LecturerAvgRates = parser.decodeFromString<LecturerAvgRates>(response.body)
+                return@withContext parsedResponse
+            } else if (response.body == "") {
+                return@withContext null
+            } else {
+                throw(Exception("API Error"))
+            }
+        }
+    }
 }
+@Serializable
+data class LecturerAvgRates(
+    val lecturerId: Int,
+    val universityId: Int,
+    val ratesCount: Int,
+    val avgRate1: Float,
+    val avgRate2: Float,
+    val avgRate3: Float,
+    val avgRate4: Float,
+    val avgRate5: Float,
+)
 
 @Serializable
 data class UserRate(
