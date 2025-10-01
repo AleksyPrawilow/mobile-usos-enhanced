@@ -1,9 +1,13 @@
 package com.cdkentertainment.mobilny_usos_enhanced.models
 
+import com.cdkentertainment.mobilny_usos_enhanced.Lecturer
+import com.cdkentertainment.mobilny_usos_enhanced.LecturerData
+import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
+import com.cdkentertainment.mobilny_usos_enhanced.PeopleSingleton
+import com.cdkentertainment.mobilny_usos_enhanced.PeopleSingleton.lecturers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
 class LecturerRatesPageModel {
@@ -47,6 +51,81 @@ class LecturerRatesPageModel {
             }
         }
     }
+    public suspend fun getStaffIndex(facultyId: String, offset: Int, pageSize: Int): LecturersIndex {
+        return withContext(Dispatchers.IO) {
+            val response: String = OAuthSingleton.get("users/staff_index?fac_ids=$facultyId&teachers_only=true&start=${offset * pageSize}&num=$pageSize")["response"]!!
+            parser.decodeFromString<LecturersIndex>(response)
+        }
+    }
+    public suspend fun getExtendedLecturersInfo(lecturerIds: List<String>) {
+        return withContext(Dispatchers.IO) {
+            try {
+                val linkedString: String = lecturerIds.joinToString("|")
+                val response: String = OAuthSingleton.get("users/users?user_ids=$linkedString&fields=id|first_name|last_name|titles|staff_status|phone_numbers|office_hours|has_photo|photo_urls[100x100]|room")["response"]!!
+                val lecturersInfo: Map<String, LecturerData> = parser.decodeFromString<Map<String, LecturerData>>(response)
+                for ((id, lecturer) in lecturersInfo) {
+                    val lecturerRating: LecturerAvgRates? = getLecturerAvgRates(id.toInt())
+                    if (lecturerRating == null) {
+                        lecturers[lecturer.id] = Lecturer(
+                            human = SharedDataClasses.Human(lecturer.id, lecturer.first_name, lecturer.last_name),
+                            lecturerData = lecturer,
+                            rating = LecturerAvgRates(
+                                lecturerId = id.toInt(),
+                                universityId = 1,
+                                ratesCount = 0,
+                                avgRate1 = 0f,
+                                avgRate2 = 0f,
+                                avgRate3 = 0f,
+                                avgRate4 = 0f,
+                                avgRate5 = 0f
+                            )
+                        )
+                    } else {
+                        lecturers[lecturer.id] = Lecturer(
+                            human = SharedDataClasses.Human(lecturer.id, lecturer.first_name, lecturer.last_name),
+                            lecturerData = lecturer,
+                            rating = lecturerRating
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                throw(Exception("API Error"))
+            }
+        }
+    }
+    public suspend fun getLecturersInfo(lecturers: List<SharedDataClasses.Human>) {
+        return withContext(Dispatchers.IO) {
+            try {
+                for (lecturer in lecturers) {
+                    val lecturerRating: LecturerAvgRates? = getLecturerAvgRates(lecturer.id.toInt())
+                    if (lecturerRating == null) {
+                        PeopleSingleton.lecturers[lecturer.id] = Lecturer(
+                            human = SharedDataClasses.Human(lecturer.id, lecturer.first_name, lecturer.last_name),
+                            rating = LecturerAvgRates(
+                                lecturerId = lecturer.id.toInt(),
+                                universityId = 1,
+                                ratesCount = 0,
+                                avgRate1 = 0f,
+                                avgRate2 = 0f,
+                                avgRate3 = 0f,
+                                avgRate4 = 0f,
+                                avgRate5 = 0f
+                            )
+                        )
+                    } else {
+                        PeopleSingleton.lecturers[lecturer.id] = Lecturer(
+                            human = SharedDataClasses.Human(lecturer.id, lecturer.first_name, lecturer.last_name),
+                            rating = lecturerRating
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                throw(Exception("API Error"))
+            }
+        }
+    }
 }
 @Serializable
 data class LecturerAvgRates(
@@ -79,4 +158,11 @@ data class LecturerRate(
     val rate_3: Float = 0f,
     val rate_4: Float = 0f,
     val rate_5: Float = 0f
+)
+
+@Serializable
+data class LecturersIndex(
+    val users: List<SharedDataClasses.Human>,
+    val total: Int,
+    val next_page: Boolean
 )

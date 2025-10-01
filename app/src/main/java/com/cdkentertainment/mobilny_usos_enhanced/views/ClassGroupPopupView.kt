@@ -1,6 +1,7 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
 import android.content.Context
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -13,11 +14,17 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -30,11 +37,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.cdkentertainment.mobilny_usos_enhanced.PeopleSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.getLocalized
 import com.cdkentertainment.mobilny_usos_enhanced.models.LessonGroup
+import com.cdkentertainment.mobilny_usos_enhanced.view_models.LecturerRatesPageViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.LessonGroupPageViewModel
 
 @Composable
@@ -45,16 +54,32 @@ fun ClassGroupPopupView(
 ) {
     val context: Context = LocalContext.current
     val viewModel: LessonGroupPageViewModel = viewModel<LessonGroupPageViewModel>()
+    val lecturersViewModel: LecturerRatesPageViewModel = viewModel<LecturerRatesPageViewModel>()
     val classType: String = data.class_type_id
+    var lecturersFetched: Boolean by rememberSaveable { mutableStateOf(false) }
+    var lecturersFetchError: Boolean by rememberSaveable { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        lecturersViewModel.getLecturersRatings(
+            lecturerIds = data.lecturers.map { it.id.toString() },
+            onSuccess = {
+                lecturersFetched = true
+                lecturersFetchError = false
+            },
+            onError = {
+                lecturersFetchError = true
+                lecturersFetched = false
+            }
+        )
+        if (viewModel.groupDetails[groupKey]?.participants == null) {
+            viewModel.groupDetails[groupKey]?.participants = viewModel.fetchParticipants(data.group_number.toString(), data.course_unit_id.toString())
+        }
+    }
+
     Dialog(
         onDismissRequest = onDismissRequest,
         properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true)
     ) {
-        LaunchedEffect(Unit) {
-            if (viewModel.groupDetails[groupKey]?.participants == null) {
-                viewModel.groupDetails[groupKey]?.participants = viewModel.fetchParticipants(data.group_number.toString(), data.course_unit_id.toString())
-            }
-        }
         Box(
             contentAlignment = Alignment.TopCenter,
             modifier = Modifier
@@ -92,16 +117,29 @@ fun ClassGroupPopupView(
                     }
                 }
                 item {
-                    GroupedContentContainerView(
-                        title = stringResource(R.string.lecturers),
-                        backgroundColor = UISingleton.color1,
-                        modifier = Modifier.padding(12.dp)
-                    ) {
-                        for (lecturer in 0 until data.lecturers.size) {
-                            //Can this be replaced with GroupParticipantCardView.kt?
-                            //The answer is NO, it cannot!
-                            GroupLecturerCardView(data.lecturers[lecturer])
+                    AnimatedVisibility(lecturersFetched && !lecturersFetchError) {
+                        GroupedContentContainerView(
+                            title = stringResource(R.string.lecturers),
+                            backgroundColor = UISingleton.color1,
+                            modifier = Modifier.padding(12.dp)
+                        ) {
+                            for (lecturer in data.lecturers) {
+                                GroupLecturerCardView(
+                                    lecturer = PeopleSingleton.lecturers[lecturer.id]!!
+                                )
+                            }
                         }
+                    }
+                }
+                item {
+                    AnimatedVisibility(lecturersFetchError) {
+                        TextAndIconCardView(
+                            title = stringResource(R.string.failed_to_fetch),
+                            icon = Icons.Rounded.Refresh,
+                            iconSize = 40.dp,
+                            iconPadding = 6.dp,
+                            modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 12.dp)
+                        )
                     }
                 }
                 if (viewModel.groupDetails[groupKey]?.participants != null) {

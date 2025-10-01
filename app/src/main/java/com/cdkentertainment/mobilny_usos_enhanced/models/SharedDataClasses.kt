@@ -1,5 +1,6 @@
 package com.cdkentertainment.mobilny_usos_enhanced.models
 
+import androidx.compose.runtime.Stable
 import kotlinx.serialization.Serializable
 
 class SharedDataClasses {
@@ -15,6 +16,7 @@ class SharedDataClasses {
         val name: LangDict
     )
 
+    @Stable
     @Serializable
     data class Human (
         val id: String,

@@ -67,6 +67,7 @@ import com.cdkentertainment.mobilny_usos_enhanced.DatabaseSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.models.findActivity
+import com.cdkentertainment.mobilny_usos_enhanced.view_models.LecturerRatesPageViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.LoginPageViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.ScreenManagerViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -450,12 +451,14 @@ private fun UsosOauthVerifierView(viewModel: LoginPageViewModel) {
 
 @Composable
 private fun DatabaseSavingSessionView(viewModel: LoginPageViewModel) {
+    val lecturersViewModel: LecturerRatesPageViewModel = viewModel<LecturerRatesPageViewModel>()
     var tryingToSave: Boolean by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         if (tryingToSave) {
             return@LaunchedEffect
         }
         tryingToSave = true
+        lecturersViewModel.fetchUserRates()
         viewModel.saveUserSession()
     }
 

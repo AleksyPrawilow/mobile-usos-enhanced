@@ -35,24 +35,31 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.cdkentertainment.mobilny_usos_enhanced.Lecturer
 import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.models.LecturerRate
-import com.cdkentertainment.mobilny_usos_enhanced.models.SharedDataClasses
+import com.cdkentertainment.mobilny_usos_enhanced.models.UserRate
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.LecturerRatesPageViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
 fun LecturerInfoPopupView(
-    data: SharedDataClasses.Human,
+    data: Lecturer,
     onDismissRequest: () -> Unit
 ) {
     val context: Context = LocalContext.current
     val coroutineScope: CoroutineScope = rememberCoroutineScope()
     val viewModel: LecturerRatesPageViewModel = viewModel<LecturerRatesPageViewModel>()
-    val userRating: LecturerRate? = viewModel.userRatings[data.id]
-    val lecturerRatings: LecturerRate? = viewModel.lecturerRates[data.id]
+    val userRating: UserRate? = viewModel.userRatings[data.human.id]
+    val lecturerRatings: LecturerRate? = LecturerRate(
+        data.rating.avgRate1,
+        data.rating.avgRate2,
+        data.rating.avgRate3,
+        data.rating.avgRate4,
+        data.rating.avgRate5
+    )
     var editingRate: Boolean by rememberSaveable { mutableStateOf(false) }
 
     Dialog(
@@ -73,7 +80,7 @@ fun LecturerInfoPopupView(
             ) {
                 item {
                     PopupHeaderView(
-                        title = "${data.first_name} ${data.last_name}"
+                        title = "${data.human.first_name} ${data.human.last_name}"
                     ) {
                         Box(
                             contentAlignment = Alignment.Center,
@@ -143,7 +150,7 @@ fun LecturerInfoPopupView(
                             .padding(12.dp)
                     ) {
                         LecturerRateView(
-                            lecturerId = data.id,
+                            lecturerId = data.human.id,
                             numberOfReviews = if (lecturerRatings != null) 1 else 0,
                             rate = if (lecturerRatings != null) lecturerRatings else LecturerRate()
                         )
@@ -163,14 +170,14 @@ fun LecturerInfoPopupView(
                             visible = userRating == null || editingRate
                         ) {
                             LecturerRateView(
-                                lecturerId = data.id,
+                                lecturerId = data.human.id,
                                 title = stringResource(R.string.your_rating),
                                 numberOfReviews = 0,
                                 showNumberOfReviews = false,
-                                rate = userRating ?: LecturerRate(),
+                                rate = if (userRating != null) LecturerRate(userRating.rate1.toFloat(), userRating.rate2.toFloat(), userRating.rate3.toFloat(), userRating.rate4.toFloat(), userRating.rate5.toFloat()) else LecturerRate(),
                                 onAddRate = { rate ->
                                     coroutineScope.launch {
-                                        viewModel.addUserRate(lecturerId = data.id, rate)
+                                        viewModel.addUserRate(lecturerId = data.human.id, rate)
                                         editingRate = false
                                     }
                                 }
@@ -180,11 +187,11 @@ fun LecturerInfoPopupView(
                             visible = userRating != null && !editingRate,
                         ) {
                             LecturerRateView(
-                                lecturerId = data.id,
+                                lecturerId = data.human.id,
                                 title = stringResource(R.string.your_rating),
                                 numberOfReviews = 1,
                                 showNumberOfReviews = false,
-                                rate = userRating ?: LecturerRate(),
+                                rate = if (userRating != null) LecturerRate(userRating.rate1.toFloat(), userRating.rate2.toFloat(), userRating.rate3.toFloat(), userRating.rate4.toFloat(), userRating.rate5.toFloat()) else LecturerRate(),
                                 onEditRate = {
                                     editingRate = true
                                 }
