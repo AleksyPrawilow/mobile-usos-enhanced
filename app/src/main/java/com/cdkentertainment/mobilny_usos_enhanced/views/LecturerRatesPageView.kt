@@ -3,6 +3,7 @@ package com.cdkentertainment.mobilny_usos_enhanced.views
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.FlowRow
@@ -16,11 +17,19 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Done
+import androidx.compose.material.icons.rounded.Refresh
+import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -39,6 +48,8 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
@@ -72,6 +83,7 @@ fun LecturerRatesPageView() {
     var showSearch     : Boolean   by rememberSaveable { mutableStateOf(false) }
     var showLecturers  : Boolean   by rememberSaveable { mutableStateOf(false) }
     var selectedFaculty: String    by rememberSaveable { mutableStateOf("0600000000") }
+    var searchValue    : String    by rememberSaveable { mutableStateOf("") }
     var selectedPage   : Int       by rememberSaveable { mutableStateOf(0) }
     val pageSize: Int = 20
     val lecturersIndex: Map<String, List<SharedDataClasses.Human>>? = lecturerRatesPageViewModel.lecturersIndex
@@ -124,6 +136,11 @@ fun LecturerRatesPageView() {
             showElements = true
             delay(500)
             showLecturers = true
+        }
+    }
+    val onQuerySearch: (String, Boolean) -> Unit = { query, force ->
+        coroutineScope.launch {
+            lecturerRatesPageViewModel.queryLecturersSearch(query, force)
         }
     }
 
@@ -281,23 +298,131 @@ fun LecturerRatesPageView() {
                 }
             }
         } else {
-            if (true) {
-                item {
-                    Text(
-                        "Wyszukiwarka bla bla bla"
+            item {
+                AnimatedVisibility(
+                    visible = showSearch && showElements,
+                    enter = enterTransition(3)
+                ) {
+                    OutlinedTextField(
+                        label = {
+                            Text(
+                                text = "Search",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = UISingleton.textColor1,
+                                fontWeight = FontWeight.Light
+                            )
+                        },
+                        placeholder = {
+                            Text(
+                                text = "Wprowadz cos",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = UISingleton.textColor1,
+                                fontWeight = FontWeight.Light
+                            )
+                        },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Rounded.Search,
+                                contentDescription = null,
+                                tint = UISingleton.textColor1
+                            )
+                        },
+                        trailingIcon = {
+                            if (searchValue.isNotEmpty()) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
+                                    contentDescription = null,
+                                    tint = UISingleton.textColor1,
+                                    modifier = Modifier.clickable {
+                                        onQuerySearch(searchValue, false)
+                                        searchValue = ""
+                                    }
+                                )
+                            }
+                        },
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Text
+                        ),
+                        value = searchValue,
+                        singleLine = true,
+                        onValueChange = { searchValue = it },
+                        shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedContainerColor = UISingleton.color1,
+                            unfocusedContainerColor = UISingleton.color1,
+                            disabledContainerColor = UISingleton.color1,
+                            unfocusedBorderColor = UISingleton.color3,
+                            focusedBorderColor = UISingleton.color3,
+                            disabledBorderColor = UISingleton.color3,
+                            cursorColor = UISingleton.textColor1,
+                            focusedTextColor = UISingleton.textColor1,
+                            unfocusedTextColor = UISingleton.textColor1
+                        ),
+                        enabled = !lecturerRatesPageViewModel.lecturersSearchLoading,
+                        modifier = paddingModifier
+                            .fillMaxWidth()
                     )
                 }
-            } else {
+            }
+            item {
+                AnimatedVisibility(
+                    visible = showSearch && showElements && lecturerRatesPageViewModel.lecturersSearchLoading
+                ) {
+                    Box(modifier = paddingModifier.fillMaxWidth()) {
+                        CircularProgressIndicator(color = UISingleton.textColor2, modifier = Modifier.align(Alignment.Center))
+                    }
+                }
+            }
+            item {
+                AnimatedVisibility(
+                    visible = showSearch && showElements && lecturerRatesPageViewModel.lecturersSearchError
+                ) {
+                    TextAndIconCardView(
+                        title = stringResource(R.string.failed_to_fetch),
+                        icon = Icons.Rounded.Refresh,
+                        modifier = paddingModifier
+                    ) {
+                        onQuerySearch(lecturerRatesPageViewModel.lastQuery, true)
+                    }
+                }
+            }
+            item {
+                AnimatedVisibility(
+                    visible = showElements && showSearch && !lecturerRatesPageViewModel.lecturersSearchError && !lecturerRatesPageViewModel.lecturersSearchLoading && lecturerRatesPageViewModel.lastQuery.isNotEmpty()
+                ) {
+                    Text(
+                        text = "Wyniki wyszukiwania dla \"${lecturerRatesPageViewModel.lastQuery}\"",
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = UISingleton.textColor1,
+                        fontWeight = FontWeight.Bold,
+                        modifier = paddingModifier
+                    )
+                }
+            }
+            if (lecturerRatesPageViewModel.lastQueryResults != null) {
+                items(lecturerRatesPageViewModel.lastQueryResults!!.size) { index ->
+                    AnimatedVisibility(
+                        showElements && showSearch && lecturerRatesPageViewModel.lecturersSearchLoaded,
+                        enter = enterTransition(4 + index)
+                    ) {
+                        if (lecturerRatesPageViewModel.lastQueryResults!!.getOrNull(index) != null) {
+                            GroupLecturerCardView(
+                                lecturer = lecturerRatesPageViewModel.lastQueryResults!![index], // I suppose it is safe to use !! here?
+                                modifier = paddingModifier,
+                                prefix = "${index + 1}. ",
+                                elevation = 3.dp
+                            )
+                        }
+                    }
+                }
                 item {
                     AnimatedVisibility(
-                        showElements && showSearch,
-                        enter = enterTransition(4)
+                        visible = showElements && showSearch && lecturerRatesPageViewModel.lastQueryResults.isNullOrEmpty(),
                     ) {
                         TextAndIconCardView(
-                            title = "Nie znaleziono prowadzących.",
+                            title = stringResource(R.string.no_lecturers_found),
                             icon = Icons.Rounded.Close,
-                            modifier = paddingModifier,
-                            backgroundColor = UISingleton.color2,
+                            modifier = paddingModifier
                         )
                     }
                 }

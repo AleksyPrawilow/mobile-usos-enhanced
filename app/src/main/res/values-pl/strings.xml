@@ -78,4 +78,5 @@
     <string name="something_went_wrong">Coś poszło nie tak</string>
     <string name="teachers_index">Wszyscy\nprowadzący</string>
     <string name="teachers_search">Wyszukaj\nprowadzącego</string>
+    <string name="no_lecturers_found">Nie znaleziono prowadzących</string>
 </resources>

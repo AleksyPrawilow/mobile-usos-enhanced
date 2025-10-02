@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.cdkentertainment.mobilny_usos_enhanced.Lecturer
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.PeopleSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.models.LecturerRate
@@ -32,6 +33,14 @@ class LecturerRatesPageViewModel: ViewModel() {
     var lecturersIndexTotal: MutableMap<String, Int> = mutableStateMapOf()
     var lecturersIndexNextPage: Boolean = true
     // *****End lecturers Index block*****
+
+    // *****Lecturers search block*****
+    var lecturersSearchLoading: Boolean by mutableStateOf(false)
+    var lecturersSearchLoaded: Boolean by mutableStateOf(false)
+    var lecturersSearchError: Boolean by mutableStateOf(false)
+    var lastQuery: String by mutableStateOf("")
+    var lastQueryResults: List<Lecturer>? by mutableStateOf(null)
+    // *****End lecturers search block*****
 
     fun selectLecturer(lecturer: SharedDataClasses.Human) {
         selectedLecturer = lecturer
@@ -156,6 +165,31 @@ class LecturerRatesPageViewModel: ViewModel() {
                     lecturersIndexLoading["$facultyId/$offset"] = false
                     onFetched()
                 }
+            }
+        }
+    }
+
+    suspend fun queryLecturersSearch(query: String, force: Boolean = false) {
+        if (lastQuery == query && !force) {
+            return
+        }
+        lecturersSearchLoading = true
+        lecturersSearchError = false
+        lecturersSearchLoaded = false
+        withContext(Dispatchers.IO) {
+            try {
+                lastQuery = query
+                val lecturers: List<SharedDataClasses.Human> = model.queryLecturersSearch(query)
+                val filteredLecturers: List<SharedDataClasses.Human> = lecturers.filter { !PeopleSingleton.lecturers.containsKey(it.id) }
+                model.getLecturersInfo(filteredLecturers)
+                lastQueryResults = lecturers.map { PeopleSingleton.lecturers[it.id]!! }
+                lecturersSearchLoading = false
+                lecturersSearchLoaded = true
+            } catch(e: Exception) {
+                e.printStackTrace()
+                lastQueryResults = null
+                lecturersSearchError = true
+                lecturersSearchLoading = false
             }
         }
     }
