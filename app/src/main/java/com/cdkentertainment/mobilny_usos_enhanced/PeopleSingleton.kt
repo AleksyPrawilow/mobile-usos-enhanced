@@ -39,5 +39,19 @@ data class Room(
 
 data class Student(
     val human: SharedDataClasses.Human,
-    val studentData: String = "placeholder"
+    var studentData: StudentData? = null
+)
+
+@Serializable
+data class StudentData(
+    val id: String,
+    val first_name: String,
+    val last_name: String,
+    val sex: String,
+    val email: String?,
+    val has_photo: Boolean,
+    val photo_urls: Map<String, String>,
+    val student_status: Int?,
+    val has_email: Boolean,
+    val mobile_numbers: List<String>
 )

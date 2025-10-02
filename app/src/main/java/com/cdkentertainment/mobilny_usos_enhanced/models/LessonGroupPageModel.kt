@@ -1,6 +1,7 @@
 package com.cdkentertainment.mobilny_usos_enhanced.models
 
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
+import com.cdkentertainment.mobilny_usos_enhanced.StudentData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
@@ -38,6 +39,17 @@ class LessonGroupPageModel {
                throw (Exception("API Error"))
            }
        }
+    }
+    public suspend fun fetchUserInfo(human: SharedDataClasses.Human): StudentData {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response: String = OAuthSingleton.get("users/user?user_id=${human.id}&fields=id|first_name|last_name|sex|email|has_photo|photo_urls[100x100]|student_status|has_email|mobile_numbers")["response"]!!
+                val parsedStudentData: StudentData = parser.decodeFromString<StudentData>(response)
+                return@withContext parsedStudentData
+            } catch (e: Exception) {
+                throw (Exception("API Error"))
+            }
+        }
     }
 }
 @Serializable

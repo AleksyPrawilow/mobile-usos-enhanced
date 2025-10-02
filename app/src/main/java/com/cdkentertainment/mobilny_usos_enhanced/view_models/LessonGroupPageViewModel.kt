@@ -5,6 +5,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
+import com.cdkentertainment.mobilny_usos_enhanced.PeopleSingleton
+import com.cdkentertainment.mobilny_usos_enhanced.Student
+import com.cdkentertainment.mobilny_usos_enhanced.StudentData
 import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.models.GradesPageModel
 import com.cdkentertainment.mobilny_usos_enhanced.models.LessonGroup
@@ -78,6 +81,20 @@ class LessonGroupPageViewModel: ViewModel() {
             } catch (e: Exception) {
                 // TODO: Add error handling
                 return@withContext null
+            }
+        }
+    }
+
+    suspend fun fetchUserInfo(human: SharedDataClasses.Human): Boolean {
+        if (PeopleSingleton.students.containsKey(human.id)) return true
+        return withContext(Dispatchers.IO) {
+            try {
+                val studentData: StudentData = model.fetchUserInfo(human)
+                PeopleSingleton.students[human.id] = Student(human, studentData)
+                return@withContext true
+            } catch (e: Exception) {
+                e.printStackTrace()
+                return@withContext false
             }
         }
     }
