@@ -11,6 +11,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
 class LecturerRatesPageModel {
+    private val staffUrl: String = "Users/Staff"
     private val userRateUrl: String = "LecturerRates/UserRates"
     private val lecturerRateUrl: String = "LecturerRates/LecturerRates"
     private val addUserRateUrl: String = "LecturerRates/AddRate"
@@ -53,8 +54,14 @@ class LecturerRatesPageModel {
     }
     public suspend fun getStaffIndex(facultyId: String, offset: Int, pageSize: Int): LecturersIndex {
         return withContext(Dispatchers.IO) {
-            val response: String = OAuthSingleton.get("users/staff_index?fac_ids=$facultyId&teachers_only=true&start=${offset * pageSize}&num=$pageSize")["response"]!!
-            parser.decodeFromString<LecturersIndex>(response)
+            val start = offset * pageSize
+            val response: BackendDataSender.BackendResponse = BackendDataSender.get("$staffUrl?facultyId=$facultyId&start=$start&pageSize=$pageSize")
+            if(response.statusCode == 200 && response.body != "") {
+                val parsedResponse: LecturersIndex = parser.decodeFromString<LecturersIndex>(response.body)
+                return@withContext parsedResponse
+            } else {
+                throw(Exception("API Error"))
+            }
         }
     }
     public suspend fun getExtendedLecturersInfo(lecturerIds: List<String>) {

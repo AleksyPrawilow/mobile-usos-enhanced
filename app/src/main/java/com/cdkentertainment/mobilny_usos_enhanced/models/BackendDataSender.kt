@@ -14,7 +14,7 @@ import java.util.Base64
 object BackendDataSender {
     private val developmentLogin: String = "admin"
     private val developmentPassword: String = "temp1234"
-    private val developmentUrl: String = "http://10.0.2.2:8080"
+    private val developmentUrl: String = "http://127.0.0.1:8080"
     private val client = OkHttpClient()
     private val authHeader = "Basic " + Base64.getEncoder().encodeToString("$developmentLogin:$developmentPassword".toByteArray())
     private val parser: Json = Json{}

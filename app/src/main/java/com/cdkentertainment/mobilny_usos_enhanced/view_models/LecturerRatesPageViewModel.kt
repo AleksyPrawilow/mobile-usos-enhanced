@@ -16,8 +16,13 @@ import com.cdkentertainment.mobilny_usos_enhanced.models.UserRate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 
+fun main(): Unit = runBlocking {
+    val model = LecturerRatesPageModel()
+    println(model.getStaffIndex("1234", 10, 10))
+}
 class LecturerRatesPageViewModel: ViewModel() {
     var selectedLecturer: SharedDataClasses.Human? by mutableStateOf(null)
         private set
