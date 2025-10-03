@@ -67,7 +67,7 @@ class HomePageViewModel: ViewModel() {
         }
         withContext(Dispatchers.IO) {
             try {
-                todaySchedule = scheduleModel.getSingleDaySchedule(LocalDate.of(2025, 5, 12))
+                todaySchedule = scheduleModel.getSingleDaySchedule(LocalDate.now())
             } catch (e: Exception) {
                 e.printStackTrace()
                 scheduleFetchSuccess = false

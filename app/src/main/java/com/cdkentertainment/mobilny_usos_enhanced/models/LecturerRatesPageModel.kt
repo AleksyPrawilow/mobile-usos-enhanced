@@ -133,6 +133,13 @@ class LecturerRatesPageModel {
             }
         }
     }
+    public suspend fun queryLecturersSearch(query: String): List<SharedDataClasses.Human> {
+        return withContext(Dispatchers.IO) {
+            val response: String = OAuthSingleton.get("users/search2?query=$query&lang=pl&fields=items[user[id|first_name|last_name]]&among=current_teachers&num=10")["response"]!!
+            val parsedResponse: SearchResult = parser.decodeFromString<SearchResult>(response)
+            return@withContext parsedResponse.items.map { it.user }
+        }
+    }
 }
 @Serializable
 data class LecturerAvgRates(
@@ -172,4 +179,14 @@ data class LecturersIndex(
     val users: List<SharedDataClasses.Human>,
     val total: Int,
     val next_page: Boolean
+)
+
+@Serializable
+private data class SearchResult(
+    val items: List<UserWrapper>
+)
+
+@Serializable
+private data class UserWrapper(
+    val user: SharedDataClasses.Human
 )

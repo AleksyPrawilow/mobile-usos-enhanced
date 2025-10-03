@@ -77,4 +77,5 @@
     <string name="something_went_wrong">Something went wrong</string>
     <string name="teachers_index">All\nlecturers</string>
     <string name="teachers_search">Search\nlecturer</string>
+    <string name="no_lecturers_found">No lecturers found</string>
 </resources>
