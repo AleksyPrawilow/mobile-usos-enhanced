@@ -39,16 +39,7 @@ class LessonGroupPageViewModel: ViewModel() {
 
     suspend fun fetchLessonGroups() {
         withContext(Dispatchers.IO) {
-            if (UIHelper.classTypeIds.isEmpty()) {
-                try {
-                    UIHelper.classTypeIds = gradesPageModel.fetchClasstypeIds()
-                    classtypeIdInfo = UIHelper.classTypeIds
-                } catch (e: Exception) {
-                    println(e)
-                }
-            } else {
-                classtypeIdInfo = UIHelper.classTypeIds
-            }
+            classtypeIdInfo = UIHelper.classTypeIds
             if (lessonGroups != null) {
                 return@withContext
             }

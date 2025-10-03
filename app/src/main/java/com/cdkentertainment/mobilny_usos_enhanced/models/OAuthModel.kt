@@ -1,65 +1,119 @@
 package com.cdkentertainment.mobilny_usos_enhanced.models
 
+import android.content.Context
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
-import com.github.scribejava.core.exceptions.OAuthException
+import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
+import com.cdkentertainment.mobilny_usos_enhanced.UserDataSingleton
+import com.cdkentertainment.mobilny_usos_enhanced.view_models.LoginPageViewModel
 import com.github.scribejava.core.model.OAuth1AccessToken
 import com.github.scribejava.core.model.OAuth1RequestToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.io.IOException
-import java.util.concurrent.ExecutionException
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 
 class OAuthModel {
-    suspend fun getRequestToken(): OAuth1RequestToken? {
+    private val parser: Json = Json { ignoreUnknownKeys = true }
+    private val userInfoUrl: String = "users/user?fields=id|first_name|last_name|student_number|sex|email|photo_urls[100x100]|mobile_numbers|student_programmes[id|programme[all_faculties|id|name]]"
+
+    public suspend fun checkIfAccessTokenExists(context: Context): Boolean {
+        return withContext(Dispatchers.IO) {
+            if (BackendDataSender.oAuth1AccessToken != null) {
+                return@withContext !checkIfTokenExpired()
+            }
+            val accessToken: OAuth1AccessToken? = UserDataSingleton.readAccessToken(context)
+            if (accessToken != null) {
+                BackendDataSender.oAuth1AccessToken = accessToken
+                return@withContext !checkIfTokenExpired()
+            }
+            return@withContext false
+        }
+    }
+    public suspend fun checkIfTokenExpired(): Boolean {
         return withContext(Dispatchers.IO) {
             try {
-                val token: OAuth1RequestToken = OAuthSingleton.service.getRequestToken()
-                return@withContext token
-            } catch (e: IOException) {
-                e.printStackTrace()
-                return@withContext null
-            } catch (e: InterruptedException) {
-                e.printStackTrace()
-                return@withContext null
-            } catch (e: ExecutionException) {
-                e.printStackTrace()
-                return@withContext null
-            } catch (e: OAuthException) {
-                e.printStackTrace()
-                return@withContext null
+                UserDataSingleton.userData = getUserData()
+                return@withContext UserDataSingleton.userData == null
+            } catch (e: Exception) {
+                return@withContext true
             }
         }
     }
-
-    suspend fun getAccessToken(pin: String, requestToken: OAuth1RequestToken): Map<String, String> {
-        val result: LinkedHashMap<String, String> = LinkedHashMap<String, String>()
+    public suspend fun getUserData(): UserInfo {
         return withContext(Dispatchers.IO) {
-            try {
-                result["success"] = "true"
-                val accessToken: OAuth1AccessToken = OAuthSingleton.service.getAccessToken(requestToken, pin)
-                OAuthSingleton.oAuth1AccessToken = accessToken
-                return@withContext result
-            } catch (e: IOException) {
-                result["fail"] = e.message.toString()
-                println("Network error while getting access token: ${e.message}")
-                e.printStackTrace()
-                return@withContext result
-            } catch (e: InterruptedException) {
-                result["fail"] = e.message.toString()
-                println("Request was interrupted: ${e.message}")
-                e.printStackTrace()
-                return@withContext result
-            } catch (e: ExecutionException) {
-                result["fail"] = e.message.toString()
-                println("Execution error while getting access token: ${e.message}")
-                e.printStackTrace()
-                return@withContext result
-            } catch (e: OAuthException) {
-                result["fail"] = e.message.toString()
-                println("OAuthError")
-                e.printStackTrace()
-                return@withContext result
+            val responseString: String = OAuthSingleton.get(userInfoUrl)["response"]!!
+            val parsedResponse: UserInfo = parser.decodeFromString<UserInfo>(responseString)
+            return@withContext parsedResponse
+        }
+    }
+    public suspend fun tryUsosAutoLogin(context: Context): LoginPageViewModel.LoginState {
+        return if (checkIfAccessTokenExists(context)) {
+            LoginPageViewModel.LoginState.LAST_STEPS
+        } else {
+            LoginPageViewModel.LoginState.USOS_LOGIN
+        }
+    }
+    public suspend fun getRequestToken(): OAuth1RequestToken {
+        return withContext(Dispatchers.IO) {
+            return@withContext OAuthSingleton.service.getRequestToken()
+        }
+    }
+    public suspend fun getAccessToken(pin: String, requestToken: OAuth1RequestToken, context: Context) {
+        withContext(Dispatchers.IO) {
+            val result = OAuthSingleton.service.getAccessToken(requestToken, pin)
+            BackendDataSender.oAuth1AccessToken = result
+            UserDataSingleton.saveUserCredentials(context, BackendDataSender.oAuth1AccessToken!!)
+            UserDataSingleton.userData = getUserData()
+        }
+    }
+    public suspend fun loadNecessaryData() {
+        withContext(Dispatchers.IO) {
+            val termsResponse: BackendDataSender.BackendResponse = BackendDataSender.get("Grades/TermIds")
+            if (UIHelper.termIds.isEmpty()) {
+                if (termsResponse.statusCode == 200) {
+                    val responseString: String = termsResponse.body
+                    val parsedResponse: List<String> = parser.decodeFromString<List<String>>(responseString)
+                    UIHelper.termIds = parsedResponse
+                } else {
+                    throw Exception("API Error")
+                }
+            }
+            if (UIHelper.classTypeIds.isEmpty()) {
+                val classTypesResponse: BackendDataSender.BackendResponse = BackendDataSender.get("Grades/ClassTypeIds")
+                if (classTypesResponse.statusCode == 200) {
+                    val responseString: String = classTypesResponse.body
+                    val parsedResponse: Map<String, SharedDataClasses.IdAndName> = parser.decodeFromString<Map<String, SharedDataClasses.IdAndName>>(responseString)
+                    UIHelper.classTypeIds = parsedResponse
+                } else {
+                    throw(Exception("API Error"))
+                }
             }
         }
     }
 }
+
+@Serializable
+data class UserInfo(
+    val id: String,
+    val first_name: String,
+    val last_name: String,
+    val student_number: String,
+    val sex: String,
+    val email: String,
+    val photo_urls: Map<String, String>,
+    val mobile_numbers: List<String>,
+    val student_programmes: List<StudentProgramme>
+)
+
+@Serializable
+data class StudentProgramme(
+    val id: String,
+    val programme: ProgrammeData,
+)
+
+@Serializable
+data class ProgrammeData(
+    val id: String,
+    val name: SharedDataClasses.LangDict,
+    val all_faculties: List<SharedDataClasses.IdAndName>
+)

@@ -7,7 +7,6 @@ import android.webkit.CookieManager
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -20,6 +19,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 @Composable
 fun OAuthWebView(
     url: String,
+    modifier: Modifier = Modifier,
     onRedirect: (Uri) -> Unit
 ) {
     var webView: WebView? by remember { mutableStateOf(null) }
@@ -58,7 +58,7 @@ fun OAuthWebView(
             }
         },
         update = { it.loadUrl(url) },
-        modifier = Modifier.fillMaxSize()
+        modifier = modifier
     )
 
     DisposableEffect(Unit) {

@@ -1,7 +1,6 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
 import android.content.Context
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,11 +19,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
@@ -36,26 +31,25 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size.Companion.ORIGINAL
-import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
-import com.cdkentertainment.mobilny_usos_enhanced.getLocalized
+import com.cdkentertainment.mobilny_usos_enhanced.UserDataSingleton
 
 @Composable
 fun UserDataView(modifier: Modifier = Modifier) {
-    var expanded: Boolean by rememberSaveable { mutableStateOf(false) }
     val paddingSize: Int = 12
     val context: Context = LocalContext.current
-    val profilePicture: Painter? = if (OAuthSingleton.userData != null) rememberAsyncImagePainter(
+    val profilePicture: Painter? = if (UserDataSingleton.userData != null) rememberAsyncImagePainter(
         ImageRequest.Builder(context)
-            .data(OAuthSingleton.userData?.basicInfo?.photo_urls["100x100"])
+            .data(UserDataSingleton.userData?.photo_urls["100x100"])
             .size(ORIGINAL)
             .crossfade(true)
             .placeholder(android.R.drawable.ic_menu_help)
             .error(android.R.drawable.ic_menu_help)
             .build()
     ) else null
-    val shape: RoundedCornerShape = remember { RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp) }
+    val shape: RoundedCornerShape =
+        remember { RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp) }
     Card(
         colors = CardColors(
             contentColor = UISingleton.textColor1,
@@ -65,9 +59,6 @@ fun UserDataView(modifier: Modifier = Modifier) {
         ),
         elevation = CardDefaults.cardElevation(3.dp),
         shape = shape,
-        onClick = {
-            expanded = !expanded
-        },
         modifier = Modifier
             .fillMaxWidth()
             .then(modifier)
@@ -117,7 +108,7 @@ fun UserDataView(modifier: Modifier = Modifier) {
             } // User photo card
             Column {
                 Text(
-                    text = "${OAuthSingleton.userData?.basicInfo?.first_name} ${OAuthSingleton.userData?.basicInfo?.last_name}",
+                    text = "${UserDataSingleton.userData?.first_name} ${UserDataSingleton.userData?.last_name}",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.SemiBold,
                     color = UISingleton.textColor1
@@ -128,16 +119,12 @@ fun UserDataView(modifier: Modifier = Modifier) {
                     fontWeight = FontWeight.Light,
                     color = UISingleton.textColor1
                 )
-                AnimatedVisibility(expanded) {
-                    Column {
-                        Text(
-                            text = "${OAuthSingleton.userData?.programme[0]?.programme?.description?.getLocalized(context)}",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Light,
-                            color = UISingleton.textColor1
-                        )
-                    }
-                }
+                Text(
+                    text = "${stringResource(R.string.student_number)} ${UserDataSingleton.userData?.student_number}",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Light,
+                    color = UISingleton.textColor1
+                )
             }
         }
     }

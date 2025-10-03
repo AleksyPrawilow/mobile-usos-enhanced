@@ -78,4 +78,7 @@
     <string name="teachers_index">All\nlecturers</string>
     <string name="teachers_search">Search\nlecturer</string>
     <string name="no_lecturers_found">No lecturers found</string>
+    <string name="failed_to_sign_in">Failed to sign in.</string>
+    <string name="student_number">Student number:</string>
+    <string name="delete_rating_confirm">Are you sure you want to delete your rate?</string>
 </resources>

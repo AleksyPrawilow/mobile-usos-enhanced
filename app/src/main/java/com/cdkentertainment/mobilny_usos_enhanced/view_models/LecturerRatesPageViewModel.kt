@@ -7,8 +7,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cdkentertainment.mobilny_usos_enhanced.Lecturer
-import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.PeopleSingleton
+import com.cdkentertainment.mobilny_usos_enhanced.UserDataSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.models.LecturerRate
 import com.cdkentertainment.mobilny_usos_enhanced.models.LecturerRatesPageModel
 import com.cdkentertainment.mobilny_usos_enhanced.models.LecturersIndex
@@ -51,7 +51,7 @@ class LecturerRatesPageViewModel: ViewModel() {
         return withContext(Dispatchers.IO) {
             try {
                 val userRate = UserRate(
-                    userId = OAuthSingleton.userData!!.basicInfo.id.toInt(),
+                    userId = UserDataSingleton.userData!!.id.toInt(),
                     lecturerId = lecturerId.toInt(),
                     universityId = 1, //TEMPORARY
                     rate1 = rate.rate_1.toInt(),
@@ -62,7 +62,7 @@ class LecturerRatesPageViewModel: ViewModel() {
                 )
                 model.addUserRate(userRate)
                 userRatings[lecturerId] = UserRate(
-                    userId = OAuthSingleton.userData!!.basicInfo.id.toInt(),
+                    userId = UserDataSingleton.userData!!.id.toInt(),
                     lecturerId = lecturerId.toInt(),
                     universityId = 1, //TEMPORARY
                     rate1 = rate.rate_1.toInt(),
@@ -107,14 +107,16 @@ class LecturerRatesPageViewModel: ViewModel() {
         }
     }
 
-    fun fetchUserRates(onFailed: () -> Unit = {}) {
+    fun fetchUserRates(onSuccess: () -> Unit = {}, onFailed: () -> Unit = {}) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 try {
-                    val rates: List<UserRate> = model.getUserRates(OAuthSingleton.userData!!.basicInfo.id.toInt())
+                    val rates: List<UserRate> = model.getUserRates(UserDataSingleton.userData!!.id.toInt())
                     rates.associateTo(userRatings) { it.lecturerId.toString() to it }
+                    onSuccess()
                 } catch (e: Exception) {
                     e.printStackTrace()
+                    onFailed()
                 }
             }
         }

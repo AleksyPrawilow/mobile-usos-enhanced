@@ -1,7 +1,7 @@
 package com.cdkentertainment.mobilny_usos_enhanced.models
 
 
-import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
+import com.github.scribejava.core.model.OAuth1AccessToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
@@ -17,8 +17,9 @@ object BackendDataSender {
     private val developmentUrl: String = "http://10.0.2.2:8080"
     private val client = OkHttpClient()
     private val authHeader = "Basic " + Base64.getEncoder().encodeToString("$developmentLogin:$developmentPassword".toByteArray())
-    private val parser: Json = Json{}
+    private val parser: Json = Json { ignoreUnknownKeys = true }
     private val mediaType =  "application/json; charset=utf-8".toMediaType()
+    var oAuth1AccessToken: OAuth1AccessToken? = null
     public data class BackendResponse (
         var statusCode: Int,
         var body: String
@@ -31,8 +32,8 @@ object BackendDataSender {
             val request = Request.Builder()
                 .url(requestUrl)
                 .header("Authorization", authHeader)
-                .header("OAuth-Key", OAuthSingleton.oAuth1AccessToken?.token ?: "")
-                .header("OAuth-Secret", OAuthSingleton.oAuth1AccessToken?.tokenSecret ?: "")
+                .header("OAuth-Key", BackendDataSender.oAuth1AccessToken?.token ?: "")
+                .header("OAuth-Secret", BackendDataSender.oAuth1AccessToken?.tokenSecret ?: "")
                 .build()
 
             println(authHeader)

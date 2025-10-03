@@ -1,10 +1,15 @@
 package com.cdkentertainment.mobilny_usos_enhanced
 
 import android.content.Context
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.cdkentertainment.mobilny_usos_enhanced.models.BackendDataSender
+import com.cdkentertainment.mobilny_usos_enhanced.models.UserInfo
 import com.github.scribejava.core.model.OAuth1AccessToken
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -18,6 +23,7 @@ object UserDataSingleton {
     private val SELECTED_THEME = intPreferencesKey("SELECTED_THEME")
 
     var currentSettings: SettingsObject = SettingsObject()
+    var userData: UserInfo? by mutableStateOf(null)
 
     suspend fun saveUserCredentials(context: Context, accessToken: OAuth1AccessToken) {
         context.dataStore.edit { settings ->
@@ -27,7 +33,7 @@ object UserDataSingleton {
     }
 
     suspend fun deleteUserCredentials(context: Context) {
-        OAuthSingleton.oAuth1AccessToken = null
+        BackendDataSender.oAuth1AccessToken = null
         context.dataStore.edit { settings ->
             settings[ACCESS_TOKEN_KEY] = ""
             settings[ACCESS_TOKEN_SECRET] = ""

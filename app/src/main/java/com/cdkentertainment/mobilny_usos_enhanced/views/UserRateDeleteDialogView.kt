@@ -26,12 +26,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
+import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.LecturerRatesPageViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -45,7 +46,6 @@ fun UserRateDeleteDialogView(
 ) {
     val viewModel: LecturerRatesPageViewModel = viewModel<LecturerRatesPageViewModel>()
     val coroutineScope: CoroutineScope = rememberCoroutineScope()
-    val userSex: String = OAuthSingleton.userData?.basicInfo?.sex ?: "M"
     var savingDeletion: Boolean by rememberSaveable { mutableStateOf(false) }
     var deletionFailed: Boolean by rememberSaveable { mutableStateOf(false) }
     var deletionFinished: Boolean by rememberSaveable { mutableStateOf(false) }
@@ -77,7 +77,7 @@ fun UserRateDeleteDialogView(
             ) {
                 AnimatedVisibility(visible = !savingDeletion) {
                     Text(
-                        text = "Czy jesteś ${if (userSex == "M") "pewien" else "pewna"} że chcesz usunąc swoją ocenę?",
+                        text = stringResource(R.string.delete_rating_confirm),
                         style = MaterialTheme.typography.headlineSmall,
                         color = UISingleton.textColor1,
                         textAlign = TextAlign.Center,

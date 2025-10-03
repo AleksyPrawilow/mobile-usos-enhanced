@@ -79,4 +79,7 @@
     <string name="teachers_index">Wszyscy\nprowadzący</string>
     <string name="teachers_search">Wyszukaj\nprowadzącego</string>
     <string name="no_lecturers_found">Nie znaleziono prowadzących</string>
+    <string name="failed_to_sign_in">Nie udało się zalogować.</string>
+    <string name="student_number">Nr. indeksu:</string>
+    <string name="delete_rating_confirm">Czy na pewno chcesz usunąć swoją ocenę?</string>
 </resources>

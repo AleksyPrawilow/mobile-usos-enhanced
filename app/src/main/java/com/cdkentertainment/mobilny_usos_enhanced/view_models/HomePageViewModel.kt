@@ -5,12 +5,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
-import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
+import com.cdkentertainment.mobilny_usos_enhanced.UserDataSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.models.GradesPageModel
-import com.cdkentertainment.mobilny_usos_enhanced.models.HomePageModel
 import com.cdkentertainment.mobilny_usos_enhanced.models.Schedule
 import com.cdkentertainment.mobilny_usos_enhanced.models.SchedulePageModel
-import com.cdkentertainment.mobilny_usos_enhanced.models.UserInfoClass
+import com.cdkentertainment.mobilny_usos_enhanced.models.UserInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -32,10 +31,9 @@ fun main(): Unit = runBlocking {
 class HomePageViewModel: ViewModel() {
     private val gradesPageModel: GradesPageModel = GradesPageModel()
     private val timeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-    var userInfo: UserInfoClass? by mutableStateOf(null)
+    var userInfo: UserInfo? by mutableStateOf(null)
     var todaySchedule: Schedule? by mutableStateOf(null)
     var scheduleFetchSuccess: Boolean by mutableStateOf(false)
-    val model: HomePageModel = HomePageModel()
     val scheduleModel: SchedulePageModel = SchedulePageModel()
 
     fun getTimeFromDate(date: String): String {
@@ -46,17 +44,7 @@ class HomePageViewModel: ViewModel() {
 
     suspend fun fetchData() {
         withContext(Dispatchers.IO) {
-            userInfo = OAuthSingleton.userData
-        }
-    }
-
-    suspend fun fetchClasstypes() {
-        if (UIHelper.classTypeIds.isEmpty()) {
-            try {
-                UIHelper.classTypeIds = gradesPageModel.fetchClasstypeIds()
-            } catch (e: Exception) {
-                println(e)
-            }
+            userInfo = UserDataSingleton.userData
         }
     }
 

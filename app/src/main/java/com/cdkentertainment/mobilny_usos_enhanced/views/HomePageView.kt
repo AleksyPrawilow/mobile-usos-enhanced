@@ -41,14 +41,15 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
+import com.cdkentertainment.mobilny_usos_enhanced.UserDataSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.getLocalized
 import com.cdkentertainment.mobilny_usos_enhanced.models.Lesson
 import com.cdkentertainment.mobilny_usos_enhanced.models.Schedule
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.AttendancePageViewModel
+import com.cdkentertainment.mobilny_usos_enhanced.view_models.GradesPageViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.HomePageViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -56,9 +57,11 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun HomePageView() {
+    val viewModel: HomePageViewModel = viewModel<HomePageViewModel>()
+    val gradesViewModel: GradesPageViewModel = viewModel<GradesPageViewModel>()
+
     val coroutineScope: CoroutineScope = rememberCoroutineScope()
     val attendancePageViewModel: AttendancePageViewModel = viewModel<AttendancePageViewModel>()
-    val viewModel: HomePageViewModel = viewModel<HomePageViewModel>()
     val enterTransition: (Int) -> EnterTransition = UIHelper.slideEnterTransition
     val scaleEnterTransition: (Int) -> EnterTransition = UIHelper.scaleEnterTransition
     var showElements: Boolean by rememberSaveable { mutableStateOf(false) }
@@ -91,8 +94,8 @@ fun HomePageView() {
     }
 
     LaunchedEffect(Unit) {
+        gradesViewModel.fetchSemesterGrades(UIHelper.termIds.last())
         attendancePageViewModel.readPinnedGroups(context)
-        viewModel.fetchClasstypes()
         viewModel.fetchSchedule()
         delay(150)
         showElements = true
@@ -107,7 +110,7 @@ fun HomePageView() {
             .padding(top = topPadding, bottom = bottomPadding)
     ) {
         item {
-            PageHeaderView("${stringResource(R.string.greeting)}, ${OAuthSingleton.userData?.basicInfo?.first_name}!")
+            PageHeaderView("${stringResource(R.string.greeting)}, ${UserDataSingleton.userData?.first_name}!")
         }
         item {
             Spacer(modifier = Modifier.height(8.dp))
