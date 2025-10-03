@@ -35,6 +35,8 @@ data class LecturerData(
 data class Room(
     val id: Int,
     val number: String,
+    val building_name: SharedDataClasses.LangDict,
+    val building_id: String
 )
 
 data class Student(
