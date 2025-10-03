@@ -186,7 +186,7 @@ class LecturerRatesPageViewModel: ViewModel() {
         withContext(Dispatchers.IO) {
             try {
                 lastQuery = query
-                val lecturers: List<SharedDataClasses.Human> = model.queryLecturersSearch(query)
+                val lecturers: List<SharedDataClasses.Human> = model.queryLecturersSearch(query, start = 0).items // TODO Add multiple pages
                 val filteredLecturers: List<SharedDataClasses.Human> = lecturers.filter { !PeopleSingleton.lecturers.containsKey(it.id) }
                 model.getLecturersInfo(filteredLecturers)
                 lastQueryResults = lecturers.map { PeopleSingleton.lecturers[it.id]!! }
