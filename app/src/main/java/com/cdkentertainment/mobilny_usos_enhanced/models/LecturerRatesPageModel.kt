@@ -12,6 +12,8 @@ import kotlinx.serialization.json.Json
 
 class LecturerRatesPageModel {
     private val staffUrl: String = "Users/Staff"
+    private val searchUserUrl: String = "Users/Search"
+    private val usersInfoUrl: String = "Users/Info"
     private val userRateUrl: String = "LecturerRates/UserRates"
     private val lecturerRateUrl: String = "LecturerRates/LecturerRates"
     private val addUserRateUrl: String = "LecturerRates/AddRate"
@@ -67,32 +69,43 @@ class LecturerRatesPageModel {
     public suspend fun getExtendedLecturersInfo(lecturerIds: List<String>) {
         return withContext(Dispatchers.IO) {
             try {
-                val linkedString: String = lecturerIds.joinToString("|")
-                val response: String = OAuthSingleton.get("users/users?user_ids=$linkedString&fields=id|first_name|last_name|titles|staff_status|phone_numbers|office_hours|has_photo|photo_urls[100x100]|room")["response"]!!
-                val lecturersInfo: Map<String, LecturerData> = parser.decodeFromString<Map<String, LecturerData>>(response)
-                for ((id, lecturer) in lecturersInfo) {
-                    val lecturerRating: LecturerAvgRates? = getLecturerAvgRates(id.toInt())
-                    if (lecturerRating == null) {
-                        lecturers[lecturer.id] = Lecturer(
-                            human = SharedDataClasses.Human(lecturer.id, lecturer.first_name, lecturer.last_name),
-                            lecturerData = lecturer,
-                            rating = LecturerAvgRates(
-                                lecturerId = id.toInt(),
-                                universityId = 1,
-                                ratesCount = 0,
-                                avgRate1 = 0f,
-                                avgRate2 = 0f,
-                                avgRate3 = 0f,
-                                avgRate4 = 0f,
-                                avgRate5 = 0f
+                val json = parser.encodeToString<List<String>>(lecturerIds)
+                val response: BackendDataSender.BackendResponse = BackendDataSender.postHeaders(usersInfoUrl, json)
+                print(response.body)
+                if (response.statusCode == 200 && response.body != "") {
+                    val lecturersInfo: List<LecturerData> = parser.decodeFromString<List<LecturerData>>(response.body)
+                    for (lecturer in lecturersInfo) {
+                        val lecturerRating: LecturerAvgRates? = getLecturerAvgRates(lecturer.id.toInt())
+                        if (lecturerRating == null) {
+                            lecturers[lecturer.id] = Lecturer(
+                                human = SharedDataClasses.Human(
+                                    lecturer.id,
+                                    lecturer.first_name,
+                                    lecturer.last_name
+                                ),
+                                lecturerData = lecturer,
+                                rating = LecturerAvgRates(
+                                    lecturerId = lecturer.id.toInt(),
+                                    universityId = 1,
+                                    ratesCount = 0,
+                                    avgRate1 = 0f,
+                                    avgRate2 = 0f,
+                                    avgRate3 = 0f,
+                                    avgRate4 = 0f,
+                                    avgRate5 = 0f
+                                )
                             )
-                        )
-                    } else {
-                        lecturers[lecturer.id] = Lecturer(
-                            human = SharedDataClasses.Human(lecturer.id, lecturer.first_name, lecturer.last_name),
-                            lecturerData = lecturer,
-                            rating = lecturerRating
-                        )
+                        } else {
+                            lecturers[lecturer.id] = Lecturer(
+                                human = SharedDataClasses.Human(
+                                    lecturer.id,
+                                    lecturer.first_name,
+                                    lecturer.last_name
+                                ),
+                                lecturerData = lecturer,
+                                rating = lecturerRating
+                            )
+                        }
                     }
                 }
             } catch (e: Exception) {
@@ -133,11 +146,15 @@ class LecturerRatesPageModel {
             }
         }
     }
-    public suspend fun queryLecturersSearch(query: String): List<SharedDataClasses.Human> {
+    public suspend fun queryLecturersSearch(query: String, start: Int): SearchedLecturers {
         return withContext(Dispatchers.IO) {
-            val response: String = OAuthSingleton.get("users/search2?query=$query&lang=pl&fields=items[user[id|first_name|last_name]]&among=current_teachers&num=10")["response"]!!
-            val parsedResponse: SearchResult = parser.decodeFromString<SearchResult>(response)
-            return@withContext parsedResponse.items.map { it.user }
+            val response: BackendDataSender.BackendResponse = BackendDataSender.get("$searchUserUrl?query=$query&start=$start")
+            if (response.statusCode == 200) {
+                val parsedResponse: SearchedLecturers = parser.decodeFromString<SearchedLecturers>(response.body)
+                return@withContext parsedResponse
+            } else {
+                throw(Exception("API Error"))
+            }
         }
     }
 }
@@ -182,11 +199,8 @@ data class LecturersIndex(
 )
 
 @Serializable
-private data class SearchResult(
-    val items: List<UserWrapper>
-)
-
-@Serializable
-private data class UserWrapper(
-    val user: SharedDataClasses.Human
+data class SearchedLecturers(
+    val items: List<SharedDataClasses.Human>,
+    val count: Int,
+    val nextPage: Boolean
 )

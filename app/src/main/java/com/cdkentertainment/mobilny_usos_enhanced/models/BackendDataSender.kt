@@ -47,6 +47,28 @@ object BackendDataSender {
         }
     }
 
+    public suspend fun postHeaders(requestUrl: String, json: String): BackendResponse {
+        return withContext(Dispatchers.IO) {
+            val requestUrl = "$developmentUrl/$requestUrl"
+            val requestBody = json.toRequestBody(mediaType)
+
+            val request = Request.Builder()
+                .url(requestUrl)
+                .header("Authorization", authHeader)
+                .header("OAuth-Key", OAuthSingleton.oAuth1AccessToken?.token ?: "")
+                .header("OAuth-Secret", OAuthSingleton.oAuth1AccessToken?.tokenSecret ?: "")
+                .post(requestBody)
+                .build()
+            val resp = BackendResponse(0, "")
+            client.newCall(request).execute().use { response ->
+                resp.body = response.body?.string() ?: ""
+                resp.statusCode = response.code
+            }
+
+            return@withContext resp
+        }
+    }
+
     public suspend fun post(requestUrl: String, json: String): BackendResponse {
         return withContext(Dispatchers.IO){
             val requestUrl = "$developmentUrl/$requestUrl"
