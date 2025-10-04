@@ -102,6 +102,10 @@ class LecturerRatesPageViewModel: ViewModel() {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 val nonFetchedIds: List<String> = lecturerIds.filter { !PeopleSingleton.lecturers.containsKey(it) }
+                if (nonFetchedIds.isEmpty()) {
+                    onSuccess()
+                    return@withContext
+                }
                 try {
                     model.getExtendedLecturersInfo(nonFetchedIds)
                     onSuccess()

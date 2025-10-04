@@ -37,6 +37,7 @@ import coil.size.Size.Companion.ORIGINAL
 import com.cdkentertainment.mobilny_usos_enhanced.PeopleSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.StudentData
+import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.models.SharedDataClasses
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.LessonGroupPageViewModel
@@ -94,7 +95,8 @@ fun StudentInfoPopupView(
                                     .border(5.dp, UISingleton.color1, shape = RoundedCornerShape(50.dp))
                             ) {
                                 AnimatedVisibility(
-                                    extendedData != null
+                                    visible = extendedData != null,
+                                    enter = UIHelper.scaleEnterTransition(1)
                                 ) {
                                     val profilePicture: Painter? = if (extendedData != null) rememberAsyncImagePainter(
                                         ImageRequest.Builder(context)
@@ -133,6 +135,7 @@ fun StudentInfoPopupView(
                                 }
                                 AnimatedVisibility(
                                     visible = extendedData == null,
+                                    enter = UIHelper.scaleEnterTransition(1)
                                 ) {
                                     Box(
                                         modifier = Modifier.fillMaxSize()

@@ -110,7 +110,10 @@ fun ActivityInfoPopupView(
                         elevation = 0.dp
                     )
                 }
-                AnimatedVisibility(lecturersFetched && !lecturersFetchError) {
+                AnimatedVisibility(
+                    visible = lecturersFetched && !lecturersFetchError,
+                    enter = UIHelper.slideEnterTransition(1)
+                ) {
                     GroupedContentContainerView(
                         title = stringResource(R.string.lecturers),
                         backgroundColor = UISingleton.color1,
@@ -123,7 +126,10 @@ fun ActivityInfoPopupView(
                         }
                     }
                 }
-                AnimatedVisibility(lecturersFetchError) {
+                AnimatedVisibility(
+                    visible = lecturersFetchError,
+                    enter = UIHelper.slideEnterTransition(1)
+                ) {
                     TextAndIconCardView(
                         title = stringResource(R.string.failed_to_fetch),
                         icon = Icons.Rounded.Refresh,
