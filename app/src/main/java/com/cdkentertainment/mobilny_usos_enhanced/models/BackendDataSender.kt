@@ -25,10 +25,31 @@ object BackendDataSender {
         var body: String
     )
 
+    public suspend fun getWithAuthHeaders(requestUrl: String, pin: String, token: String, tokenSecret: String): BackendResponse {
+        return withContext(Dispatchers.IO) {
+            val requestUrl = "$developmentUrl/$requestUrl"
+            val request = Request.Builder()
+                .url(requestUrl)
+                .header("Authorization", authHeader)
+                .header("pin", pin)
+                .header("token", token)
+                .header("tokenSecret", tokenSecret)
+                .build()
+
+            val resp = BackendResponse(0, "")
+            client.newCall(request).execute().use { response ->
+                println(response)
+                resp.body = response.body?.string() ?: ""
+                resp.statusCode = response.code
+            }
+
+            return@withContext resp
+        }
+    }
+
     public suspend fun get(requestUrl: String): BackendResponse  {
         return withContext(Dispatchers.IO) {
              val requestUrl = "$developmentUrl/$requestUrl"
-            println(requestUrl)
             val request = Request.Builder()
                 .url(requestUrl)
                 .header("Authorization", authHeader)

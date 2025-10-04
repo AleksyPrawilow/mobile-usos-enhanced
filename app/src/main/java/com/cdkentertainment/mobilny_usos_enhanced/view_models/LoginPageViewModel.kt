@@ -7,6 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton.service
 import com.cdkentertainment.mobilny_usos_enhanced.getLocalized
+import com.cdkentertainment.mobilny_usos_enhanced.models.BackendDataSender
 import com.cdkentertainment.mobilny_usos_enhanced.models.OAuthModel
 import com.cdkentertainment.mobilny_usos_enhanced.models.SharedDataClasses
 import com.github.scribejava.core.model.OAuth1RequestToken
@@ -33,8 +34,9 @@ class LoginPageViewModel: ViewModel() {
     suspend fun authorize(context: Context) {
         loginState = LoginState.USOS_RETREIVING_REQUEST_TOKEN
         try {
-            requestToken = model.getRequestToken()
-            oauthUrl = service.getAuthorizationUrl(requestToken)
+            val urlAndTokens = model.getRequestToken()
+            requestToken = OAuth1RequestToken(urlAndTokens.token, urlAndTokens.tokenSecret)
+            oauthUrl = urlAndTokens.url
             loginState = LoginState.USOS_RETREIVING_OAUTH_VERIFIER
         } catch (e: Exception) {
             val message: SharedDataClasses.LangDict = SharedDataClasses.LangDict(
@@ -75,7 +77,7 @@ class LoginPageViewModel: ViewModel() {
 
     suspend fun getAccessToken(pin: String, context: Context) {
         try {
-            model.getAccessToken(pin, requestToken!!, context)
+            model.getAccessToken(pin, requestToken!!.token, requestToken!!.tokenSecret,  context)
             loginState = LoginState.LAST_STEPS
         } catch (e: Exception) {
             val message: SharedDataClasses.LangDict = SharedDataClasses.LangDict(
