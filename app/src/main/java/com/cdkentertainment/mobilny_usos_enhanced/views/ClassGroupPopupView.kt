@@ -4,9 +4,7 @@ import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -37,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.cdkentertainment.mobilny_usos_enhanced.Lecturer
 import com.cdkentertainment.mobilny_usos_enhanced.PeopleSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
@@ -45,6 +45,8 @@ import com.cdkentertainment.mobilny_usos_enhanced.getLocalized
 import com.cdkentertainment.mobilny_usos_enhanced.models.LessonGroup
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.LecturerRatesPageViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.LessonGroupPageViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun ClassGroupPopupView(
@@ -52,14 +54,18 @@ fun ClassGroupPopupView(
     groupKey: String,
     onDismissRequest: () -> Unit
 ) {
+    val coroutineScope: CoroutineScope = rememberCoroutineScope()
     val context: Context = LocalContext.current
     val viewModel: LessonGroupPageViewModel = viewModel<LessonGroupPageViewModel>()
     val lecturersViewModel: LecturerRatesPageViewModel = viewModel<LecturerRatesPageViewModel>()
     val classType: String = data.class_type_id
     var lecturersFetched: Boolean by rememberSaveable { mutableStateOf(false) }
     var lecturersFetchError: Boolean by rememberSaveable { mutableStateOf(false) }
-
-    LaunchedEffect(Unit) {
+    var participantsFetching: Boolean by rememberSaveable { mutableStateOf(false) }
+    var participantsFetchError: Boolean by rememberSaveable { mutableStateOf(false) }
+    val loadLecturersInfo: () -> Unit = {
+        lecturersFetched = false
+        lecturersFetchError = false
         lecturersViewModel.getLecturersRatings(
             lecturerIds = data.lecturers.map { it.id.toString() },
             onSuccess = {
@@ -71,9 +77,27 @@ fun ClassGroupPopupView(
                 lecturersFetched = false
             }
         )
-        if (viewModel.groupDetails[groupKey]?.participants == null) {
-            viewModel.groupDetails[groupKey]?.participants = viewModel.fetchParticipants(data.group_number.toString(), data.course_unit_id.toString())
+    }
+    val loadParticipantsInfo: () -> Unit = {
+        coroutineScope.launch {
+            try {
+                if (viewModel.groupDetails[groupKey]?.participants == null) {
+                    participantsFetching = true
+                    participantsFetchError = false
+                    viewModel.groupDetails[groupKey]?.participants = viewModel.fetchParticipants(data.group_number.toString(), data.course_unit_id.toString())
+                    participantsFetching = false
+                    participantsFetchError = false
+                }
+            } catch (e: Exception) {
+                participantsFetching = false
+                participantsFetchError = true
+            }
         }
+    }
+
+    LaunchedEffect(Unit) {
+        loadLecturersInfo()
+        loadParticipantsInfo()
     }
 
     Dialog(
@@ -124,13 +148,29 @@ fun ClassGroupPopupView(
                         GroupedContentContainerView(
                             title = stringResource(R.string.lecturers),
                             backgroundColor = UISingleton.color1,
-                            modifier = Modifier.padding(12.dp)
+                            modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 12.dp)
                         ) {
                             for (lecturer in data.lecturers) {
-                                GroupLecturerCardView(
-                                    lecturer = PeopleSingleton.lecturers[lecturer.id]!!
-                                )
+                                val lecturerData: Lecturer? = PeopleSingleton.lecturers[lecturer.id]
+                                if (lecturerData != null) {
+                                    GroupLecturerCardView(
+                                        lecturer = PeopleSingleton.lecturers[lecturer.id]!!
+                                    )
+                                }
                             }
+                        }
+                    }
+                }
+                item {
+                    AnimatedVisibility(
+                        visible = !lecturersFetched && !lecturersFetchError,
+                        enter = UIHelper.slideEnterTransition(1)
+                    ) {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.fillMaxWidth().padding(12.dp)
+                        ) {
+                            CircularProgressIndicator(color = UISingleton.textColor2)
                         }
                     }
                 }
@@ -144,8 +184,11 @@ fun ClassGroupPopupView(
                             icon = Icons.Rounded.Refresh,
                             iconSize = 40.dp,
                             iconPadding = 6.dp,
-                            modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 12.dp)
-                        )
+                            backgroundColor = UISingleton.color1,
+                            modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 12.dp)
+                        ) {
+                            loadLecturersInfo()
+                        }
                     }
                 }
                 if (viewModel.groupDetails[groupKey]?.participants != null) {
@@ -158,7 +201,7 @@ fun ClassGroupPopupView(
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 12.dp)
+                                .padding(start = 12.dp, end = 12.dp, top = 12.dp)
                                 .shadow(3.dp, RoundedCornerShape(topStart = UISingleton.uiElementsCornerRadius.dp, topEnd = UISingleton.uiElementsCornerRadius.dp, 0.dp, 0.dp))
                                 .background(UISingleton.color1, RoundedCornerShape(topStart = UISingleton.uiElementsCornerRadius.dp, topEnd = UISingleton.uiElementsCornerRadius.dp, 0.dp, 0.dp))
                                 .padding(12.dp)
@@ -173,16 +216,34 @@ fun ClassGroupPopupView(
                             modifier = Modifier.animateItem()
                         )
                     }
-                } else {
-                    item {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(0.dp, alignment = Alignment.CenterHorizontally),
-                            modifier = Modifier
-                                .fillMaxWidth()
+                }
+                item {
+                    AnimatedVisibility(
+                        visible = participantsFetching && !participantsFetchError,
+                        enter = UIHelper.slideEnterTransition(1)
+                    ) {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.fillMaxWidth().padding(12.dp)
                         ) {
-                            CircularProgressIndicator(
-                                color = UISingleton.textColor2,
-                            )
+                            CircularProgressIndicator(color = UISingleton.textColor2)
+                        }
+                    }
+                }
+                item {
+                    AnimatedVisibility(
+                        visible = participantsFetchError,
+                        enter = UIHelper.slideEnterTransition(1)
+                    ) {
+                        TextAndIconCardView(
+                            title = stringResource(R.string.failed_to_fetch),
+                            icon = Icons.Rounded.Refresh,
+                            iconSize = 40.dp,
+                            iconPadding = 6.dp,
+                            backgroundColor = UISingleton.color1,
+                            modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 12.dp)
+                        ) {
+                            loadParticipantsInfo()
                         }
                     }
                 }
