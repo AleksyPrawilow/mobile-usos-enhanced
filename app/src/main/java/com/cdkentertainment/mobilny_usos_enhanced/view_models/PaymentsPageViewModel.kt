@@ -41,6 +41,7 @@ class PaymentsPageViewModel: ViewModel() {
             loaded = true
             return
         }
+        if (loading) return
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 loading = true

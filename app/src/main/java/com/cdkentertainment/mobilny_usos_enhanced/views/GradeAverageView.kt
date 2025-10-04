@@ -74,7 +74,7 @@ fun GradeAverageView(gradeAverage: Float?, modifier: Modifier = Modifier) {
                     .padding(horizontal = 6.dp)
             ) {
                 Text(
-                    text = if (gradeAverage?.isNaN() ?: true) "—" else "%.2f".format(gradeAverage),
+                    text = if (gradeAverage?.isNaN() ?: true || gradeAverage == 0f) "—" else "%.2f".format(gradeAverage),
                     color = UISingleton.textColor4,
                     fontWeight = FontWeight.ExtraBold,
                     fontSize = 16.sp.scaleIndependent,
