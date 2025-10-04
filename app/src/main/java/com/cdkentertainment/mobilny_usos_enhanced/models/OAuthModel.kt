@@ -1,21 +1,37 @@
 package com.cdkentertainment.mobilny_usos_enhanced.models
 
 import android.content.Context
+import coil.util.CoilUtils.result
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.UserDataSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.LoginPageViewModel
 import com.github.scribejava.core.model.OAuth1AccessToken
 import com.github.scribejava.core.model.OAuth1RequestToken
+import io.ktor.client.request.request
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
 class OAuthModel {
+    private val tokenAndUrl: String = "Auth/Url"
+    private val finalTokensUrl: String = "Auth/AccessToken"
     private val parser: Json = Json { ignoreUnknownKeys = true }
     private val userInfoUrl: String = "users/user?fields=id|first_name|last_name|student_number|sex|email|photo_urls[100x100]|mobile_numbers|student_programmes[id|programme[all_faculties|id|name]]"
 
+    @Serializable
+    data class UrlAndToken(
+        val url: String,
+        val token: String,
+        val tokenSecret: String
+    )
+
+    @Serializable
+    data class TokenPair(
+        val token: String,
+        val tokenSecret: String
+    )
     public suspend fun checkIfAccessTokenExists(context: Context): Boolean {
         return withContext(Dispatchers.IO) {
             if (BackendDataSender.oAuth1AccessToken != null) {
@@ -53,17 +69,30 @@ class OAuthModel {
             LoginPageViewModel.LoginState.USOS_LOGIN
         }
     }
-    public suspend fun getRequestToken(): OAuth1RequestToken {
+    public suspend fun getRequestToken(): UrlAndToken {
         return withContext(Dispatchers.IO) {
-            return@withContext OAuthSingleton.service.getRequestToken()
+            val response: BackendDataSender.BackendResponse = BackendDataSender.get(tokenAndUrl)
+            if (response.statusCode == 200) {
+                val parsedResponse: UrlAndToken = parser.decodeFromString<UrlAndToken>(response.body)
+                return@withContext parsedResponse
+            } else {
+                throw(Exception("API Login Error"))
+            }
         }
     }
-    public suspend fun getAccessToken(pin: String, requestToken: OAuth1RequestToken, context: Context) {
-        withContext(Dispatchers.IO) {
-            val result = OAuthSingleton.service.getAccessToken(requestToken, pin)
-            BackendDataSender.oAuth1AccessToken = result
-            UserDataSingleton.saveUserCredentials(context, BackendDataSender.oAuth1AccessToken!!)
-            UserDataSingleton.userData = getUserData()
+    public suspend fun getAccessToken(pin: String, requestToken: String, tokenSecret: String, context: Context): OAuth1AccessToken {
+        return withContext(Dispatchers.IO) {
+            val result: BackendDataSender.BackendResponse = BackendDataSender.getWithAuthHeaders(finalTokensUrl, pin, requestToken, tokenSecret)
+            if (result.statusCode == 200) {
+                val parsedLoginData: TokenPair = parser.decodeFromString<TokenPair>(result.body)
+                val oAuthToken = OAuth1AccessToken(parsedLoginData.token, parsedLoginData.tokenSecret)
+                BackendDataSender.oAuth1AccessToken = oAuthToken
+                UserDataSingleton.saveUserCredentials(context, BackendDataSender.oAuth1AccessToken!!)
+                UserDataSingleton.userData = getUserData()
+                return@withContext oAuthToken
+            } else {
+                throw (Exception("API Login Error"))
+            }
         }
     }
     public suspend fun loadNecessaryData() {
