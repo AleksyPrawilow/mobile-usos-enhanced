@@ -1,12 +1,9 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
 import android.content.Context
-import androidx.compose.animation.core.EaseOut
 import androidx.compose.animation.core.EaseOutQuad
 import androidx.compose.animation.core.Easing
-import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -61,21 +58,7 @@ fun FloatingButtonView(
     val buttonSize = 72
     val subButtonSize = 58
     val circleRadius = 110.0
-    val iconRotation: Float by animateFloatAsState(
-        targetValue = if (fabViewModel.expanded) -45.0f else 0.0f,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioHighBouncy,
-            stiffness = Spring.StiffnessLow
-        )
-    )
-    val iconYRotation: Float by animateFloatAsState(
-        targetValue = if (screenManagerViewModel.authorized) 360f else 0f,
-        animationSpec = tween(
-            durationMillis = 750,
-            easing = EaseOut
-        )
-    )
-    val color2: Color =UISingleton.color2
+    val color2: Color = UISingleton.color2
     val color4: Color = UISingleton.textColor1
     val buttonScale: Float by animateFloatAsState(if (fabViewModel.expanded) 1.25f else 1.0f)
     val subButtonDelayNormal: Int = if (fabViewModel.expanded) 150 else 0

@@ -40,6 +40,8 @@ fun LatestSomethingView(
     textColor: Color = UISingleton.textColor1,
     disabledTextColor: Color = UISingleton.textColor1,
     enabled: Boolean = true,
+    loading: Boolean = false,
+    loadingError: Boolean = false,
     onClick: () -> Unit = {}
 ) {
     val cardShape: RoundedCornerShape = remember { RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp) }
@@ -95,11 +97,13 @@ fun LatestSomethingView(
                         .align(Alignment.TopEnd)
                         .padding((UISingleton.uiElementsCornerRadius / 4).dp)
                 ) {
-                    Text(
-                        text = badge,
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.SemiBold
-                    )
+                    if (!loading) {
+                        Text(
+                            text = if (!loadingError) badge else "?",
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
                 }
             }
         }

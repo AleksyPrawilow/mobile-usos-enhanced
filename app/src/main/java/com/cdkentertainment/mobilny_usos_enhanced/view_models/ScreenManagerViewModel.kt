@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 class ScreenManagerViewModel: ViewModel() {
     var selectedScreen: Screens by mutableStateOf(Screens.LOGIN)
         private set
-    var authorized: Boolean by mutableStateOf(false)
+    var showFab: Boolean by mutableStateOf(false)
 
     fun changeScreen(newScreen: Screens, context: Context?) {
         if (selectedScreen == newScreen) {
@@ -29,7 +29,6 @@ class ScreenManagerViewModel: ViewModel() {
     }
 
     fun authorize() {
-        authorized = true
         changeScreen(Screens.HOME, null)
     }
 }

@@ -66,14 +66,10 @@ class AttendancePageModel {
     }
     public suspend fun readPinnedGroups(fileName: String, context: Context): List<LessonGroup> {
         return withContext(Dispatchers.IO) {
-            try {
-                val file = File(context.filesDir, fileName)
-                val json: String = file.readText()
-                val groups: List<LessonGroup> = parser.decodeFromString(json)
-                return@withContext groups
-            } catch (e: Exception) {
-                return@withContext emptyList()
-            }
+            val file = File(context.filesDir, fileName)
+            val json: String = file.readText()
+            val groups: List<LessonGroup> = parser.decodeFromString(json)
+            return@withContext groups
         }
     }
 }

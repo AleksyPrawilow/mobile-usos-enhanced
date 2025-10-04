@@ -86,7 +86,7 @@ fun ContentView() {
         )
     )
     val fabOffsetRatio: Float by animateFloatAsState(
-        targetValue = if (screenManagerViewModel.authorized) 0f else 1f,
+        targetValue = if (screenManagerViewModel.showFab) 0f else 1f,
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioMediumBouncy,
             stiffness = 100f

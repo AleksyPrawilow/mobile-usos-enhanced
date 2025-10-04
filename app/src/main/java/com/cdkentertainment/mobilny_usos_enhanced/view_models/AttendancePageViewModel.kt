@@ -130,10 +130,20 @@ class AttendancePageViewModel: ViewModel() {
         }
     }
 
-    suspend fun readPinnedGroups(context: Context) {
-        withContext(Dispatchers.IO) {
-            pinnedGroups = attendancePageModel.readPinnedGroups("${UserDataSingleton.userData!!.id}_attendance_pinned_groups.json", context)
-            pinnedGroupedBySubject = lessongGroupModel.mergeGroupsBySubjects(pinnedGroups!!)
+    suspend fun readPinnedGroups(context: Context): Boolean {
+        if (pinnedGroups != null) {
+            return true
+        }
+        return withContext(Dispatchers.IO) {
+            try {
+                pinnedGroups = attendancePageModel.readPinnedGroups("${UserDataSingleton.userData!!.id}_attendance_pinned_groups.json", context)
+                pinnedGroupedBySubject = lessongGroupModel.mergeGroupsBySubjects(pinnedGroups!!)
+                return@withContext true
+            } catch (e: Exception) {
+                pinnedGroups = emptyList()
+                pinnedGroupedBySubject = emptyMap()
+                return@withContext false
+            }
         }
     }
 
