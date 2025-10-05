@@ -26,11 +26,16 @@ class OAuthModel {
         val token: String,
         val tokenSecret: String
     )
-
     @Serializable
     data class TokenPair(
         val token: String,
         val tokenSecret: String
+    )
+    @Serializable
+    data class TokenSet(
+        val usosToken: String,
+        val usosTokenSecret: String,
+        val backendToken: String
     )
     public suspend fun checkIfAccessTokenExists(context: Context): Boolean {
         return withContext(Dispatchers.IO) {
@@ -84,9 +89,10 @@ class OAuthModel {
         return withContext(Dispatchers.IO) {
             val result: BackendDataSender.BackendResponse = BackendDataSender.getWithAuthHeaders(finalTokensUrl, pin, requestToken, tokenSecret)
             if (result.statusCode == 200) {
-                val parsedLoginData: TokenPair = parser.decodeFromString<TokenPair>(result.body)
-                val oAuthToken = OAuth1AccessToken(parsedLoginData.token, parsedLoginData.tokenSecret)
+                val parsedLoginData: TokenSet = parser.decodeFromString<TokenSet>(result.body)
+                val oAuthToken = OAuth1AccessToken(parsedLoginData.usosToken, parsedLoginData.usosTokenSecret)
                 BackendDataSender.oAuth1AccessToken = oAuthToken
+                BackendDataSender.setAuthHeader(parsedLoginData.backendToken)
                 UserDataSingleton.saveUserCredentials(context, BackendDataSender.oAuth1AccessToken!!)
                 UserDataSingleton.userData = getUserData()
                 return@withContext oAuthToken
