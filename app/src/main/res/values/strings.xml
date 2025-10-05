@@ -82,4 +82,11 @@
     <string name="student_number">Student number:</string>
     <string name="delete_rating_confirm">Are you sure you want to delete your rate?</string>
     <string name="cancel">Cancel</string>
+    <string name="to_pay">To pay</string>
+    <string name="no_unpaid_debts">No unpaid debts</string>
+    <string name="no_paid_debts">No paid debts</string>
+    <string name="paid">Paid</string>
+    <string name="unpaid">Unpaid</string>
+    <string name="payment_deadline">Deadline</string>
+    <string name="bank_account">Bank account</string>
 </resources>

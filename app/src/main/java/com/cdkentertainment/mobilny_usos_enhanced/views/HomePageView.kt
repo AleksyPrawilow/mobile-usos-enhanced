@@ -53,6 +53,7 @@ import com.cdkentertainment.mobilny_usos_enhanced.view_models.GradesPageViewMode
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.HomePageViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.PaymentsPageViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.ScreenManagerViewModel
+import com.cdkentertainment.mobilny_usos_enhanced.view_models.Screens
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -206,7 +207,9 @@ fun HomePageView() {
                         title = cardLabels[0].first,
                         maxWidth = maxCardWidth,
                         badge = "2!"
-                    )
+                    ) {
+                        screenManagerViewModel.changeScreen(Screens.GRADES, context)
+                    }
                 }
 
                 AnimatedVisibility(showElements && !loadingError, enter = scaleEnterTransition(5)) {
@@ -225,7 +228,9 @@ fun HomePageView() {
                         badge = unpaidSumFormatted,
                         loading = paymentsPageViewModel.loading,
                         loadingError = paymentsPageViewModel.error
-                    )
+                    ) {
+                        screenManagerViewModel.changeScreen(Screens.PAYMENTS, context)
+                    }
                 }
 
                 AnimatedVisibility(showElements && !loadingError, enter = scaleEnterTransition(4)) {
@@ -234,7 +239,9 @@ fun HomePageView() {
                         title = cardLabels[3].first,
                         maxWidth = maxCardWidth,
                         badge = "99!"
-                    )
+                    ) {
+                        screenManagerViewModel.changeScreen(Screens.ATTENDANCE, context)
+                    }
                 }
             }
         }

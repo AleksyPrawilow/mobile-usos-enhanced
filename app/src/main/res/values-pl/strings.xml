@@ -83,4 +83,11 @@
     <string name="student_number">Nr. indeksu:</string>
     <string name="delete_rating_confirm">Czy na pewno chcesz usunąć swoją ocenę?</string>
     <string name="cancel">Anuluj</string>
+    <string name="to_pay">Do zapłaty</string>
+    <string name="no_unpaid_debts">Brak nierozliczonych płatności</string>
+    <string name="no_paid_debts">Brak rozliczonych płatności</string>
+    <string name="paid">Zapłacona w całości</string>
+    <string name="unpaid">Niezapłacona</string>
+    <string name="payment_deadline">Termin płatności</string>
+    <string name="bank_account">Konto bankowe</string>
 </resources>

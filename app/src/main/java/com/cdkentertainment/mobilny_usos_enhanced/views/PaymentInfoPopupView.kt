@@ -73,7 +73,7 @@ fun PaymentInfoPopupView(
                 Spacer(modifier = Modifier.height(12.dp))
                 if (data.state == "unpaid") {
                     GroupedContentContainerView(
-                        title = "Konto bankowe",
+                        title = stringResource(R.string.bank_account),
                         backgroundColor = UISingleton.color1,
                         onClick = {
                             clipboard.setText(AnnotatedString(data.account_number))
