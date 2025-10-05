@@ -77,8 +77,8 @@ object BackendDataSender {
                 val request = Request.Builder()
                     .url(requestUrl)
                     .header("Authorization", authHeader?: "")
-                    .header("OAuth-Key", oAuth1AccessToken?.token ?: "")
-                    .header("OAuth-Secret", oAuth1AccessToken?.tokenSecret ?: "")
+                    .header("OAuth-Key", accessToken)
+                    .header("OAuth-Secret", accessSecret)
                     .post(requestBody)
                     .build()
 
