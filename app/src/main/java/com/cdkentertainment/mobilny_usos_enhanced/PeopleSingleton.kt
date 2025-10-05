@@ -22,13 +22,13 @@ data class LecturerData(
     val id: String,
     val first_name: String,
     val last_name: String,
+    val email: String,
     val titles: Map<String?, String?>,
+    val room: Room?,
     val staff_status: Int,
-    val phone_numbers: List<String>,
-    val office_hours: SharedDataClasses.LangDict,
-    val has_photo: Boolean,
     val photo_urls: Map<String, String>,
-    val room: Room?
+    val phone_numbers: List<String>,
+    val sex: String
 )
 
 @Serializable

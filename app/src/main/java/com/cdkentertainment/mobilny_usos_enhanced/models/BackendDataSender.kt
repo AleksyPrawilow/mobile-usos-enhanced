@@ -27,7 +27,10 @@ object BackendDataSender {
         var body: String? = null
         val apiCall = client.newCall(request).execute().use { response ->
             code = response.code
-            body = response.body.toString()
+            body = response.body?.string()
+        }
+        if (body.isNullOrEmpty()) {
+            body = null
         }
         return BackendResponse(code, body)
     }

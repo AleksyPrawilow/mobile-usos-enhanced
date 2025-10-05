@@ -44,9 +44,9 @@ class LecturerRatesPageModel {
         return withContext(Dispatchers.IO) {
             val response: BackendDataSender.BackendResponse = BackendDataSender.get("$lecturerRateUrl?lecturerId=$lecturerId&universityId=1") //TEMPORARY
             if (response.statusCode == 200 && response.body != null) {
-                val parsedResponse: LecturerAvgRates = parser.decodeFromString<LecturerAvgRates>(response.body!!)
+                val parsedResponse: LecturerAvgRates? = parser.decodeFromString<LecturerAvgRates?>(response.body!!)
                 return@withContext parsedResponse
-            } else if (response.body == "") {
+            } else if (response.statusCode == 200 && response.body == null) {
                 return@withContext null
             } else {
                 throw(Exception("API Error"))
@@ -57,6 +57,7 @@ class LecturerRatesPageModel {
         return withContext(Dispatchers.IO) {
             val start = offset * pageSize
             val response: BackendDataSender.BackendResponse = BackendDataSender.get("$staffUrl?facultyId=$facultyId&start=$start&pageSize=$pageSize")
+            println(response.body)
             if(response.statusCode == 200 && response.body != null) {
                 val parsedResponse: LecturersIndex = parser.decodeFromString<LecturersIndex>(response.body!!)
                 return@withContext parsedResponse
