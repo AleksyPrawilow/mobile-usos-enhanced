@@ -22,8 +22,14 @@ object BackendDataSender {
     var oAuth1AccessToken: OAuth1AccessToken? = null
     public data class BackendResponse (
         var statusCode: Int,
-        var body: String
+        var body: String?
     )
+
+    private fun sendRequestToBackend(request: Request): BackendResponse {
+        val apiCall = client.newCall(request).execute()
+        val response = BackendResponse(apiCall.code, apiCall.body?.toString())
+        return response
+    }
 
     public suspend fun getWithAuthHeaders(requestUrl: String, pin: String, token: String, tokenSecret: String): BackendResponse {
         return withContext(Dispatchers.IO) {
@@ -36,14 +42,7 @@ object BackendDataSender {
                 .header("tokenSecret", tokenSecret)
                 .build()
 
-            val resp = BackendResponse(0, "")
-            client.newCall(request).execute().use { response ->
-                println(response)
-                resp.body = response.body?.string() ?: ""
-                resp.statusCode = response.code
-            }
-
-            return@withContext resp
+            return@withContext sendRequestToBackend(request)
         }
     }
 
@@ -57,15 +56,7 @@ object BackendDataSender {
                 .header("OAuth-Secret", oAuth1AccessToken?.tokenSecret ?: "")
                 .build()
 
-            println(authHeader)
-            val resp = BackendResponse(0, "")
-            client.newCall(request).execute().use { response ->
-                println(response)
-                resp.body = response.body?.string() ?: ""
-                resp.statusCode = response.code
-            }
-
-            return@withContext resp
+            return@withContext sendRequestToBackend(request)
         }
     }
 
@@ -81,13 +72,8 @@ object BackendDataSender {
                 .header("OAuth-Secret", oAuth1AccessToken?.tokenSecret ?: "")
                 .post(requestBody)
                 .build()
-            val resp = BackendResponse(0, "")
-            client.newCall(request).execute().use { response ->
-                resp.body = response.body?.string() ?: ""
-                resp.statusCode = response.code
-            }
 
-            return@withContext resp
+            return@withContext sendRequestToBackend(request)
         }
     }
 
@@ -101,13 +87,8 @@ object BackendDataSender {
                 .header("Authorization", authHeader)
                 .post(requestBody)
                 .build()
-            val resp = BackendResponse(0, "")
-            client.newCall(request).execute().use {response ->
-                resp.body = response.body?.string() ?: ""
-                resp.statusCode = response.code
-            }
 
-            return@withContext resp
+            return@withContext sendRequestToBackend(request)
         }
     }
 }
