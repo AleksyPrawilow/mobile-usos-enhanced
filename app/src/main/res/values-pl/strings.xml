@@ -90,4 +90,6 @@
     <string name="unpaid">Niezapłacona</string>
     <string name="payment_deadline">Termin płatności</string>
     <string name="bank_account">Konto bankowe</string>
+    <string name="no_pinned_courses">Brak podpiętych przedmiotów</string>
+    <string name="no_unpinned_courses">Brak niepodpiętych przedmiotów</string>
 </resources>

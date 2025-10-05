@@ -66,7 +66,7 @@ fun AttendancePopupView(
     }
 
     LaunchedEffect(Unit) {
-        viewModel.readAllCourseMeetings(viewModel.popupData!!.classGroupData)
+
     }
 
     Dialog(

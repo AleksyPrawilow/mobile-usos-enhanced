@@ -6,30 +6,21 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.UserDataSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.models.AttendanceDatesObject
 import com.cdkentertainment.mobilny_usos_enhanced.models.AttendancePageModel
-import com.cdkentertainment.mobilny_usos_enhanced.models.GradesPageModel
 import com.cdkentertainment.mobilny_usos_enhanced.models.LessonGroup
 import com.cdkentertainment.mobilny_usos_enhanced.models.LessonGroupPageModel
 import com.cdkentertainment.mobilny_usos_enhanced.models.SharedDataClasses
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 
-//----- Tutaj dałem tymczasowo funkcję do testowania
-fun main(): Unit = runBlocking {
-    OAuthSingleton.setTestAccessToken()
-    launch {
-        val model = AttendancePageModel()
-        val test = model.getGivenSubjectAttendanceDates("461821", "13")
-        println(model.filterPastAttendanceDates(test))
-    }
-}
 class AttendancePageViewModel: ViewModel() {
+    var loading: Boolean by mutableStateOf(false)
+    var error: Boolean by mutableStateOf(false)
+    var loaded: Boolean by mutableStateOf(false)
+
     var unitMeetings: MutableMap<String, List<AttendanceDatesObject>> = mutableStateMapOf()
     var lessonGroups: List<List<LessonGroup>>? by mutableStateOf(null)
         private set
@@ -47,22 +38,28 @@ class AttendancePageViewModel: ViewModel() {
 
     private val lessongGroupModel: LessonGroupPageModel = LessonGroupPageModel()
     private val attendancePageModel: AttendancePageModel = AttendancePageModel()
-    private val gradesPageModel: GradesPageModel = GradesPageModel()
     var classtypeIdInfo: Map<String, SharedDataClasses.IdAndName>? by mutableStateOf(null)
 
     suspend fun fetchLessonGroups() {
+        if (lessonGroups != null || loaded) {
+            return
+        }
         withContext(Dispatchers.IO) {
             classtypeIdInfo = UIHelper.classTypeIds
-            userId = UserDataSingleton.userData!!.id
-            if (lessonGroups != null) {
-                return@withContext
-            }
             try {
+                loading = true
+                error = false
+                loaded = false
+                userId = UserDataSingleton.userData!!.id
                 val groups = lessongGroupModel.getLessonGroups()
                 lessonGroups = groups.groups[UIHelper.termIds.last()]?.values?.toList() ?: emptyList()
+                loading = false
+                loaded = true
+                error = false
             } catch (e: Exception) {
-                // TODO: Add error handling
-                return@withContext
+                loaded = false
+                loading = false
+                error = true
             }
         }
     }
@@ -147,19 +144,14 @@ class AttendancePageViewModel: ViewModel() {
         }
     }
 
-    suspend fun readAllCourseMeetings(group: LessonGroup): Boolean {
-        return withContext(Dispatchers.IO) {
-            try {
-                if (unitMeetings[group.course_unit_id.toString()] != null) {
-                    return@withContext true
-                }
-                val dates: List<AttendanceDatesObject> = attendancePageModel.getGivenSubjectAttendanceDates(group.course_unit_id.toString(), group.group_number.toString())
-                unitMeetings[group.course_unit_id.toString()] = dates
-                return@withContext true
-            } catch (e: Exception) {
-                e.printStackTrace()
-                return@withContext false
-            }
+    suspend fun readAllCourseMeetings(group: LessonGroup) {
+        if (unitMeetings[group.course_unit_id.toString()] != null) {
+            return
+        }
+        withContext(Dispatchers.IO) {
+            val dates: List<AttendanceDatesObject> = attendancePageModel.getGivenSubjectAttendanceDates(group.course_unit_id.toString(), group.group_number.toString())
+            unitMeetings[group.course_unit_id.toString()] = dates
+            return@withContext
         }
     }
 }

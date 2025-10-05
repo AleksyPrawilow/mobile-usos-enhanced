@@ -9,7 +9,6 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-import java.util.Base64
 
 object BackendDataSender {
     private val developmentUrl: String = "http://10.0.2.2:8080"
@@ -58,7 +57,6 @@ object BackendDataSender {
                 .header("OAuth-Secret", oAuth1AccessToken?.tokenSecret ?: "")
                 .build()
 
-            println(authHeader)
             val resp = BackendResponse(0, "")
             client.newCall(request).execute().use { response ->
                 println(response)

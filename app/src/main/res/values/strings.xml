@@ -89,4 +89,6 @@
     <string name="unpaid">Unpaid</string>
     <string name="payment_deadline">Deadline</string>
     <string name="bank_account">Bank account</string>
+    <string name="no_pinned_courses">No pinned courses</string>
+    <string name="no_unpinned_courses">No unpinned courses</string>
 </resources>

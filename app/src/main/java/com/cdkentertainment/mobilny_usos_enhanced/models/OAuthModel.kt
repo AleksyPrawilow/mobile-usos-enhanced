@@ -1,14 +1,11 @@
 package com.cdkentertainment.mobilny_usos_enhanced.models
 
 import android.content.Context
-import coil.util.CoilUtils.result
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.UserDataSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.LoginPageViewModel
 import com.github.scribejava.core.model.OAuth1AccessToken
-import com.github.scribejava.core.model.OAuth1RequestToken
-import io.ktor.client.request.request
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
@@ -54,6 +51,10 @@ class OAuthModel {
         return withContext(Dispatchers.IO) {
             try {
                 UserDataSingleton.userData = getUserData()
+                // FIXME FIXME FIXME FIXME
+                val token = BackendDataSender.get("tests?userId=${UserDataSingleton.userData!!.id}").body
+                BackendDataSender.setAuthHeader(token)
+                // FIXME FIXME FIXME FIXME
                 return@withContext UserDataSingleton.userData == null
             } catch (e: Exception) {
                 return@withContext true
