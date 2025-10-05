@@ -76,9 +76,10 @@ class OAuthModel {
     }
     public suspend fun getRequestToken(): UrlAndToken {
         return withContext(Dispatchers.IO) {
-            val response: BackendDataSender.BackendResponse = BackendDataSender.get(tokenAndUrl)
+            val response: BackendDataSender.BackendResponse = BackendDataSender.getWithoutHeaders(tokenAndUrl)
             if (response.statusCode == 200 && response.body != null) {
                 val parsedResponse: UrlAndToken = parser.decodeFromString<UrlAndToken>(response.body!!)
+                println(parsedResponse.token)
                 return@withContext parsedResponse
             } else {
                 throw(Exception("API Login Error"))

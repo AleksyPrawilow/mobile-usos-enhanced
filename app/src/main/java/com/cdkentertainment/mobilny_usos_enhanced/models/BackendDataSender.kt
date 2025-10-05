@@ -31,6 +31,15 @@ object BackendDataSender {
         authHeader = "Bearer $accessToken"
     }
 
+    public suspend fun getWithoutHeaders(requestUrl: String): BackendResponse {
+        return withContext(Dispatchers.IO) {
+            val requestUrl = "$developmentUrl/$requestUrl"
+            val request = Request.Builder()
+                .url(requestUrl)
+                .build()
+            return@withContext sendRequestToBackend(request)
+        }
+    }
     public suspend fun getWithAuthHeaders(requestUrl: String, pin: String, token: String, tokenSecret: String): BackendResponse {
         return withContext(Dispatchers.IO) {
             val requestUrl = "$developmentUrl/$requestUrl"
