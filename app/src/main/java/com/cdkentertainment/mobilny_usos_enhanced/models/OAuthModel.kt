@@ -104,6 +104,7 @@ class OAuthModel {
     }
     public suspend fun loadNecessaryData() {
         withContext(Dispatchers.IO) {
+            UserDataSingleton.userFaculties = UserDataSingleton.getUserFaculties(UserDataSingleton.userData!!)
             val termsResponse: BackendDataSender.BackendResponse = BackendDataSender.get("Grades/TermIds")
             if (UIHelper.termIds.isEmpty()) {
                 if (termsResponse.statusCode == 200) {

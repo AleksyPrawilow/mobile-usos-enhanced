@@ -1,5 +1,6 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
+import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -42,6 +43,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -60,6 +62,7 @@ import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.UIHelper.scaleEnterTransition
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
+import com.cdkentertainment.mobilny_usos_enhanced.UserDataSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.models.SharedDataClasses
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.LecturerRatesPageViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -71,6 +74,7 @@ import kotlin.math.max
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun LecturerRatesPageView() {
+    val context: Context = LocalContext.current
     val coroutineScope: CoroutineScope = rememberCoroutineScope()
     val listState     : LazyListState  = rememberLazyListState()
     val textMeasurer  : TextMeasurer   = rememberTextMeasurer()
@@ -171,7 +175,7 @@ fun LecturerRatesPageView() {
             Spacer(modifier = Modifier.height(8.dp))
         }
         item {
-            AnimatedVisibility(lecturerRatesPageViewModel.lecturersIndex["$selectedFaculty/0"] == null, modifier = paddingModifier) {
+            AnimatedVisibility(lecturerRatesPageViewModel.lecturersIndexLoading["$selectedFaculty/0"] == true, modifier = paddingModifier) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     CircularProgressIndicator(color = UISingleton.textColor2, modifier = Modifier.align(Alignment.Center))
                 }
@@ -232,10 +236,7 @@ fun LecturerRatesPageView() {
                     ) {
                         PageSelectorView(
                             pageNum = "${selectedPage + 1}",
-                            faculty = mapOf(
-                                "0600000000" to "Wydział Matematyki i informatyki",
-                                "0400000000" to "Wydział Fizyki i Astronomii"
-                            ),
+                            faculty = UserDataSingleton.userFaculties,
                             selectedFaculty = selectedFaculty,
                             showBack = selectedPage > 0,
                             showNext = selectedPage < ceil((lecturerRatesPageViewModel.lecturersIndexTotal.getOrDefault(selectedFaculty, 0) / pageSize).toDouble()),
@@ -258,6 +259,19 @@ fun LecturerRatesPageView() {
                     ) {
                         Box(modifier = paddingModifier.fillMaxWidth()) {
                             CircularProgressIndicator(color = UISingleton.textColor2, modifier = Modifier.align(Alignment.Center))
+                        }
+                    }
+                }
+                item {
+                    AnimatedVisibility(
+                        visible = lecturerRatesPageViewModel.lecturersIndexError["$selectedFaculty/$selectedPage"] == true && showElements,
+                        enter = enterTransition(1)
+                    ) {
+                        TextAndIconCardView(
+                            stringResource(R.string.failed_to_fetch),
+                            paddingModifier
+                        ) {
+                            lecturerRatesPageViewModel.loadStaffIndex(selectedFaculty, selectedPage, pageSize)
                         }
                     }
                 }

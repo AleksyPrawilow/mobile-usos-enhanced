@@ -1,5 +1,6 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
+import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -32,16 +33,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton.color2
+import com.cdkentertainment.mobilny_usos_enhanced.getLocalized
+import com.cdkentertainment.mobilny_usos_enhanced.models.SharedDataClasses
 
 @Composable
 fun PageSelectorView(
     pageNum: String,
-    faculty: Map<String, String>,
+    faculty: Map<String, SharedDataClasses.LangDict>,
     selectedFaculty: String,
     showBack: Boolean,
     showNext: Boolean,
@@ -50,6 +54,7 @@ fun PageSelectorView(
     onFacultySelect: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context: Context = LocalContext.current
     val shape: RoundedCornerShape = remember { RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp) }
     var facultiesExpanded by remember { mutableStateOf(false) }
     Card(
@@ -126,43 +131,45 @@ fun PageSelectorView(
                     contentColor = UISingleton.textColor1,
                     disabledContentColor = UISingleton.textColor1
                 ),
-                enabled = true, // faculties.size() > 0
+                enabled = faculty.size > 1,
                 contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
                 shape = shape,
                 onClick = { facultiesExpanded = !facultiesExpanded }
             ) {
                 Text(
-                    text = faculty[selectedFaculty] ?: "N/A",
+                    text = faculty[selectedFaculty]?.getLocalized(context) ?: "N/A",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Medium,
                     color = UISingleton.textColor1
                 )
-                Icon(
-                    imageVector = Icons.Rounded.KeyboardArrowDown,
-                    contentDescription = null,
-                    tint = UISingleton.textColor1
-                )
-                DropdownMenu(
-                    expanded = facultiesExpanded,
-                    onDismissRequest = { facultiesExpanded = false },
-                    containerColor = color2,
-                    shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp)
-                ) {
-                    for ((facultyId, facultyName) in faculty) {
-                        DropdownMenuItem(
-                            contentPadding = PaddingValues(12.dp),
-                            text = {
-                                Text(
-                                    text = facultyName,
-                                    style = MaterialTheme.typography.titleMedium,
-                                    color = UISingleton.textColor1
-                                )
-                            },
-                            onClick = {
-                                facultiesExpanded = false
-                                onFacultySelect(facultyId)
-                            }
-                        )
+                if (faculty.size > 1) {
+                    Icon(
+                        imageVector = Icons.Rounded.KeyboardArrowDown,
+                        contentDescription = null,
+                        tint = UISingleton.textColor1
+                    )
+                    DropdownMenu(
+                        expanded = facultiesExpanded,
+                        onDismissRequest = { facultiesExpanded = false },
+                        containerColor = color2,
+                        shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp)
+                    ) {
+                        for ((facultyId, facultyName) in faculty) {
+                            DropdownMenuItem(
+                                contentPadding = PaddingValues(12.dp),
+                                text = {
+                                    Text(
+                                        text = facultyName.getLocalized(context),
+                                        style = MaterialTheme.typography.titleMedium,
+                                        color = UISingleton.textColor1
+                                    )
+                                },
+                                onClick = {
+                                    facultiesExpanded = false
+                                    onFacultySelect(facultyId)
+                                }
+                            )
+                        }
                     }
                 }
             }

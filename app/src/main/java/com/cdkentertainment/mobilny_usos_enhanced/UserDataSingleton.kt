@@ -2,6 +2,7 @@ package com.cdkentertainment.mobilny_usos_enhanced
 
 import android.content.Context
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.datastore.preferences.core.edit
@@ -9,6 +10,7 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.cdkentertainment.mobilny_usos_enhanced.models.BackendDataSender
+import com.cdkentertainment.mobilny_usos_enhanced.models.SharedDataClasses
 import com.cdkentertainment.mobilny_usos_enhanced.models.UserInfo
 import com.github.scribejava.core.model.OAuth1AccessToken
 import kotlinx.coroutines.flow.Flow
@@ -24,6 +26,7 @@ object UserDataSingleton {
 
     var currentSettings: SettingsObject = SettingsObject()
     var userData: UserInfo? by mutableStateOf(null)
+    var userFaculties: MutableMap<String, SharedDataClasses.LangDict> = mutableStateMapOf()
 
     suspend fun saveUserCredentials(context: Context, accessToken: OAuth1AccessToken) {
         context.dataStore.edit { settings ->
@@ -80,6 +83,21 @@ object UserDataSingleton {
             return OAuth1AccessToken(key, secret)
         }
         return null
+    }
+
+    fun getUserFaculties(userData: UserInfo): MutableMap<String, SharedDataClasses.LangDict> {
+        val faculties: MutableMap<String, SharedDataClasses.LangDict> = mutableMapOf()
+        for (programme in userData.student_programmes) {
+            val programmeFaculties = programme.programme.all_faculties
+            for (faculty in programmeFaculties) {
+                if (faculty.id.toInt() == 0) {
+                    continue
+                }
+                faculties[faculty.id] = faculty.name
+            }
+        }
+        println(faculties)
+        return faculties
     }
 }
 
