@@ -6,10 +6,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.R
-import com.cdkentertainment.mobilny_usos_enhanced.UserDataSingleton
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class ScreenManagerViewModel: ViewModel() {
     var selectedScreen: Screens by mutableStateOf(Screens.LOGIN)
@@ -19,11 +15,6 @@ class ScreenManagerViewModel: ViewModel() {
     fun changeScreen(newScreen: Screens, context: Context?) {
         if (selectedScreen == newScreen) {
             return
-        }
-        if (selectedScreen == Screens.SETTINGS && context != null) {
-            CoroutineScope(Dispatchers.IO).launch {
-                UserDataSingleton.saveUserSettings(context)
-            }
         }
         selectedScreen = newScreen
     }

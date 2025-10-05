@@ -18,11 +18,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
@@ -41,11 +40,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.R
@@ -70,12 +67,6 @@ fun LoginPageView(screenManagerViewModel: ScreenManagerViewModel = viewModel<Scr
         targetValue = if (showLoginStuff) 0.3f else 0.01f,
         spring(stiffness = Spring.StiffnessLow)
     )
-    val density: Density = LocalDensity.current
-    val insets = WindowInsets.systemBars
-    val topInset = insets.getTop(density)
-    val bottomInset = insets.getBottom(density)
-    val topPadding = with(density) { topInset.toDp() }
-    val bottomPadding = with(density) { bottomInset.toDp() }
 
     LaunchedEffect(pageViewModel.errorMessage) {
         if (pageViewModel.errorMessage.isNotEmpty()) {
@@ -92,7 +83,7 @@ fun LoginPageView(screenManagerViewModel: ScreenManagerViewModel = viewModel<Scr
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxSize().padding(top = topPadding, bottom = bottomPadding)
+        modifier = Modifier.fillMaxSize().systemBarsPadding()
     ) {
         SplashScreenView(
             modifier = Modifier.weight(1f)
@@ -132,7 +123,7 @@ fun LoginPageView(screenManagerViewModel: ScreenManagerViewModel = viewModel<Scr
         exit = slideOutHorizontally() + fadeOut(),
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = topPadding, bottom = bottomPadding)
+            .systemBarsPadding()
     ) {
         Column(
             modifier = Modifier

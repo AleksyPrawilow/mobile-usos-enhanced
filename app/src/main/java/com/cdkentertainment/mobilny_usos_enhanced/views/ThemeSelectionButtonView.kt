@@ -24,10 +24,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -39,10 +41,15 @@ import com.cdkentertainment.mobilny_usos_enhanced.UISingleton.color2
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton.color3
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton.color4
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton.textColor1
+import com.cdkentertainment.mobilny_usos_enhanced.UserDataSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.SettingsPageViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun ThemeSelectionButtonView(modifier: Modifier = Modifier) {
+    val coroutineScope: CoroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
     val settingsPageViewModel: SettingsPageViewModel = viewModel<SettingsPageViewModel>()
     val shape: RoundedCornerShape = remember { RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp) }
     var expanded by remember { mutableStateOf(false) }
@@ -133,6 +140,9 @@ fun ThemeSelectionButtonView(modifier: Modifier = Modifier) {
                             onClick = {
                                 expanded = false
                                 settingsPageViewModel.chooseTheme(theme)
+                                coroutineScope.launch {
+                                    UserDataSingleton.saveUserSettings(context)
+                                }
                             }
                         )
                     }

@@ -137,9 +137,10 @@ class AttendancePageViewModel: ViewModel() {
                 pinnedGroupedBySubject = lessongGroupModel.mergeGroupsBySubjects(pinnedGroups!!)
                 return@withContext true
             } catch (e: Exception) {
+                e.printStackTrace()
                 pinnedGroups = emptyList()
                 pinnedGroupedBySubject = emptyMap()
-                return@withContext false
+                return@withContext true
             }
         }
     }

@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -98,6 +99,7 @@ fun FloatingButtonView(
         Box(
             modifier = Modifier
                 .offset(x = x.dp * subButtonOffsetsRatios[index], y = y.dp * subButtonOffsetsRatios[index])
+                .systemBarsPadding()
                 .graphicsLayer(
                     transformOrigin = TransformOrigin.Center,
                     scaleX = subButtonOffsetsRatios[index] * if (screenManagerViewModel.selectedScreen.ordinal == index + 1) 1.15f else 1.0f,
@@ -127,6 +129,7 @@ fun FloatingButtonView(
             contentAlignment = Alignment.BottomCenter,
             modifier = Modifier
                 .offset(x = x.dp * subButtonOffsetsRatios[index], y = y.dp * subButtonOffsetsRatios[index] + 26.dp)
+                .systemBarsPadding()
                 .graphicsLayer(
                     transformOrigin = TransformOrigin.Center,
                     scaleX = subButtonOffsetsRatios[index] * if (screenManagerViewModel.selectedScreen.ordinal == index + 1) 1.15f else 1.0f,
@@ -167,7 +170,8 @@ fun FloatingButtonView(
             fabViewModel.changeExpanded(!fabViewModel.expanded)
         },
         modifier = Modifier
-            .padding(16.dp)
+            .systemBarsPadding()
+            .padding(start = 16.dp, end = 16.dp, bottom = 16.dp, top = 16.dp)
             .graphicsLayer(
                 scaleX = buttonScale,
                 scaleY = buttonScale,

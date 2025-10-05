@@ -6,12 +6,11 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -26,10 +25,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.R
@@ -48,13 +45,6 @@ fun ClassGroupsPageView() {
     val enterTransition: (Int) -> EnterTransition = UIHelper.slideEnterTransition
     var showElements: Boolean by rememberSaveable { mutableStateOf(false) }
     val coroutineScope: CoroutineScope = rememberCoroutineScope()
-    val density: Density = LocalDensity.current
-
-    val insets = WindowInsets.systemBars
-    val topInset = insets.getTop(density)
-    val bottomInset = insets.getBottom(density)
-    val topPadding = with(density) { topInset.toDp() }
-    val bottomPadding = with(density) { bottomInset.toDp() }
 
     val paddingModifier: Modifier = Modifier.padding(
         horizontal = UISingleton.horizontalPadding,
@@ -78,7 +68,7 @@ fun ClassGroupsPageView() {
         verticalArrangement = Arrangement.spacedBy(0.dp),
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = topPadding, bottom = bottomPadding)
+            .systemBarsPadding()
     ) {
         item {
             PageHeaderView(

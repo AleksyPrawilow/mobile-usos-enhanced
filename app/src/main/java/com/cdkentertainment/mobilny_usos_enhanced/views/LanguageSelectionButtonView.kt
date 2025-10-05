@@ -1,6 +1,8 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
+import android.app.Activity
 import android.content.Context
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,6 +37,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
@@ -42,10 +46,12 @@ import com.cdkentertainment.mobilny_usos_enhanced.UISingleton.color3
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton.textColor1
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton.textColor4
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.SettingsPageViewModel
+import kotlinx.coroutines.CoroutineScope
 
 @Composable
 fun LanguageSelectionButtonView(modifier: Modifier) {
     val settingsPageViewModel: SettingsPageViewModel = viewModel<SettingsPageViewModel>()
+    val coroutineScope: CoroutineScope = rememberCoroutineScope()
     val shape: RoundedCornerShape = remember { RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp) }
     var expanded by remember { mutableStateOf(false) }
     val context: Context = LocalContext.current
@@ -119,7 +125,12 @@ fun LanguageSelectionButtonView(modifier: Modifier) {
                             },
                             onClick = {
                                 expanded = false
-                                //TODO
+                                val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags(language.first)
+                                (context as? Activity)?.apply {
+                                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+                                }
+                                AppCompatDelegate.setApplicationLocales(appLocale)
+
                             }
                         )
                     }
