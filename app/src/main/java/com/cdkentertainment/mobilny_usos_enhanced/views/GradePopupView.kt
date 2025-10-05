@@ -160,7 +160,7 @@ fun GradePopupView(
                 ) {
                     if (viewModel.gradesDistribution.getOrDefault(grade.exam_id, null) != null)  {
                         GradeChart(
-                            gradeData = viewModel.gradesDistribution[grade.exam_id]!!,
+                            gradeData = viewModel.gradesDistribution[grade.exam_id] ?: emptyMap(),
                             modifier = Modifier
                                 .fillMaxWidth()
                         )

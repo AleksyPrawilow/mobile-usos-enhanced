@@ -32,17 +32,23 @@ class LessonGroupPageViewModel: ViewModel() {
     var lessonGroups: SeasonGroupsGroupedBySubject? by mutableStateOf(null)
         private set
     var groupDetails = mutableMapOf<String, GroupDetails>()
+    var loading: Boolean by mutableStateOf(false)
+    var loaded: Boolean by mutableStateOf(false)
+    var error: Boolean by mutableStateOf(false)
 
     private val model: LessonGroupPageModel = LessonGroupPageModel()
     private val gradesPageModel: GradesPageModel = GradesPageModel()
     var classtypeIdInfo: Map<String, SharedDataClasses.IdAndName>? by mutableStateOf(null)
 
     suspend fun fetchLessonGroups() {
+        classtypeIdInfo = UIHelper.classTypeIds
+        if (lessonGroups != null) {
+            return
+        }
         withContext(Dispatchers.IO) {
-            classtypeIdInfo = UIHelper.classTypeIds
-            if (lessonGroups != null) {
-                return@withContext
-            }
+            error = false
+            loaded = false
+            loading = true
             try {
                 lessonGroups = model.getLessonGroups()
                 for (seasonId in lessonGroups!!.groups.keys) {
@@ -58,8 +64,13 @@ class LessonGroupPageViewModel: ViewModel() {
                         }
                     }
                 }
+                loading = false
+                error = false
+                loaded = true
             } catch (e: Exception) {
-                // TODO: Add error handling
+                loading = false
+                loaded = false
+                error = true
                 return@withContext
             }
         }
@@ -67,12 +78,7 @@ class LessonGroupPageViewModel: ViewModel() {
 
     suspend fun fetchParticipants(groupNumber: String, courseUnitId: String): Participants? {
         return withContext(Dispatchers.IO) {
-            try {
-                return@withContext model.getParticipantOfGivenGroup(groupNumber, courseUnitId)
-            } catch (e: Exception) {
-                // TODO: Add error handling
-                return@withContext null
-            }
+            return@withContext model.getParticipantOfGivenGroup(groupNumber, courseUnitId)
         }
     }
 

@@ -2,7 +2,6 @@ package com.cdkentertainment.mobilny_usos_enhanced.models
 
 import com.cdkentertainment.mobilny_usos_enhanced.Lecturer
 import com.cdkentertainment.mobilny_usos_enhanced.LecturerData
-import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.PeopleSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.PeopleSingleton.lecturers
 import kotlinx.coroutines.Dispatchers
@@ -107,6 +106,8 @@ class LecturerRatesPageModel {
                             )
                         }
                     }
+                } else {
+                    throw(Exception("API Error"))
                 }
             } catch (e: Exception) {
                 e.printStackTrace()

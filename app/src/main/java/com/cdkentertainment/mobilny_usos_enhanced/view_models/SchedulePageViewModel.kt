@@ -41,6 +41,9 @@ class SchedulePageViewModel: ViewModel() {
     var schedule: Schedule? by mutableStateOf(null)
         private set
     var groupedByHours: Map<Int, List<Lesson>> = mutableStateMapOf<Int, List<Lesson>>()
+    var loading: Boolean by mutableStateOf(false)
+    var error: Boolean by mutableStateOf(false)
+    var loaded: Boolean by mutableStateOf(false)
     private val model: SchedulePageModel = SchedulePageModel()
 
     fun selectWeekOption(weekOptionIndex: Int) {
@@ -75,21 +78,25 @@ class SchedulePageViewModel: ViewModel() {
         }
     }
 
-    suspend fun fetchTodaysActivities() {
-        withContext(Dispatchers.IO) {
-            if (schedule != null) {
-                return@withContext
-            }
-            schedule = model.getSingleDaySchedule(LocalDate.now())
-        }
-    }
-
     suspend fun fetchWeekData(date: LocalDate) {
         withContext(Dispatchers.IO) {
             if (schedule != null) {
                 return@withContext
             }
-            schedule = model.getWeekSchedule(date)
+            loading = true
+            error = false
+            loaded = false
+            try {
+                schedule = model.getWeekSchedule(date)
+                loaded = true
+                loading = false
+                error = false
+            } catch (e: Exception) {
+                e.printStackTrace()
+                loading = false
+                loaded = false
+                error = true
+            }
         }
     }
 }

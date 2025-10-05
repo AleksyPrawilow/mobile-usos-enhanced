@@ -1,10 +1,8 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
@@ -30,16 +28,13 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.models.Test
-import com.cdkentertainment.mobilny_usos_enhanced.view_models.Screens
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.TestsPageViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -54,10 +49,18 @@ fun TestsPageView() {
     val testsPageViewModel: TestsPageViewModel = viewModel<TestsPageViewModel>()
     val listState: LazyListState = rememberLazyListState()
     var showElements: Boolean by rememberSaveable { mutableStateOf(false) }
+
+    val onStart: () -> Unit = {
+        coroutineScope.launch {
+            showElements = false
+            testsPageViewModel.fetchTests()
+            delay(150)
+            showElements = true
+        }
+    }
+
     LaunchedEffect(Unit) {
-        testsPageViewModel.fetchTests()
-        delay(150)
-        showElements = true
+        onStart()
     }
 
     val insets = WindowInsets.systemBars
@@ -65,17 +68,18 @@ fun TestsPageView() {
     val bottomInset = insets.getBottom(density)
     val topPadding = with(density) { topInset.toDp() }
     val bottomPadding = with(density) { bottomInset.toDp() }
-    val paddingModifier: Modifier = Modifier.padding(horizontal = UISingleton.horizontalPadding, vertical = 8.dp)
+
+    val paddingModifier: Modifier = Modifier.padding(
+        horizontal = UISingleton.horizontalPadding,
+        vertical = 8.dp
+    )
 
     LazyColumn(
         state = listState,
         verticalArrangement = Arrangement.spacedBy(0.dp),
         modifier = Modifier
             .fillMaxSize()
-            .padding(
-                top = topPadding,
-                bottom = bottomPadding
-            )
+            .padding(top = topPadding, bottom = bottomPadding)
     ) {
         item {
             PageHeaderView(
@@ -83,41 +87,81 @@ fun TestsPageView() {
                 icon = ImageVector.vectorResource(R.drawable.rounded_assignment_24)
             )
         }
+
+        item { Spacer(modifier = Modifier.height(8.dp)) }
+
         item {
-            Spacer(modifier = Modifier.height(8.dp))
-        }
-        item {
-            AnimatedVisibility(testsPageViewModel.tests == null, modifier = paddingModifier) {
+            AnimatedVisibility(
+                visible = testsPageViewModel.loading,
+                modifier = paddingModifier
+            ) {
                 Box(modifier = Modifier.fillMaxSize()) {
-                    CircularProgressIndicator(color = UISingleton.textColor2, modifier = Modifier.align(Alignment.Center))
+                    CircularProgressIndicator(
+                        color = UISingleton.textColor2,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
                 }
             }
         }
+
+        item {
+            AnimatedVisibility(
+                visible = testsPageViewModel.error && showElements,
+                enter = enterTransition(1)
+            ) {
+                TextAndIconCardView(
+                    stringResource(R.string.failed_to_fetch),
+                    paddingModifier
+                ) {
+                    onStart()
+                }
+            }
+        }
+
         var currentIndex: Int = 2
         if (testsPageViewModel.tests != null) {
             for (semester in testsPageViewModel.tests!!.tests.keys.reversed()) {
                 currentIndex++
-                val semesterTests: Map<String, Test>? = testsPageViewModel.tests!!.tests[semester]
+                val semesterTests: Map<String, Test>? = testsPageViewModel.tests?.tests[semester]
+
                 stickyHeader {
                     AnimatedVisibility(
-                        showElements,
+                        visible = showElements && testsPageViewModel.loaded,
                         enter = enterTransition(1)
                     ) {
-                        SemesterCardView(semester, modifier = paddingModifier)
+                        SemesterCardView(
+                            semester,
+                            modifier = paddingModifier
+                        )
                     }
                 }
+
                 if (semesterTests != null) {
                     val keys: List<String> = semesterTests.keys.toList()
+
                     for (index in 0 until semesterTests.keys.size) {
                         currentIndex++
                         val captureIndex: Int = currentIndex
                         val test: Test? = semesterTests[keys[index]]
+
                         if (test != null) {
                             item {
-                                AnimatedVisibility(showElements, enter = enterTransition(2 + index)) {
-                                    TestCardView(semesterTests[keys[index]]!!, modifier = paddingModifier) {
-                                        coroutineScope.launch {
-                                            listState.animateScrollToItem(index = captureIndex, with(density) { -96.dp.toPx() }.toInt())
+                                AnimatedVisibility(
+                                    visible = showElements && testsPageViewModel.loaded,
+                                    enter = enterTransition(2 + index)
+                                ) {
+                                    val data: Test? = semesterTests[keys[index]]
+                                    if (data != null) {
+                                        TestCardView(
+                                            data,
+                                            modifier = paddingModifier
+                                        ) {
+                                            coroutineScope.launch {
+                                                listState.animateScrollToItem(
+                                                    index = captureIndex,
+                                                    scrollOffset = with(density) { -96.dp.toPx() }.toInt()
+                                                )
+                                            }
                                         }
                                     }
                                 }
@@ -125,32 +169,11 @@ fun TestsPageView() {
                         }
                     }
                 }
-                item {
-                    Spacer(modifier = Modifier.height(24.dp))
-                }
-            }
-        }
-        item {
-            Spacer(modifier = Modifier.height(64.dp))
-        }
-    }
-}
 
-@Preview(showBackground = true)
-@Composable
-fun TestsPagePreview() {
-    OAuthSingleton.setTestAccessToken()
-    val currentScreen: Screens = Screens.TESTS
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(UISingleton.color1)
-            .padding(12.dp)
-    ) {
-        AnimatedContent(targetState = currentScreen) { target ->
-            if (currentScreen == target) {
-                TestsPageView()
+                item { Spacer(modifier = Modifier.height(24.dp)) }
             }
         }
+
+        item { Spacer(modifier = Modifier.height(64.dp)) }
     }
 }

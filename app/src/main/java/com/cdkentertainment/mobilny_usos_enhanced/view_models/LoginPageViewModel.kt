@@ -5,12 +5,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton.service
+import androidx.lifecycle.viewModelScope
 import com.cdkentertainment.mobilny_usos_enhanced.getLocalized
-import com.cdkentertainment.mobilny_usos_enhanced.models.BackendDataSender
 import com.cdkentertainment.mobilny_usos_enhanced.models.OAuthModel
 import com.cdkentertainment.mobilny_usos_enhanced.models.SharedDataClasses
 import com.github.scribejava.core.model.OAuth1RequestToken
+import kotlinx.coroutines.launch
 
 class LoginPageViewModel: ViewModel() {
     enum class LoginState {
@@ -27,8 +27,10 @@ class LoginPageViewModel: ViewModel() {
     var requestToken: OAuth1RequestToken? = null
     val model: OAuthModel = OAuthModel()
 
-    suspend fun tryAutoLogin(context: Context) {
-        loginState = model.tryUsosAutoLogin(context)
+    fun tryAutoLogin(context: Context) {
+        viewModelScope.launch {
+            loginState = model.tryUsosAutoLogin(context)
+        }
     }
 
     suspend fun authorize(context: Context) {

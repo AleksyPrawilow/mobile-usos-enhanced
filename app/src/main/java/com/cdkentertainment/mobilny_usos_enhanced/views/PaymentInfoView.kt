@@ -43,7 +43,7 @@ fun PaymentInfoView(data: Payment) {
                 .padding(12.dp)
         ) {
             Text(
-                text = if (data.state == "paid") "Zapłacona w całości" else "Niezapłacona",
+                text = if (data.state == "paid") stringResource(R.string.paid) else stringResource(R.string.unpaid),
                 style = MaterialTheme.typography.titleMedium,
                 color = UISingleton.textColor1,
                 textAlign = TextAlign.Start,
@@ -62,13 +62,13 @@ fun PaymentInfoView(data: Payment) {
         }
         if (data.state == "unpaid") {
             GradeCardView(
-                courseName = "Do zapłaty",
+                courseName = stringResource(R.string.to_pay),
                 grade = "${"%.2f".format(data.total_amount - data.saldo_amount)} zł",
                 showArrow = false,
                 backgroundColor = UISingleton.color2
             )
             GradeCardView(
-                courseName = "Termin płatności",
+                courseName = stringResource(R.string.payment_deadline),
                 grade = data.payment_deadline,
                 showArrow = false,
                 backgroundColor = UISingleton.color2

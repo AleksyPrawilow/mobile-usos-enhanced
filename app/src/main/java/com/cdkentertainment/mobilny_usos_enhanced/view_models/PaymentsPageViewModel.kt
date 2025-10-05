@@ -5,25 +5,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.models.Payment
 import com.cdkentertainment.mobilny_usos_enhanced.models.PaymentsPageModel
-import com.cdkentertainment.mobilny_usos_enhanced.models.prettyPrint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-
-fun main(): Unit = runBlocking{
-    OAuthSingleton.setTestAccessToken()
-    launch {
-        val model = PaymentsPageModel()
-        val payments: List<Payment> = model.getAllPayments()
-
-        val filtered: List<Payment> = payments.filter { it.state == "unpaid" }
-        println(filtered.prettyPrint())
-    }
-}
 
 class PaymentsPageViewModel: ViewModel() {
     var loading: Boolean by mutableStateOf(false)
@@ -41,6 +27,7 @@ class PaymentsPageViewModel: ViewModel() {
             loaded = true
             return
         }
+        if (loading) return
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 loading = true
