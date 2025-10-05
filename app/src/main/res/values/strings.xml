@@ -81,4 +81,5 @@
     <string name="failed_to_sign_in">Failed to sign in.</string>
     <string name="student_number">Student number:</string>
     <string name="delete_rating_confirm">Are you sure you want to delete your rate?</string>
+    <string name="cancel">Cancel</string>
 </resources>

@@ -82,4 +82,5 @@
     <string name="failed_to_sign_in">Nie udało się zalogować.</string>
     <string name="student_number">Nr. indeksu:</string>
     <string name="delete_rating_confirm">Czy na pewno chcesz usunąć swoją ocenę?</string>
+    <string name="cancel">Anuluj</string>
 </resources>

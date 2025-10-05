@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Refresh
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -39,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.cdkentertainment.mobilny_usos_enhanced.Lecturer
 import com.cdkentertainment.mobilny_usos_enhanced.PeopleSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
@@ -63,7 +65,9 @@ fun ActivityInfoPopupView(
     var lecturersFetched: Boolean by rememberSaveable { mutableStateOf(false) }
     var lecturersFetchError: Boolean by rememberSaveable { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
+    val loadLecturersInfo: () -> Unit = {
+        lecturersFetched = false
+        lecturersFetchError = false
         lecturersViewModel.getLecturersRatings(
             lecturerIds = data.lecturer_ids.map { it.toString() },
             onSuccess = {
@@ -75,6 +79,10 @@ fun ActivityInfoPopupView(
                 lecturersFetched = false
             }
         )
+    }
+
+    LaunchedEffect(Unit) {
+        loadLecturersInfo()
     }
 
     Dialog(
@@ -117,13 +125,27 @@ fun ActivityInfoPopupView(
                     GroupedContentContainerView(
                         title = stringResource(R.string.lecturers),
                         backgroundColor = UISingleton.color1,
-                        modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 12.dp, bottom = 0.dp)
+                        modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 12.dp)
                     ) {
                         for (lecturer in data.lecturer_ids) {
-                            GroupLecturerCardView(
-                                lecturer = PeopleSingleton.lecturers[lecturer.toString()]!!
-                            )
+                            val lecturerData: Lecturer? = PeopleSingleton.lecturers[lecturer.toString()]
+                            if (lecturerData != null) {
+                                GroupLecturerCardView(
+                                    lecturer = PeopleSingleton.lecturers[lecturer.toString()]!!
+                                )
+                            }
                         }
+                    }
+                }
+                AnimatedVisibility(
+                    visible = !lecturersFetched && !lecturersFetchError,
+                    enter = UIHelper.slideEnterTransition(1)
+                ) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxWidth().padding(12.dp)
+                    ) {
+                        CircularProgressIndicator(color = UISingleton.textColor2)
                     }
                 }
                 AnimatedVisibility(
@@ -135,7 +157,11 @@ fun ActivityInfoPopupView(
                         icon = Icons.Rounded.Refresh,
                         iconSize = 40.dp,
                         iconPadding = 6.dp,
-                    )
+                        backgroundColor = UISingleton.color1,
+                        modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 12.dp)
+                    ) {
+                        loadLecturersInfo()
+                    }
                 }
                 GroupedContentContainerView(
                     title = stringResource(R.string.information),
