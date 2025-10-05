@@ -43,8 +43,8 @@ class AttendancePageModel {
     public suspend fun getGivenSubjectAttendanceDates(courseUnitId: String, groupNumber: String): List<AttendanceDatesObject> {
         return withContext(Dispatchers.IO) {
             val response: BackendDataSender.BackendResponse = BackendDataSender.get("$attendanceUrl?courseUnitId=$courseUnitId&groupNumber=$groupNumber")
-            if (response.statusCode == 200) {
-                val responseString = response.body
+            if (response.statusCode == 200 && response.body != null) {
+                val responseString = response.body!!
                 val dates: List<AttendanceDatesObject> = parseAttendanceDates(responseString)
                 return@withContext dates
             } else {

@@ -20,8 +20,8 @@ class TestsPageModel {
     public suspend fun getAllTests(): TestsContainer {
         return withContext(Dispatchers.IO) {
             val response: BackendDataSender.BackendResponse = BackendDataSender.get(allTestsUrl)
-            if (response.statusCode == 200) {
-                val responseString: String = response.body
+            if (response.statusCode == 200 && response.body != null) {
+                val responseString: String = response.body!!
                 val parsedParticipantsTests: TestsContainer = parser.decodeFromString<TestsContainer>(responseString)
                 return@withContext parsedParticipantsTests
             } else {
@@ -32,8 +32,8 @@ class TestsPageModel {
     public suspend fun getSingleTestInfo(nodeId: Int): SubjectTestContainer {
         return withContext(Dispatchers.IO) {
             val response: BackendDataSender.BackendResponse = BackendDataSender.get("$singleSubjectUrl?id=$nodeId")
-            if (response.statusCode == 200) {
-                val parsedTests: SubjectTestContainer = parser.decodeFromString<SubjectTestContainer>(response.body)
+            if (response.statusCode == 200 && response.body != null) {
+                val parsedTests: SubjectTestContainer = parser.decodeFromString<SubjectTestContainer>(response.body!!)
                 return@withContext parsedTests
             } else {
                 throw(Exception("API Error"))
