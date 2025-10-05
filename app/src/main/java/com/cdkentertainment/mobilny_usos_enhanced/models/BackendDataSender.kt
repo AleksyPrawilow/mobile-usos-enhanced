@@ -23,9 +23,13 @@ object BackendDataSender {
     )
 
     private fun sendRequestToBackend(request: Request): BackendResponse {
-        val apiCall = client.newCall(request).execute()
-        val response = BackendResponse(apiCall.code, apiCall.body?.toString())
-        return response
+        var code: Int = 0
+        var body: String? = null
+        val apiCall = client.newCall(request).execute().use { response ->
+            code = response.code
+            body = response.body.toString()
+        }
+        return BackendResponse(code, body)
     }
     public fun setAuthHeader(accessToken: String) {
         authHeader = "Bearer $accessToken"
