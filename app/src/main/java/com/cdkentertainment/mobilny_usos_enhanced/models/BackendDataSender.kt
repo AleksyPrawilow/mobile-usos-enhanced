@@ -12,11 +12,9 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import java.util.Base64
 
 object BackendDataSender {
-    private val developmentLogin: String = "admin"
-    private val developmentPassword: String = "temp1234"
     private val developmentUrl: String = "http://10.0.2.2:8080"
     private val client = OkHttpClient()
-    private val authHeader = "Basic " + Base64.getEncoder().encodeToString("$developmentLogin:$developmentPassword".toByteArray())
+    private var authHeader: String? = null
     private val parser: Json = Json { ignoreUnknownKeys = true }
     private val mediaType =  "application/json; charset=utf-8".toMediaType()
     var oAuth1AccessToken: OAuth1AccessToken? = null
@@ -25,12 +23,15 @@ object BackendDataSender {
         var body: String
     )
 
+    public fun setAuthHeader(accessToken: String) {
+        authHeader = "Bearer $accessToken"
+    }
+
     public suspend fun getWithAuthHeaders(requestUrl: String, pin: String, token: String, tokenSecret: String): BackendResponse {
         return withContext(Dispatchers.IO) {
             val requestUrl = "$developmentUrl/$requestUrl"
             val request = Request.Builder()
                 .url(requestUrl)
-                .header("Authorization", authHeader)
                 .header("pin", pin)
                 .header("token", token)
                 .header("tokenSecret", tokenSecret)
@@ -52,7 +53,7 @@ object BackendDataSender {
              val requestUrl = "$developmentUrl/$requestUrl"
             val request = Request.Builder()
                 .url(requestUrl)
-                .header("Authorization", authHeader)
+                .header("Authorization", authHeader?: "")
                 .header("OAuth-Key", oAuth1AccessToken?.token ?: "")
                 .header("OAuth-Secret", oAuth1AccessToken?.tokenSecret ?: "")
                 .build()
@@ -76,7 +77,7 @@ object BackendDataSender {
 
             val request = Request.Builder()
                 .url(requestUrl)
-                .header("Authorization", authHeader)
+                .header("Authorization", authHeader?: "")
                 .header("OAuth-Key", oAuth1AccessToken?.token ?: "")
                 .header("OAuth-Secret", oAuth1AccessToken?.tokenSecret ?: "")
                 .post(requestBody)
@@ -98,7 +99,7 @@ object BackendDataSender {
 
             val request = Request.Builder()
                 .url(requestUrl)
-                .header("Authorization", authHeader)
+                .header("Authorization", authHeader?: "")
                 .post(requestBody)
                 .build()
             val resp = BackendResponse(0, "")
