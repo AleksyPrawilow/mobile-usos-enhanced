@@ -20,8 +20,8 @@ class LessonGroupPageModel {
     public suspend fun getLessonGroups(): SeasonGroupsGroupedBySubject {
         return withContext(Dispatchers.IO) {
             val response: BackendDataSender.BackendResponse = BackendDataSender.get(requestUrl)
-            if (response.statusCode == 200) {
-                val parsedLessonGroups: SeasonGroupsGroupedBySubject = parser.decodeFromString<SeasonGroupsGroupedBySubject>(response.body)
+            if (response.statusCode == 200 && response.body != null) {
+                val parsedLessonGroups: SeasonGroupsGroupedBySubject = parser.decodeFromString<SeasonGroupsGroupedBySubject>(response.body!!)
                 return@withContext parsedLessonGroups
             } else {
                 throw(Exception("API Error"))
@@ -32,8 +32,8 @@ class LessonGroupPageModel {
        return withContext(Dispatchers.IO) {
            val apiRequest: String = "$participantUrl?courseUnitId=$courseUnitId&groupNumber=$groupNumber"
            val response: BackendDataSender.BackendResponse = BackendDataSender.get(apiRequest)
-           if (response.statusCode == 200) {
-               val parsedLessonGroups: Participants = parser.decodeFromString<Participants>(response.body)
+           if (response.statusCode == 200 && response.body != null) {
+               val parsedLessonGroups: Participants = parser.decodeFromString<Participants>(response.body!!)
                return@withContext parsedLessonGroups
            } else {
                throw (Exception("API Error"))

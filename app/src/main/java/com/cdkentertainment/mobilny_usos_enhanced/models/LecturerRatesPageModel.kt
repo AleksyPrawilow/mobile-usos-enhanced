@@ -22,8 +22,8 @@ class LecturerRatesPageModel {
     public suspend fun getUserRates(userId: Int): List<UserRate> {
         return withContext(Dispatchers.IO) {
             val response: BackendDataSender.BackendResponse = BackendDataSender.get("$userRateUrl?userId=$userId&universityId=1")
-            if (response.statusCode == 200) {
-                val parsedResponse: List<UserRate> = parser.decodeFromString<List<UserRate>>(response.body)
+            if (response.statusCode == 200 && response.body != null) {
+                val parsedResponse: List<UserRate> = parser.decodeFromString<List<UserRate>>(response.body!!)
                 return@withContext parsedResponse
             } else {
                 throw(Exception("API Error"))
@@ -44,8 +44,8 @@ class LecturerRatesPageModel {
     public suspend fun getLecturerAvgRates(lecturerId: Int) : LecturerAvgRates? {
         return withContext(Dispatchers.IO) {
             val response: BackendDataSender.BackendResponse = BackendDataSender.get("$lecturerRateUrl?lecturerId=$lecturerId&universityId=1") //TEMPORARY
-            if (response.statusCode == 200 && response.body != "") {
-                val parsedResponse: LecturerAvgRates = parser.decodeFromString<LecturerAvgRates>(response.body)
+            if (response.statusCode == 200 && response.body != null) {
+                val parsedResponse: LecturerAvgRates = parser.decodeFromString<LecturerAvgRates>(response.body!!)
                 return@withContext parsedResponse
             } else if (response.body == "") {
                 return@withContext null
@@ -58,8 +58,8 @@ class LecturerRatesPageModel {
         return withContext(Dispatchers.IO) {
             val start = offset * pageSize
             val response: BackendDataSender.BackendResponse = BackendDataSender.get("$staffUrl?facultyId=$facultyId&start=$start&pageSize=$pageSize")
-            if(response.statusCode == 200 && response.body != "") {
-                val parsedResponse: LecturersIndex = parser.decodeFromString<LecturersIndex>(response.body)
+            if(response.statusCode == 200 && response.body != null) {
+                val parsedResponse: LecturersIndex = parser.decodeFromString<LecturersIndex>(response.body!!)
                 return@withContext parsedResponse
             } else {
                 throw(Exception("API Error"))
@@ -72,8 +72,8 @@ class LecturerRatesPageModel {
                 val json = parser.encodeToString<List<String>>(lecturerIds)
                 val response: BackendDataSender.BackendResponse = BackendDataSender.postHeaders(usersInfoUrl, json)
                 print(response.body)
-                if (response.statusCode == 200 && response.body != "") {
-                    val lecturersInfo: List<LecturerData> = parser.decodeFromString<List<LecturerData>>(response.body)
+                if (response.statusCode == 200 && response.body != null) {
+                    val lecturersInfo: List<LecturerData> = parser.decodeFromString<List<LecturerData>>(response.body!!)
                     for (lecturer in lecturersInfo) {
                         val lecturerRating: LecturerAvgRates? = getLecturerAvgRates(lecturer.id.toInt())
                         if (lecturerRating == null) {
@@ -149,8 +149,8 @@ class LecturerRatesPageModel {
     public suspend fun queryLecturersSearch(query: String, start: Int): SearchedLecturers {
         return withContext(Dispatchers.IO) {
             val response: BackendDataSender.BackendResponse = BackendDataSender.get("$searchUserUrl?query=$query&start=$start")
-            if (response.statusCode == 200) {
-                val parsedResponse: SearchedLecturers = parser.decodeFromString<SearchedLecturers>(response.body)
+            if (response.statusCode == 200 && response.body != null) {
+                val parsedResponse: SearchedLecturers = parser.decodeFromString<SearchedLecturers>(response.body!!)
                 return@withContext parsedResponse
             } else {
                 throw(Exception("API Error"))
