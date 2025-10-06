@@ -15,8 +15,8 @@ class GradesPageModel {
     public suspend fun fetchUserGrades(seasonId: String) : Season{
         return withContext(Dispatchers.IO) {
             val response: BackendDataSender.BackendResponse = BackendDataSender.get("$gradesUrl?seasonId=$seasonId")
-            if (response.statusCode == 200) {
-                val responseString: String = response.body
+            if (response.statusCode == 200 && response.body != null) {
+                val responseString: String = response.body!!
                 val parsedGrades: Season = parser.decodeFromString<Season>(responseString)
                 return@withContext parsedGrades
             } else {
@@ -27,8 +27,8 @@ class GradesPageModel {
     public suspend fun getGivenExamGradesDistribution(examId: Int): GradesDistribution {
         return withContext(Dispatchers.IO) {
             val response: BackendDataSender.BackendResponse = BackendDataSender.get("$gradesUrl/$examDistributionUrl?id=$examId")
-            if (response.statusCode == 200) {
-                val responseString: String = response.body
+            if (response.statusCode == 200 && response.body != null) {
+                val responseString: String = response.body!!
                 val parsedExamDistribution: GradesDistribution = parser.decodeFromString<GradesDistribution>(responseString)
                 return@withContext parsedExamDistribution
             } else {

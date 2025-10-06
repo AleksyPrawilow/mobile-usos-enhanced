@@ -9,23 +9,44 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import java.util.Base64
 
 object BackendDataSender {
     private val developmentUrl: String = "http://10.0.2.2:8080"
     private val client = OkHttpClient()
     private var authHeader: String? = null
-    private val parser: Json = Json { ignoreUnknownKeys = true }
     private val mediaType =  "application/json; charset=utf-8".toMediaType()
     var oAuth1AccessToken: OAuth1AccessToken? = null
     public data class BackendResponse (
         var statusCode: Int,
-        var body: String
+        var body: String?
     )
 
+    private fun sendRequestToBackend(request: Request): BackendResponse {
+        var code: Int = 0
+        var body: String? = null
+        val apiCall = client.newCall(request).execute().use { response ->
+            code = response.code
+            body = response.body?.string()
+        }
+        if (body.isNullOrEmpty()) {
+            body = null
+        }
+        return BackendResponse(code, body)
+    }
     public fun setAuthHeader(accessToken: String) {
         authHeader = "Bearer $accessToken"
     }
 
+    public suspend fun getWithoutHeaders(requestUrl: String): BackendResponse {
+        return withContext(Dispatchers.IO) {
+            val requestUrl = "$developmentUrl/$requestUrl"
+            val request = Request.Builder()
+                .url(requestUrl)
+                .build()
+            return@withContext sendRequestToBackend(request)
+        }
+    }
     public suspend fun getWithAuthHeaders(requestUrl: String, pin: String, token: String, tokenSecret: String): BackendResponse {
         return withContext(Dispatchers.IO) {
             val requestUrl = "$developmentUrl/$requestUrl"
@@ -36,77 +57,69 @@ object BackendDataSender {
                 .header("tokenSecret", tokenSecret)
                 .build()
 
-            val resp = BackendResponse(0, "")
-            client.newCall(request).execute().use { response ->
-                println(response)
-                resp.body = response.body?.string() ?: ""
-                resp.statusCode = response.code
-            }
-
-            return@withContext resp
+            return@withContext sendRequestToBackend(request)
         }
     }
 
     public suspend fun get(requestUrl: String): BackendResponse  {
         return withContext(Dispatchers.IO) {
-             val requestUrl = "$developmentUrl/$requestUrl"
-            val request = Request.Builder()
-                .url(requestUrl)
-                .header("Authorization", authHeader?: "")
-                .header("OAuth-Key", oAuth1AccessToken?.token ?: "")
-                .header("OAuth-Secret", oAuth1AccessToken?.tokenSecret ?: "")
-                .build()
+            if (authHeader != null && oAuth1AccessToken != null) {
+                val requestUrl = "$developmentUrl/$requestUrl"
+                val accessToken = oAuth1AccessToken!!.token
+                val accessSecret = oAuth1AccessToken!!.tokenSecret
 
-            val resp = BackendResponse(0, "")
-            client.newCall(request).execute().use { response ->
-                println(response)
-                resp.body = response.body?.string() ?: ""
-                resp.statusCode = response.code
+                val request = Request.Builder()
+                    .url(requestUrl)
+                    .header("Authorization", authHeader!!)
+                    .header("OAuth-Key", accessToken)
+                    .header("OAuth-Secret", accessSecret)
+                    .build()
+
+                return@withContext sendRequestToBackend(request)
+            } else {
+                throw(IllegalStateException("Missing Authentication"))
             }
-
-            return@withContext resp
         }
     }
 
     public suspend fun postHeaders(requestUrl: String, json: String): BackendResponse {
         return withContext(Dispatchers.IO) {
-            val requestUrl = "$developmentUrl/$requestUrl"
-            val requestBody = json.toRequestBody(mediaType)
+            if (oAuth1AccessToken != null && authHeader != null) {
+                val requestUrl = "$developmentUrl/$requestUrl"
+                val accessToken = oAuth1AccessToken!!.token
+                val accessSecret = oAuth1AccessToken!!.tokenSecret
+                val requestBody = json.toRequestBody(mediaType)
 
-            val request = Request.Builder()
-                .url(requestUrl)
-                .header("Authorization", authHeader?: "")
-                .header("OAuth-Key", oAuth1AccessToken?.token ?: "")
-                .header("OAuth-Secret", oAuth1AccessToken?.tokenSecret ?: "")
-                .post(requestBody)
-                .build()
-            val resp = BackendResponse(0, "")
-            client.newCall(request).execute().use { response ->
-                resp.body = response.body?.string() ?: ""
-                resp.statusCode = response.code
+                val request = Request.Builder()
+                    .url(requestUrl)
+                    .header("Authorization", authHeader?: "")
+                    .header("OAuth-Key", accessToken)
+                    .header("OAuth-Secret", accessSecret)
+                    .post(requestBody)
+                    .build()
+
+                return@withContext sendRequestToBackend(request)
+            } else {
+                throw(IllegalStateException("Missing authentication"))
             }
-
-            return@withContext resp
         }
     }
 
     public suspend fun post(requestUrl: String, json: String): BackendResponse {
         return withContext(Dispatchers.IO){
-            val requestUrl = "$developmentUrl/$requestUrl"
-            val requestBody = json.toRequestBody(mediaType)
+            if (authHeader != null) {
+                val requestUrl = "$developmentUrl/$requestUrl"
+                val requestBody = json.toRequestBody(mediaType)
+                val request = Request.Builder()
+                    .url(requestUrl)
+                    .header("Authorization", authHeader!!)
+                    .post(requestBody)
+                    .build()
 
-            val request = Request.Builder()
-                .url(requestUrl)
-                .header("Authorization", authHeader?: "")
-                .post(requestBody)
-                .build()
-            val resp = BackendResponse(0, "")
-            client.newCall(request).execute().use {response ->
-                resp.body = response.body?.string() ?: ""
-                resp.statusCode = response.code
+                return@withContext sendRequestToBackend(request)
+            } else {
+                throw(IllegalStateException("Missing authentication"))
             }
-
-            return@withContext resp
         }
     }
 }

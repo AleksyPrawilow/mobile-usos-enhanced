@@ -77,11 +77,15 @@ class OAuthModel {
     }
     public suspend fun getRequestToken(): UrlAndToken {
         return withContext(Dispatchers.IO) {
-            val response: BackendDataSender.BackendResponse = BackendDataSender.get(tokenAndUrl)
-            if (response.statusCode == 200) {
-                val parsedResponse: UrlAndToken = parser.decodeFromString<UrlAndToken>(response.body)
+            val response: BackendDataSender.BackendResponse = BackendDataSender.getWithoutHeaders(tokenAndUrl)
+            if (response.statusCode == 200 && response.body != null) {
+                println("parsing")
+                println(response.body)
+                val parsedResponse: UrlAndToken = parser.decodeFromString<UrlAndToken>(response.body!!)
+                println(parsedResponse.token)
                 return@withContext parsedResponse
             } else {
+                println("error")
                 throw(Exception("API Login Error"))
             }
         }
@@ -89,8 +93,8 @@ class OAuthModel {
     public suspend fun getAccessToken(pin: String, requestToken: String, tokenSecret: String, context: Context): OAuth1AccessToken {
         return withContext(Dispatchers.IO) {
             val result: BackendDataSender.BackendResponse = BackendDataSender.getWithAuthHeaders(finalTokensUrl, pin, requestToken, tokenSecret)
-            if (result.statusCode == 200) {
-                val parsedLoginData: TokenSet = parser.decodeFromString<TokenSet>(result.body)
+            if (result.statusCode == 200  && result.body != null) {
+                val parsedLoginData: TokenSet = parser.decodeFromString<TokenSet>(result.body!!)
                 val oAuthToken = OAuth1AccessToken(parsedLoginData.usosToken, parsedLoginData.usosTokenSecret)
                 BackendDataSender.oAuth1AccessToken = oAuthToken
                 BackendDataSender.setAuthHeader(parsedLoginData.backendToken)
@@ -107,8 +111,8 @@ class OAuthModel {
             UserDataSingleton.userFaculties = UserDataSingleton.getUserFaculties(UserDataSingleton.userData!!)
             val termsResponse: BackendDataSender.BackendResponse = BackendDataSender.get("Grades/TermIds")
             if (UIHelper.termIds.isEmpty()) {
-                if (termsResponse.statusCode == 200) {
-                    val responseString: String = termsResponse.body
+                if (termsResponse.statusCode == 200 && termsResponse.body != null) {
+                    val responseString: String = termsResponse.body!!
                     val parsedResponse: List<String> = parser.decodeFromString<List<String>>(responseString)
                     UIHelper.termIds = parsedResponse
                 } else {
@@ -117,8 +121,8 @@ class OAuthModel {
             }
             if (UIHelper.classTypeIds.isEmpty()) {
                 val classTypesResponse: BackendDataSender.BackendResponse = BackendDataSender.get("Grades/ClassTypeIds")
-                if (classTypesResponse.statusCode == 200) {
-                    val responseString: String = classTypesResponse.body
+                if (classTypesResponse.statusCode == 200  && classTypesResponse.body != null) {
+                    val responseString: String = classTypesResponse.body!!
                     val parsedResponse: Map<String, SharedDataClasses.IdAndName> = parser.decodeFromString<Map<String, SharedDataClasses.IdAndName>>(responseString)
                     UIHelper.classTypeIds = parsedResponse
                 } else {
