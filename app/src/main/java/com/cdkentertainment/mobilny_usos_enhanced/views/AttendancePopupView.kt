@@ -1,11 +1,10 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
 import android.content.Context
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Done
+import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -41,12 +42,19 @@ import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.getLocalized
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.AttendancePageViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun AttendancePopupView(
     onDismissRequest: () -> Unit,
     onRemovePin: () -> Unit
 ) {
+    var error: Boolean by rememberSaveable { mutableStateOf(false) }
+    var loading: Boolean by rememberSaveable { mutableStateOf(false) }
+    var loaded: Boolean by rememberSaveable { mutableStateOf(false) }
+    val coroutineScope: CoroutineScope = rememberCoroutineScope()
     val viewModel: AttendancePageViewModel = viewModel<AttendancePageViewModel>()
     val context: Context = LocalContext.current
     val classType: String? = viewModel.popupData?.classGroupData?.class_type_id
@@ -65,8 +73,30 @@ fun AttendancePopupView(
         )
     }
 
-    LaunchedEffect(Unit) {
+    val loadAttendanceDates: () -> Unit = {
+        coroutineScope.launch {
+            if (loaded) {
+                return@launch
+            }
+            loading = true
+            loaded = false
+            error = false
+            try {
+                delay(1000)
+                //todo loading
+                error = false
+                loading = false
+                loaded = true
+            } catch (e: Exception) {
+                error = true
+                loaded = false
+                loading = false
+            }
+        }
+    }
 
+    LaunchedEffect(Unit) {
+        loadAttendanceDates()
     }
 
     Dialog(
@@ -117,16 +147,62 @@ fun AttendancePopupView(
                     ) {
                         AttendanceStatCardView(stringResource(R.string.frequency), "100%")
                         AttendanceStatCardView(stringResource(R.string.absences), "0")
-                        TextAndIconCardView(
-                            title = "All meetings are up to date",
-                            icon = Icons.Rounded.Done,
-                            backgroundColor = UISingleton.color2,
-                            showArrow = false,
-                            elevation = 0.dp
-                        )
+                        AnimatedVisibility(
+                            visible = loading,
+                            enter = UIHelper.slideEnterTransition(1)
+                        ) {
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier.fillMaxWidth().padding(12.dp)
+                            ) {
+                                CircularProgressIndicator(color = UISingleton.textColor2)
+                            }
+                        }
+                        AnimatedVisibility(
+                            visible = loaded,
+                            enter = UIHelper.slideEnterTransition(1)
+                        ) {
+                            TextAndIconCardView(
+                                title = "All meetings are up to date",
+                                icon = Icons.Rounded.Done,
+                                backgroundColor = UISingleton.color2,
+                                showArrow = false,
+                                elevation = 0.dp
+                            )
+                        }
                     }
                 }
-                if (true) {
+                item {
+                    AnimatedVisibility(
+                        visible = loading,
+                        enter = UIHelper.slideEnterTransition(1)
+                    ) {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.fillMaxWidth().padding(12.dp)
+                        ) {
+                            CircularProgressIndicator(color = UISingleton.textColor2)
+                        }
+                    }
+                }
+                item {
+                    AnimatedVisibility(
+                        visible = error,
+                        enter = UIHelper.slideEnterTransition(1)
+                    ) {
+                        TextAndIconCardView(
+                            title = stringResource(R.string.failed_to_fetch),
+                            icon = Icons.Rounded.Refresh,
+                            iconSize = 40.dp,
+                            iconPadding = 6.dp,
+                            backgroundColor = UISingleton.color1,
+                            modifier = Modifier.padding(start = 12.dp, end = 12.dp)
+                        ) {
+                            loadAttendanceDates()
+                        }
+                    }
+                }
+                if (loaded) {
                     item {
                         Text(
                             text = stringResource(R.string.meetings),
@@ -159,18 +235,6 @@ fun AttendancePopupView(
                             backgroundColor = UISingleton.color1
                         ) {
                             showRemoveDialog = true
-                        }
-                    }
-                } else {
-                    item {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(0.dp, alignment = Alignment.CenterHorizontally),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                        ) {
-                            CircularProgressIndicator(
-                                color = UISingleton.textColor2,
-                            )
                         }
                     }
                 }

@@ -4,7 +4,9 @@ import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,8 +31,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -38,6 +42,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.Lecturer
 import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
+import com.cdkentertainment.mobilny_usos_enhanced.getLocalized
 import com.cdkentertainment.mobilny_usos_enhanced.models.LecturerRate
 import com.cdkentertainment.mobilny_usos_enhanced.models.UserRate
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.LecturerRatesPageViewModel
@@ -80,7 +85,7 @@ fun LecturerInfoPopupView(
             ) {
                 item {
                     PopupHeaderView(
-                        title = "${data.human.first_name} ${data.human.last_name}"
+                        title = "${data.lecturerData?.titles?.get("before") ?: ""} ${data.human.first_name} ${data.human.last_name} ${data.lecturerData?.titles?.get("after") ?: ""}"
                     ) {
                         Box(
                             contentAlignment = Alignment.Center,
@@ -136,8 +141,44 @@ fun LecturerInfoPopupView(
                         }
                     }
                 }
+                if (!data.lecturerData?.office_hours?.getLocalized(context).isNullOrEmpty())
                 item {
-                    ContactInfoView()
+                    GroupedContentContainerView(
+                        title = "Dyżur",
+                        backgroundColor = UISingleton.color1,
+                        modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 12.dp)
+                    ) {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(UISingleton.color2, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
+                                .padding(12.dp)
+                        ) {
+                            Icon(
+                                imageVector = ImageVector.vectorResource(R.drawable.rounded_alarm_24),
+                                contentDescription = "office_hours",
+                                tint = UISingleton.textColor4,
+                                modifier = Modifier
+                                    .size(48.dp)
+                                    .background(UISingleton.color3, CircleShape)
+                                    .padding(12.dp)
+                            )
+                            Text(
+                                text = data.lecturerData?.office_hours?.getLocalized(context) ?: "",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = UISingleton.textColor1
+                            )
+                        }
+                    }
+                }
+                item {
+                    ContactInfoView(
+                        phoneNumber = data.lecturerData?.phone_numbers?.joinToString(separator = "\n") ?: "",
+                        email = data.lecturerData?.email ?: "",
+                        address = if (data.lecturerData?.room != null && data.lecturerData?.room?.building_name != null) (data.lecturerData?.room?.building_name?.getLocalized(context) + ", ${stringResource(R.string.lecturer_room)} " + data.lecturerData?.room?.number) else ""
+                    )
                 }
 
                 item {

@@ -52,11 +52,12 @@ class OAuthModel {
             try {
                 UserDataSingleton.userData = getUserData()
                 // FIXME FIXME FIXME FIXME
-                val token = BackendDataSender.get("tests?userId=${UserDataSingleton.userData!!.id}").body
-                BackendDataSender.setAuthHeader(token)
+                val token = BackendDataSender.getWithoutHeaders("tests?userId=${UserDataSingleton.userData!!.id}").body
+                BackendDataSender.setAuthHeader(token!!)
                 // FIXME FIXME FIXME FIXME
                 return@withContext UserDataSingleton.userData == null
             } catch (e: Exception) {
+                e.printStackTrace()
                 return@withContext true
             }
         }

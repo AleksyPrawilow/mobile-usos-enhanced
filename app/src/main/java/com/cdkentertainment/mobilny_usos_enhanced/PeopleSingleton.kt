@@ -26,6 +26,7 @@ data class LecturerData(
     val titles: Map<String?, String?>,
     val room: Room?,
     val staff_status: Int,
+    val office_hours: SharedDataClasses.LangDict,
     val photo_urls: Map<String, String>,
     val phone_numbers: List<String>,
     val sex: String

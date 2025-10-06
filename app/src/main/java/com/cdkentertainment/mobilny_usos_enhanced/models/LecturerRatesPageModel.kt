@@ -70,6 +70,7 @@ class LecturerRatesPageModel {
         return withContext(Dispatchers.IO) {
             try {
                 val json = parser.encodeToString<List<String>>(lecturerIds)
+                println(json)
                 val response: BackendDataSender.BackendResponse = BackendDataSender.postHeaders(usersInfoUrl, json)
                 print(response.body)
                 if (response.statusCode == 200 && response.body != null) {
