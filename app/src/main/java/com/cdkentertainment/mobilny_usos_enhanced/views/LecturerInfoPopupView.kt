@@ -16,8 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -31,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -39,8 +38,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
+import coil.size.Size.Companion.ORIGINAL
 import com.cdkentertainment.mobilny_usos_enhanced.Lecturer
+import com.cdkentertainment.mobilny_usos_enhanced.LecturerData
+import com.cdkentertainment.mobilny_usos_enhanced.PeopleSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.R
+import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.getLocalized
 import com.cdkentertainment.mobilny_usos_enhanced.models.LecturerRate
@@ -66,6 +71,7 @@ fun LecturerInfoPopupView(
         data.rating.avgRate5
     )
     var editingRate: Boolean by rememberSaveable { mutableStateOf(false) }
+    val extendedData: LecturerData? = PeopleSingleton.lecturers[data.human.id]?.lecturerData
 
     Dialog(
         onDismissRequest = onDismissRequest,
@@ -98,17 +104,33 @@ fun LecturerInfoPopupView(
                                     .background(UISingleton.color2)
                                     .border(5.dp, UISingleton.color1, shape = RoundedCornerShape(50.dp))
                             ) {
-                                Icon(
-                                    imageVector = Icons.Rounded.Person,
-                                    contentDescription = "Person",
-                                    tint = UISingleton.textColor1,
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .graphicsLayer(
-                                            scaleX = 0.75f,
-                                            scaleY = 0.75f
+                                AnimatedVisibility(
+                                    visible = extendedData != null,
+                                    enter = UIHelper.scaleEnterTransition(1)
+                                ) {
+                                    val profilePicture: Painter? = if (extendedData != null) rememberAsyncImagePainter(
+                                        ImageRequest.Builder(context)
+                                            .data(extendedData.photo_urls["100x100"])
+                                            .size(ORIGINAL)
+                                            .crossfade(true)
+                                            .placeholder(android.R.drawable.ic_menu_help)
+                                            .error(android.R.drawable.ic_menu_help)
+                                            .build()
+                                    ) else null
+                                    if (profilePicture != null) {
+                                        Icon(
+                                            painter = profilePicture,
+                                            contentDescription = "Person",
+                                            tint = androidx.compose.ui.graphics.Color.Unspecified,
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                                .graphicsLayer(
+                                                    scaleX = 0.85f,
+                                                    scaleY = 0.85f
+                                                )
                                         )
-                                )
+                                    }
+                                }
                             }
                         }
                     }
