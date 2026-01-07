@@ -206,4 +206,29 @@ object BackendDataSender {
             }
         }
     }
+    public suspend fun patch(requestUrl: String, json: String): BackendResponse {
+        return withContext(Dispatchers.IO) {
+            if (oAuth1AccessToken != null && authHeader != null) {
+                if (isJwtExpiringSoon(authHeader)) {
+                    refreshToken()
+                }
+                val requestUrl = "$developmentUrl/$requestUrl"
+                val accessToken = oAuth1AccessToken!!.token
+                val accessSecret = oAuth1AccessToken!!.tokenSecret
+                val requestBody = json.toRequestBody(mediaType)
+
+                val request = Request.Builder()
+                    .url(requestUrl)
+                    .header("Authorization", authHeader?: "")
+                    .header("OAuth-Key", accessToken)
+                    .header("OAuth-Secret", accessSecret)
+                    .patch(requestBody)
+                    .build()
+
+                return@withContext sendRequestToBackend(request)
+            } else {
+                throw(IllegalStateException("Missing authentication"))
+            }
+        }
+    }
 }

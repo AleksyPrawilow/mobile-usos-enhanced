@@ -92,4 +92,5 @@
     <string name="no_pinned_courses">No pinned courses</string>
     <string name="no_unpinned_courses">No unpinned courses</string>
     <string name="lecturer_room">room</string>
+    <string name="office_hours">Office hours</string>
 </resources>

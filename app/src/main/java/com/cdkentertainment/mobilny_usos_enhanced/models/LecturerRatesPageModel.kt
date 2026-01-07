@@ -17,6 +17,7 @@ class LecturerRatesPageModel {
     private val lecturerRateUrl: String = "LecturerRates/LecturerRates"
     private val addUserRateUrl: String = "LecturerRates/AddRate"
     private val deleteUserRateUrl: String = "LecturerRates/DeleteRate"
+    private val patchUserRateUrl: String = "LecturerRates/UpdateRate"
     private val parser: Json = Json {ignoreUnknownKeys = true}
 
     public suspend fun getUserRates(userId: Int): List<UserRate> {
@@ -44,6 +45,17 @@ class LecturerRatesPageModel {
     public suspend fun deleteUserRate(lecturerId: Int, universityId: Int): String {
         return withContext(Dispatchers.IO) {
             val response = BackendDataSender.delete("$deleteUserRateUrl?lecturerId=$lecturerId&universityId=$universityId")
+            if (response.statusCode == 200) {
+                return@withContext "ok"
+            } else {
+                throw(Exception("API Error: ${response.statusCode}"))
+            }
+        }
+    }
+    public suspend fun updateUserRate(userRate: UserRatePatch): String {
+        return withContext(Dispatchers.IO) {
+            val userRateJson = parser.encodeToString(userRate)
+            val response = BackendDataSender.patch(patchUserRateUrl, userRateJson)
             if (response.statusCode == 200) {
                 return@withContext "ok"
             } else {
@@ -206,6 +218,17 @@ data class UserRate(
     val rate3: Int,
     val rate4: Int,
     val rate5: Int,
+)
+
+@Serializable
+data class UserRatePatch(
+    val lecturerId: Int,
+    val universityId: Int,
+    val rate1: Int,
+    val rate2: Int,
+    val rate3: Int,
+    val rate4: Int,
+    val rate5: Int
 )
 
 @Serializable

@@ -1,5 +1,7 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -26,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -34,9 +37,10 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
+import com.cdkentertainment.mobilny_usos_enhanced.getLocalized
+import com.cdkentertainment.mobilny_usos_enhanced.models.SharedDataClasses
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.LecturerRatesPageViewModel
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
@@ -44,6 +48,16 @@ fun UserRateDeleteDialogView(
     lecturerId: String,
     onDismiss: () -> Unit
 ) {
+    val context: Context = LocalContext.current
+    val errorMessage: SharedDataClasses.LangDict = SharedDataClasses.LangDict(
+        pl = "Nie udało się usunąć ocenę.",
+        en = "Failed to delete the rating."
+    )
+    val deletingMessage: SharedDataClasses.LangDict = SharedDataClasses.LangDict(
+        pl = "Usuwam ocenę...",
+        en = "Deleting the rating..."
+    )
+    val toast: Toast = Toast.makeText(context, errorMessage.getLocalized(context), Toast.LENGTH_LONG)
     val viewModel: LecturerRatesPageViewModel = viewModel<LecturerRatesPageViewModel>()
     val coroutineScope: CoroutineScope = rememberCoroutineScope()
     var savingDeletion: Boolean by rememberSaveable { mutableStateOf(false) }
@@ -86,7 +100,7 @@ fun UserRateDeleteDialogView(
                 }
                 AnimatedVisibility(visible = savingDeletion && !deletionFinished) {
                     Text(
-                        text = "Usuwam ocenę...",
+                        text = deletingMessage.getLocalized(context),
                         style = MaterialTheme.typography.headlineSmall,
                         color = UISingleton.textColor1,
                         textAlign = TextAlign.Center,
@@ -95,7 +109,7 @@ fun UserRateDeleteDialogView(
                 }
                 AnimatedVisibility(visible = deletionFinished && deletionFailed) {
                     Text(
-                        text = "Nie udało się usunąć ocenę.",
+                        text = errorMessage.getLocalized(context),
                         style = MaterialTheme.typography.headlineSmall,
                         color = UISingleton.textColor1,
                         textAlign = TextAlign.Center,
@@ -113,7 +127,7 @@ fun UserRateDeleteDialogView(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
-                            text = "Tak",
+                            text = stringResource(R.string.yes),
                             style = MaterialTheme.typography.titleLarge,
                             color = UISingleton.textColor4,
                             fontWeight = FontWeight.Bold,
@@ -131,7 +145,7 @@ fun UserRateDeleteDialogView(
                                             onDismiss()
                                         } else {
                                             deletionFailed = true
-                                            delay(1000)
+                                            toast.show()
                                             onDismiss()
                                         }
                                     }
@@ -141,7 +155,7 @@ fun UserRateDeleteDialogView(
                                 .padding(12.dp)
                         )
                         Text(
-                            text = "Nie",
+                            text = stringResource(R.string.no),
                             style = MaterialTheme.typography.titleLarge,
                             color = UISingleton.textColor1,
                             fontWeight = FontWeight.Bold,

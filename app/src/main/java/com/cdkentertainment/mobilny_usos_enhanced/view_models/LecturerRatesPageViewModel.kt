@@ -15,6 +15,7 @@ import com.cdkentertainment.mobilny_usos_enhanced.models.LecturerRatesPageModel
 import com.cdkentertainment.mobilny_usos_enhanced.models.LecturersIndex
 import com.cdkentertainment.mobilny_usos_enhanced.models.SharedDataClasses
 import com.cdkentertainment.mobilny_usos_enhanced.models.UserRate
+import com.cdkentertainment.mobilny_usos_enhanced.models.UserRatePatch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -105,7 +106,6 @@ class LecturerRatesPageViewModel: ViewModel() {
                 userRatings.remove(lecturerId)
                 lecturerRates.remove(lecturerId) // for testing only, will most likely work in another way
                 val prevRate: LecturerAvgRates = PeopleSingleton.lecturers[lecturerId]!!.rating
-                println("Print 1 $prevRate")
                 val newAvgRate: LecturerAvgRates = LecturerAvgRates(
                     lecturerId = lecturerId.toInt(),
                     universityId = 1,
@@ -125,17 +125,69 @@ class LecturerRatesPageViewModel: ViewModel() {
         }
     }
 
+    suspend fun updateUserRate(lecturerId: String, rate: LecturerRate): Boolean {
+        return withContext(Dispatchers.IO) {
+            try {
+                val prevUserRate: UserRate = userRatings[lecturerId]!!
+                val ratePatch = UserRatePatch(
+                    lecturerId = lecturerId.toInt(),
+                    universityId = 1,
+                    rate1 = rate.rate_1.toInt(),
+                    rate2 = rate.rate_2.toInt(),
+                    rate3 = rate.rate_3.toInt(),
+                    rate4 = rate.rate_4.toInt(),
+                    rate5 = rate.rate_5.toInt()
+                )
+                model.updateUserRate(ratePatch)
+                userRatings[lecturerId] = UserRate(
+                    userId = UserDataSingleton.userData!!.id.toInt(),
+                    lecturerId = lecturerId.toInt(),
+                    universityId = 1, //TEMPORARY
+                    rate1 = rate.rate_1.toInt(),
+                    rate2 = rate.rate_2.toInt(),
+                    rate3 = rate.rate_3.toInt(),
+                    rate4 = rate.rate_4.toInt(),
+                    rate5 = rate.rate_5.toInt()
+                )
+                lecturerRates[lecturerId] = rate // for testing only, will most likely work in another way
+                val prevRate: LecturerAvgRates = PeopleSingleton.lecturers[lecturerId]!!.rating
+                val prevRateModified: LecturerAvgRates = LecturerAvgRates(
+                    lecturerId = lecturerId.toInt(),
+                    universityId = 1,
+                    ratesCount = prevRate.ratesCount - 1,
+                    avgRate1 = if (prevRate.ratesCount - 1 == 0) 0.0f else (prevRate.avgRate1 * prevRate.ratesCount - prevUserRate.rate1.toFloat()) / (prevRate.ratesCount - 1),
+                    avgRate2 = if (prevRate.ratesCount - 1 == 0) 0.0f else (prevRate.avgRate2 * prevRate.ratesCount - prevUserRate.rate2.toFloat()) / (prevRate.ratesCount - 1),
+                    avgRate3 = if (prevRate.ratesCount - 1 == 0) 0.0f else (prevRate.avgRate3 * prevRate.ratesCount - prevUserRate.rate3.toFloat()) / (prevRate.ratesCount - 1),
+                    avgRate4 = if (prevRate.ratesCount - 1 == 0) 0.0f else (prevRate.avgRate4 * prevRate.ratesCount - prevUserRate.rate4.toFloat()) / (prevRate.ratesCount - 1),
+                    avgRate5 = if (prevRate.ratesCount - 1 == 0) 0.0f else (prevRate.avgRate5 * prevRate.ratesCount - prevUserRate.rate5.toFloat()) / (prevRate.ratesCount - 1)
+                )
+                val newAvgRate: LecturerAvgRates = LecturerAvgRates(
+                    lecturerId = lecturerId.toInt(),
+                    universityId = 1,
+                    ratesCount = prevRateModified.ratesCount + 1,
+                    avgRate1 = (prevRateModified.avgRate1 * prevRateModified.ratesCount + rate.rate_1) / (prevRateModified.ratesCount + 1),
+                    avgRate2 = (prevRateModified.avgRate2 * prevRateModified.ratesCount + rate.rate_2) / (prevRateModified.ratesCount + 1),
+                    avgRate3 = (prevRateModified.avgRate3 * prevRateModified.ratesCount + rate.rate_3) / (prevRateModified.ratesCount + 1),
+                    avgRate4 = (prevRateModified.avgRate4 * prevRateModified.ratesCount + rate.rate_4) / (prevRateModified.ratesCount + 1),
+                    avgRate5 = (prevRateModified.avgRate5 * prevRateModified.ratesCount + rate.rate_5) / (prevRateModified.ratesCount + 1),
+                )
+                PeopleSingleton.lecturers[lecturerId]!!.rating = newAvgRate
+                return@withContext true
+            } catch (e: Exception) {
+                return@withContext false
+            }
+        }
+    }
+
     fun getLecturersRatings(lecturerIds: List<String>, onSuccess: () -> Unit = {}, onError: () -> Unit = {}) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 val nonFetchedIds: List<String> = lecturerIds.filter { !PeopleSingleton.lecturers.containsKey(it) }
                 if (nonFetchedIds.isEmpty()) {
-                    println("Here ?")
                     onSuccess()
                     return@withContext
                 }
                 try {
-                    println("Or here ? ")
                     model.getExtendedLecturersInfo(nonFetchedIds)
                     onSuccess()
                 } catch (e: Exception) {

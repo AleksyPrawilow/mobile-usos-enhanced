@@ -194,35 +194,10 @@ fun LecturerInfoPopupView(
                 item {
                     Spacer(modifier = Modifier.height(12.dp))
                 }
-                item {
-                    GroupedContentContainerView(
-                        title = stringResource(R.string.coordinated_courses),
-                        backgroundColor = UISingleton.color1,
-                        modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 12.dp)
-                    ) {
-                        repeat(2) { index ->
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .background(
-                                        UISingleton.color2,
-                                        RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp)
-                                    )
-                                    .padding(12.dp)
-                            ) {
-                                Text(
-                                    text = "${index + 1}. Matematyka",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    color = UISingleton.textColor1
-                                )
-                            }
-                        }
-                    }
-                }
                 if (!data.lecturerData?.office_hours?.getLocalized(context).isNullOrEmpty()) {
                     item {
                         GroupedContentContainerView(
-                            title = "Dyżur",
+                            title = stringResource(R.string.office_hours),
                             backgroundColor = UISingleton.color1,
                             modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 12.dp)
                         ) {
@@ -252,12 +227,14 @@ fun LecturerInfoPopupView(
                         }
                     }
                 }
-                item {
-                    ContactInfoView(
-                        phoneNumber = data.lecturerData?.phone_numbers?.joinToString(separator = "\n") ?: "",
-                        email = data.lecturerData?.email ?: "",
-                        address = if (data.lecturerData?.room != null && data.lecturerData?.room?.building_name != null) (data.lecturerData?.room?.building_name?.getLocalized(context) + ", ${stringResource(R.string.lecturer_room)} " + data.lecturerData?.room?.number) else ""
-                    )
+                if (data.lecturerData?.phone_numbers != null || data.lecturerData?.email != null || data.lecturerData?.room != null) {
+                    item {
+                        ContactInfoView(
+                            phoneNumber = data.lecturerData?.phone_numbers?.joinToString(separator = "\n") ?: "",
+                            email = data.lecturerData?.email ?: "",
+                            address = if (data.lecturerData?.room != null && data.lecturerData?.room?.building_name != null) (data.lecturerData?.room?.building_name?.getLocalized(context) + ", ${stringResource(R.string.lecturer_room)} " + data.lecturerData?.room?.number) else ""
+                        )
+                    }
                 }
 
                 item {
@@ -297,8 +274,13 @@ fun LecturerInfoPopupView(
                                 rate = if (userRating != null) LecturerRate(userRating.rate1.toFloat(), userRating.rate2.toFloat(), userRating.rate3.toFloat(), userRating.rate4.toFloat(), userRating.rate5.toFloat()) else LecturerRate(),
                                 onAddRate = { rate ->
                                     coroutineScope.launch {
-                                        viewModel.addUserRate(lecturerId = data.human.id, rate)
-                                        editingRate = false
+                                        if (userRating != null) {
+                                            viewModel.updateUserRate(data.human.id, rate)
+                                            editingRate = false
+                                        } else {
+                                            viewModel.addUserRate(lecturerId = data.human.id, rate)
+                                            editingRate = false
+                                        }
                                     }
                                 }
                             )
