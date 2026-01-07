@@ -187,4 +187,23 @@ object BackendDataSender {
             }
         }
     }
+    public suspend fun delete(requestUrl: String): BackendResponse {
+        return withContext(Dispatchers.IO){
+            if (authHeader != null) {
+                val requestUrl = "$developmentUrl/$requestUrl"
+                val accessToken = oAuth1AccessToken!!.token
+                val accessSecret = oAuth1AccessToken!!.tokenSecret
+                val request = Request.Builder()
+                    .url(requestUrl)
+                    .header("Authorization", authHeader!!)
+                    .header("OAuth-Key", accessToken)
+                    .header("OAuth-Secret", accessSecret)
+                    .delete()
+                    .build()
+                return@withContext sendRequestToBackend(request)
+            } else {
+                throw(IllegalStateException("Missing authentication"))
+            }
+        }
+    }
 }

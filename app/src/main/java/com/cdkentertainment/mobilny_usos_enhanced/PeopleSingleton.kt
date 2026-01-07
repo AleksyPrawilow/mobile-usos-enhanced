@@ -13,7 +13,7 @@ object PeopleSingleton {
 data class Lecturer(
     val human: SharedDataClasses.Human,
     var lecturerData: LecturerData? = null,
-    val rating: LecturerAvgRates
+    var rating: LecturerAvgRates
 )
 
 //titles|staff_status|phone_numbers|office_hours|has_photo|photo_urls[100x100]|room
@@ -22,7 +22,7 @@ data class LecturerData(
     val id: String,
     val first_name: String,
     val last_name: String,
-    val email: String,
+    val email: String?,
     val titles: Map<String?, String?>,
     val room: Room?,
     val staff_status: Int,

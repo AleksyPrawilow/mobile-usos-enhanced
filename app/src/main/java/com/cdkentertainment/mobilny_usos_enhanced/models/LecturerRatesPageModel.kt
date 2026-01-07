@@ -16,6 +16,7 @@ class LecturerRatesPageModel {
     private val userRateUrl: String = "LecturerRates/UserRates"
     private val lecturerRateUrl: String = "LecturerRates/LecturerRates"
     private val addUserRateUrl: String = "LecturerRates/AddRate"
+    private val deleteUserRateUrl: String = "LecturerRates/DeleteRate"
     private val parser: Json = Json {ignoreUnknownKeys = true}
 
     public suspend fun getUserRates(userId: Int): List<UserRate> {
@@ -32,7 +33,17 @@ class LecturerRatesPageModel {
     public suspend fun addUserRate(userRate: UserRate): String {
         return withContext(Dispatchers.IO) {
             val userRateJson = parser.encodeToString(userRate)
-            val response = BackendDataSender.post(addUserRateUrl, userRateJson)
+            val response = BackendDataSender.postHeaders(addUserRateUrl, userRateJson)
+            if (response.statusCode == 200) {
+                return@withContext "ok"
+            } else {
+                throw(Exception("API Error: ${response.statusCode}"))
+            }
+        }
+    }
+    public suspend fun deleteUserRate(lecturerId: Int, universityId: Int): String {
+        return withContext(Dispatchers.IO) {
+            val response = BackendDataSender.delete("$deleteUserRateUrl?lecturerId=$lecturerId&universityId=$universityId")
             if (response.statusCode == 200) {
                 return@withContext "ok"
             } else {
@@ -66,7 +77,7 @@ class LecturerRatesPageModel {
             }
         }
     }
-    public suspend fun getExtendedLecturersInfo(lecturerIds: List<String>) {
+    public suspend fun getExtendedLecturersInfo(lecturerIds: List<String>, withRates: Boolean = true) {
         return withContext(Dispatchers.IO) {
             try {
                 val json = parser.encodeToString<List<String>>(lecturerIds)
@@ -76,26 +87,38 @@ class LecturerRatesPageModel {
                 if (response.statusCode == 200 && response.body != null) {
                     val lecturersInfo: List<LecturerData> = parser.decodeFromString<List<LecturerData>>(response.body!!)
                     for (lecturer in lecturersInfo) {
-                        val lecturerRating: LecturerAvgRates? = getLecturerAvgRates(lecturer.id.toInt())
-                        if (lecturerRating == null) {
-                            lecturers[lecturer.id] = Lecturer(
-                                human = SharedDataClasses.Human(
-                                    lecturer.id,
-                                    lecturer.first_name,
-                                    lecturer.last_name
-                                ),
-                                lecturerData = lecturer,
-                                rating = LecturerAvgRates(
-                                    lecturerId = lecturer.id.toInt(),
-                                    universityId = 1,
-                                    ratesCount = 0,
-                                    avgRate1 = 0f,
-                                    avgRate2 = 0f,
-                                    avgRate3 = 0f,
-                                    avgRate4 = 0f,
-                                    avgRate5 = 0f
+                        if (withRates) {
+                            val lecturerRating: LecturerAvgRates? = getLecturerAvgRates(lecturer.id.toInt())
+                            if (lecturerRating == null) {
+                                lecturers[lecturer.id] = Lecturer(
+                                    human = SharedDataClasses.Human(
+                                        lecturer.id,
+                                        lecturer.first_name,
+                                        lecturer.last_name
+                                    ),
+                                    lecturerData = lecturer,
+                                    rating = LecturerAvgRates(
+                                        lecturerId = lecturer.id.toInt(),
+                                        universityId = 1,
+                                        ratesCount = 0,
+                                        avgRate1 = 0f,
+                                        avgRate2 = 0f,
+                                        avgRate3 = 0f,
+                                        avgRate4 = 0f,
+                                        avgRate5 = 0f
+                                    )
                                 )
-                            )
+                            } else {
+                                lecturers[lecturer.id] = Lecturer(
+                                    human = SharedDataClasses.Human(
+                                        lecturer.id,
+                                        lecturer.first_name,
+                                        lecturer.last_name
+                                    ),
+                                    lecturerData = lecturer,
+                                    rating = lecturerRating
+                                )
+                            }
                         } else {
                             lecturers[lecturer.id] = Lecturer(
                                 human = SharedDataClasses.Human(
@@ -104,7 +127,7 @@ class LecturerRatesPageModel {
                                     lecturer.last_name
                                 ),
                                 lecturerData = lecturer,
-                                rating = lecturerRating
+                                rating = lecturers[lecturer.id]!!.rating
                             )
                         }
                     }

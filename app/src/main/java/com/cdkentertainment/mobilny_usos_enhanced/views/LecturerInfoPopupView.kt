@@ -16,10 +16,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Refresh
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -72,6 +76,28 @@ fun LecturerInfoPopupView(
     )
     var editingRate: Boolean by rememberSaveable { mutableStateOf(false) }
     val extendedData: LecturerData? = PeopleSingleton.lecturers[data.human.id]?.lecturerData
+    var lecturerDataFetched: Boolean by rememberSaveable { mutableStateOf(extendedData != null) }
+    var lecturerDataFetchError: Boolean by rememberSaveable { mutableStateOf(false) }
+
+    val loadLecturersInfo: () -> Unit = {
+        lecturerDataFetched = false
+        lecturerDataFetchError = false
+        viewModel.getLecturersExtendedData(
+            lecturerIds = listOf(data.human.id),
+            onSuccess = {
+                lecturerDataFetched = true
+                lecturerDataFetchError = false
+            },
+            onError = {
+                lecturerDataFetchError = true
+                lecturerDataFetched = false
+            }
+        )
+    }
+
+    LaunchedEffect(Unit) {
+        loadLecturersInfo()
+    }
 
     Dialog(
         onDismissRequest = onDismissRequest,
@@ -89,6 +115,36 @@ fun LecturerInfoPopupView(
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
+                item {
+                    AnimatedVisibility(
+                        visible = !lecturerDataFetched && !lecturerDataFetchError,
+                        enter = UIHelper.slideEnterTransition(1)
+                    ) {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.fillMaxWidth().padding(12.dp)
+                        ) {
+                            CircularProgressIndicator(color = UISingleton.textColor2)
+                        }
+                    }
+                }
+                item {
+                    AnimatedVisibility(
+                        visible = lecturerDataFetchError,
+                        enter = UIHelper.slideEnterTransition(1)
+                    ) {
+                        TextAndIconCardView(
+                            title = stringResource(R.string.failed_to_fetch),
+                            icon = Icons.Rounded.Refresh,
+                            iconSize = 40.dp,
+                            iconPadding = 6.dp,
+                            backgroundColor = UISingleton.color1,
+                            modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 12.dp)
+                        ) {
+                            loadLecturersInfo()
+                        }
+                    }
+                }
                 item {
                     PopupHeaderView(
                         title = "${data.lecturerData?.titles?.get("before") ?: ""} ${data.human.first_name} ${data.human.last_name} ${data.lecturerData?.titles?.get("after") ?: ""}"
@@ -163,35 +219,36 @@ fun LecturerInfoPopupView(
                         }
                     }
                 }
-                if (!data.lecturerData?.office_hours?.getLocalized(context).isNullOrEmpty())
-                item {
-                    GroupedContentContainerView(
-                        title = "Dyżur",
-                        backgroundColor = UISingleton.color1,
-                        modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 12.dp)
-                    ) {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(12.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(UISingleton.color2, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
-                                .padding(12.dp)
+                if (!data.lecturerData?.office_hours?.getLocalized(context).isNullOrEmpty()) {
+                    item {
+                        GroupedContentContainerView(
+                            title = "Dyżur",
+                            backgroundColor = UISingleton.color1,
+                            modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 12.dp)
                         ) {
-                            Icon(
-                                imageVector = ImageVector.vectorResource(R.drawable.rounded_alarm_24),
-                                contentDescription = "office_hours",
-                                tint = UISingleton.textColor4,
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier
-                                    .size(48.dp)
-                                    .background(UISingleton.color3, CircleShape)
+                                    .fillMaxWidth()
+                                    .background(UISingleton.color2, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
                                     .padding(12.dp)
-                            )
-                            Text(
-                                text = data.lecturerData?.office_hours?.getLocalized(context) ?: "",
-                                style = MaterialTheme.typography.titleMedium,
-                                color = UISingleton.textColor1
-                            )
+                            ) {
+                                Icon(
+                                    imageVector = ImageVector.vectorResource(R.drawable.rounded_alarm_24),
+                                    contentDescription = "office_hours",
+                                    tint = UISingleton.textColor4,
+                                    modifier = Modifier
+                                        .size(48.dp)
+                                        .background(UISingleton.color3, CircleShape)
+                                        .padding(12.dp)
+                                )
+                                Text(
+                                    text = data.lecturerData?.office_hours?.getLocalized(context) ?: "",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = UISingleton.textColor1
+                                )
+                            }
                         }
                     }
                 }
@@ -214,7 +271,7 @@ fun LecturerInfoPopupView(
                     ) {
                         LecturerRateView(
                             lecturerId = data.human.id,
-                            numberOfReviews = if (lecturerRatings != null) 1 else 0,
+                            numberOfReviews = data.rating.ratesCount,
                             rate = if (lecturerRatings != null) lecturerRatings else LecturerRate()
                         )
                     }
