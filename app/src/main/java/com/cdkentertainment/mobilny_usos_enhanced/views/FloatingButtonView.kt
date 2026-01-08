@@ -57,7 +57,7 @@ fun FloatingButtonView(
     modifier: Modifier = Modifier
 ) {
     val buttonSize = 72
-    val subButtonSize = 58
+    val subButtonSize = 64
     val circleRadius = 110.0
     val color2: Color = UISingleton.color2
     val color4: Color = UISingleton.textColor1
@@ -80,8 +80,8 @@ fun FloatingButtonView(
 
     val context: Context = LocalContext.current
 
-    repeat(9) { index ->
-        val angle: Double = index * 40.0 - 90.0
+    repeat(8) { index ->
+        val angle: Double = index * 45.0 - 90.0
         val x = cos(toRadians(angle)) * circleRadius
         val y = sin(toRadians(angle)) * circleRadius
         val image: ImageVector = when(index) {
@@ -91,8 +91,8 @@ fun FloatingButtonView(
             3 -> ImageVector.vectorResource(R.drawable.rounded_calendar_month_24)
             4 -> ImageVector.vectorResource(R.drawable.rounded_group_24)
             5 -> ImageVector.vectorResource(R.drawable.rounded_payments_24)
-            6 -> ImageVector.vectorResource(R.drawable.rounded_alarm_24)
-            7 -> ImageVector.vectorResource(R.drawable.rounded_school_24)
+            //6 -> ImageVector.vectorResource(R.drawable.rounded_alarm_24)
+            6 -> ImageVector.vectorResource(R.drawable.rounded_school_24)
             else -> ImageVector.vectorResource(R.drawable.rounded_settings_24)
         }
 

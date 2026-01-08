@@ -42,6 +42,7 @@ import com.cdkentertainment.mobilny_usos_enhanced.UISingleton.color3
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton.color4
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton.textColor1
 import com.cdkentertainment.mobilny_usos_enhanced.UserDataSingleton
+import com.cdkentertainment.mobilny_usos_enhanced.getLocalized
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.SettingsPageViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -124,7 +125,7 @@ fun ThemeSelectionButtonView(modifier: Modifier = Modifier) {
                             contentPadding = PaddingValues(12.dp),
                             text = {
                                 Text(
-                                    text = themeName,
+                                    text = themeName.getLocalized(context),
                                     style = MaterialTheme.typography.titleMedium,
                                     color = textColor1
                                 )

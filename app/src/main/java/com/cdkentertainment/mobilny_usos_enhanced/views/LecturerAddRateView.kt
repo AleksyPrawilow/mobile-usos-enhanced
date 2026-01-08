@@ -42,6 +42,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.rememberTextMeasurer
@@ -49,8 +50,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
+import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
+import com.cdkentertainment.mobilny_usos_enhanced.getLocalized
 import com.cdkentertainment.mobilny_usos_enhanced.models.LecturerRate
+import com.cdkentertainment.mobilny_usos_enhanced.models.SharedDataClasses
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
@@ -58,6 +62,7 @@ fun LecturerAddRateView(
     rate: LecturerRate = LecturerRate(),
     onAddRate: (LecturerRate) -> Unit
 ) {
+    val context: Context = LocalContext.current
     var rate_1: Int by rememberSaveable { mutableStateOf(rate.rate_1.toInt()) }
     var rate_2: Int by rememberSaveable { mutableStateOf(rate.rate_2.toInt()) }
     var rate_3: Int by rememberSaveable { mutableStateOf(rate.rate_3.toInt()) }
@@ -77,11 +82,11 @@ fun LecturerAddRateView(
         val context: Context = LocalContext.current
         val availableWidthPx = with(density) { maxWidth.toPx() }
         val categoriesPrompts: List<String> = listOf(
-            "Jak oceniasz jasność i zrozumiałość tłumaczenia materiału?",
-            "Jak oceniasz przygotowanie i organizację zajęć?",
-            "Jak oceniasz zaangażowanie prowadzącego w prowadzeniu zajęć?",
-            "Jak oceniasz sposób komunikacji i kontakt ze studentami?",
-            "Jak oceniasz sprawiedliwość i obiektywność oceniania?"
+            stringResource(R.string.clarity_rate),
+            stringResource(R.string.organization_rate),
+            stringResource(R.string.engagement_rate),
+            stringResource(R.string.communication_rate),
+            stringResource(R.string.fairness_rate)
         )
         val headerStyle: TextStyle = MaterialTheme.typography.titleMedium
         val textMeasurer = rememberTextMeasurer()
@@ -96,7 +101,7 @@ fun LecturerAddRateView(
                 ).size.height
             }
         }
-        val toast: Toast = Toast.makeText(context, "Nie wybrano oceny!", Toast.LENGTH_SHORT)
+        val toast: Toast = Toast.makeText(context, SharedDataClasses.LangDict("Nie wybrano oceny!", "No rate chosen!").getLocalized(context), Toast.LENGTH_SHORT)
         val noRateToast: () -> Unit = {
             toast.show()
         }
@@ -106,17 +111,12 @@ fun LecturerAddRateView(
                 .fillMaxWidth()
         ) {
             Text(
-                text = "Podziel się swoją opinią!",
+                text = stringResource(R.string.share_opinion),
                 style = MaterialTheme.typography.titleLarge,
                 textAlign = TextAlign.Center,
                 color = UISingleton.textColor1,
                 modifier = Modifier.fillMaxWidth()
             )
-//            HorizontalDivider(
-//                thickness = 5.dp,
-//                color = UISingleton.textColor2,
-//                modifier = Modifier.clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
-//            )
             AnimatedContent(
                 ratingStage,
                 transitionSpec = {

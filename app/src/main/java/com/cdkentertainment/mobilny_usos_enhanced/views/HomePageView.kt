@@ -85,9 +85,9 @@ fun HomePageView() {
     val textMeasurer = rememberTextMeasurer()
     val cardLabels: List<Pair<String, ImageVector>> = listOf(
         Pair(stringResource(R.string.latest_grades), ImageVector.vectorResource(R.drawable.rounded_star_24)),
-        Pair(stringResource(R.string.notifications), ImageVector.vectorResource(R.drawable.rounded_notifications_24)),
+        Pair(stringResource(R.string.tests_page), ImageVector.vectorResource(R.drawable.rounded_assignment_24)),
         Pair(stringResource(R.string.payments), ImageVector.vectorResource(R.drawable.rounded_payments_24)),
-        Pair(stringResource(R.string.attendance), ImageVector.vectorResource(R.drawable.rounded_alarm_24))
+        Pair(stringResource(R.string.lecturers), ImageVector.vectorResource(R.drawable.rounded_school_24))
     )
 
     val cardLabelStyle: TextStyle = MaterialTheme.typography.titleMedium
@@ -111,7 +111,7 @@ fun HomePageView() {
 
             paymentsPageViewModel.fetchPayments()
             gradesViewModel.fetchSemesterGrades(UIHelper.termIds.last())
-            loadingError = !attendancePageViewModel.readPinnedGroups(context) || !viewModel.fetchSchedule()
+            loadingError = !viewModel.fetchSchedule()
 
             loading = false
             delay(150)
@@ -208,7 +208,9 @@ fun HomePageView() {
                         icon = cardLabels[1].second,
                         title = cardLabels[1].first,
                         maxWidth = maxCardWidth
-                    )
+                    ) {
+                        screenManagerViewModel.changeScreen(Screens.TESTS, context)
+                    }
                 }
 
                 AnimatedVisibility(showElements && !loadingError, enter = scaleEnterTransition(6)) {
@@ -229,9 +231,8 @@ fun HomePageView() {
                         icon = cardLabels[3].second,
                         title = cardLabels[3].first,
                         maxWidth = maxCardWidth,
-                        badge = "99!"
                     ) {
-                        screenManagerViewModel.changeScreen(Screens.ATTENDANCE, context)
+                        screenManagerViewModel.changeScreen(Screens.LECTURERS, context)
                     }
                 }
             }

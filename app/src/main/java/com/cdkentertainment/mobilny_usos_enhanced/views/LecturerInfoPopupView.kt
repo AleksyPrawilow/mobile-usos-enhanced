@@ -116,36 +116,6 @@ fun LecturerInfoPopupView(
                     .fillMaxWidth()
             ) {
                 item {
-                    AnimatedVisibility(
-                        visible = !lecturerDataFetched && !lecturerDataFetchError,
-                        enter = UIHelper.slideEnterTransition(1)
-                    ) {
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier.fillMaxWidth().padding(12.dp)
-                        ) {
-                            CircularProgressIndicator(color = UISingleton.textColor2)
-                        }
-                    }
-                }
-                item {
-                    AnimatedVisibility(
-                        visible = lecturerDataFetchError,
-                        enter = UIHelper.slideEnterTransition(1)
-                    ) {
-                        TextAndIconCardView(
-                            title = stringResource(R.string.failed_to_fetch),
-                            icon = Icons.Rounded.Refresh,
-                            iconSize = 40.dp,
-                            iconPadding = 6.dp,
-                            backgroundColor = UISingleton.color1,
-                            modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 12.dp)
-                        ) {
-                            loadLecturersInfo()
-                        }
-                    }
-                }
-                item {
                     PopupHeaderView(
                         title = "${data.lecturerData?.titles?.get("before") ?: ""} ${data.human.first_name} ${data.human.last_name} ${data.lecturerData?.titles?.get("after") ?: ""}"
                     ) {
@@ -194,46 +164,86 @@ fun LecturerInfoPopupView(
                 item {
                     Spacer(modifier = Modifier.height(12.dp))
                 }
+                item {
+                    AnimatedVisibility(
+                        visible = !lecturerDataFetched && !lecturerDataFetchError,
+                        enter = UIHelper.slideEnterTransition(1)
+                    ) {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.fillMaxWidth().padding(12.dp)
+                        ) {
+                            CircularProgressIndicator(color = UISingleton.textColor2)
+                        }
+                    }
+                }
+                item {
+                    AnimatedVisibility(
+                        visible = lecturerDataFetchError,
+                        enter = UIHelper.slideEnterTransition(1)
+                    ) {
+                        TextAndIconCardView(
+                            title = stringResource(R.string.failed_to_fetch),
+                            icon = Icons.Rounded.Refresh,
+                            iconSize = 40.dp,
+                            iconPadding = 6.dp,
+                            backgroundColor = UISingleton.color1,
+                            modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 12.dp)
+                        ) {
+                            loadLecturersInfo()
+                        }
+                    }
+                }
                 if (!data.lecturerData?.office_hours?.getLocalized(context).isNullOrEmpty()) {
                     item {
-                        GroupedContentContainerView(
-                            title = stringResource(R.string.office_hours),
-                            backgroundColor = UISingleton.color1,
-                            modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 12.dp)
+                        AnimatedVisibility(
+                            visible = lecturerDataFetched,
+                            enter = UIHelper.slideEnterTransition(1)
                         ) {
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .background(UISingleton.color2, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
-                                    .padding(12.dp)
+                            GroupedContentContainerView(
+                                title = stringResource(R.string.office_hours),
+                                backgroundColor = UISingleton.color1,
+                                modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 12.dp)
                             ) {
-                                Icon(
-                                    imageVector = ImageVector.vectorResource(R.drawable.rounded_alarm_24),
-                                    contentDescription = "office_hours",
-                                    tint = UISingleton.textColor4,
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
                                     modifier = Modifier
-                                        .size(48.dp)
-                                        .background(UISingleton.color3, CircleShape)
+                                        .fillMaxWidth()
+                                        .background(UISingleton.color2, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
                                         .padding(12.dp)
-                                )
-                                Text(
-                                    text = data.lecturerData?.office_hours?.getLocalized(context) ?: "",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    color = UISingleton.textColor1
-                                )
+                                ) {
+                                    Icon(
+                                        imageVector = ImageVector.vectorResource(R.drawable.rounded_alarm_24),
+                                        contentDescription = "office_hours",
+                                        tint = UISingleton.textColor4,
+                                        modifier = Modifier
+                                            .size(48.dp)
+                                            .background(UISingleton.color3, CircleShape)
+                                            .padding(12.dp)
+                                    )
+                                    Text(
+                                        text = data.lecturerData?.office_hours?.getLocalized(context) ?: "",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        color = UISingleton.textColor1
+                                    )
+                                }
                             }
                         }
                     }
                 }
                 if (data.lecturerData?.phone_numbers != null || data.lecturerData?.email != null || data.lecturerData?.room != null) {
                     item {
-                        ContactInfoView(
-                            phoneNumber = data.lecturerData?.phone_numbers?.joinToString(separator = "\n") ?: "",
-                            email = data.lecturerData?.email ?: "",
-                            address = if (data.lecturerData?.room != null && data.lecturerData?.room?.building_name != null) (data.lecturerData?.room?.building_name?.getLocalized(context) + ", ${stringResource(R.string.lecturer_room)} " + data.lecturerData?.room?.number) else ""
-                        )
+                        AnimatedVisibility(
+                            visible = lecturerDataFetched,
+                            enter = UIHelper.slideEnterTransition(2)
+                        ) {
+                            ContactInfoView(
+                                phoneNumber = data.lecturerData?.phone_numbers?.joinToString(separator = "\n") ?: "",
+                                email = data.lecturerData?.email ?: "",
+                                address = if (data.lecturerData?.room != null && data.lecturerData?.room?.building_name != null) (data.lecturerData?.room?.building_name?.getLocalized(context) + ", ${stringResource(R.string.lecturer_room)} " + data.lecturerData?.room?.number) else ""
+                            )
+                        }
                     }
                 }
 

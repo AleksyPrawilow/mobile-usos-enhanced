@@ -156,7 +156,7 @@ fun LecturerRatesPageView() {
         item {
             PageHeaderView(
                 text = stringResource(R.string.lecturers_page),
-                icon = ImageVector.vectorResource(R.drawable.rounded_alarm_24)
+                icon = ImageVector.vectorResource(R.drawable.rounded_school_24)
             )
         }
         item {
@@ -269,12 +269,12 @@ fun LecturerRatesPageView() {
                         val extendedLecturer: Lecturer? = if (lecturer != null) PeopleSingleton.lecturers[lecturer.id] else null
                         if (lecturer != null) {
                             AnimatedVisibility(
-                                showElements && showIndex && showLecturers,
+                                visible = showElements && showIndex && showLecturers,
                                 enter = enterTransition(4 + lecturerIndex)
                             ) {
                                 if (extendedLecturer != null) {
                                     GroupLecturerCardView(
-                                        lecturer = extendedLecturer, // I suppose it is safe to use !! here?
+                                        lecturer = extendedLecturer,
                                         modifier = paddingModifier,
                                         prefix = "${lecturerIndex + 1 + pageSize * selectedPage}. ",
                                         elevation = 3.dp
@@ -286,11 +286,11 @@ fun LecturerRatesPageView() {
                 } else {
                     item {
                         AnimatedVisibility(
-                            showElements && showIndex && lecturerRatesPageViewModel.lecturersIndexLoaded["$selectedFaculty$selectedPage"] == true,
+                            visible = showElements && showIndex && lecturerRatesPageViewModel.lecturersIndexLoaded["$selectedFaculty$selectedPage"] == true,
                             enter = enterTransition(4)
                         ) {
                             TextAndIconCardView(
-                                title = "Brak prowadzących na wydziale",
+                                title = stringResource(R.string.no_lecturers_on_faculty),
                                 icon = Icons.Rounded.Done,
                                 modifier = paddingModifier,
                                 backgroundColor = UISingleton.color2,
@@ -308,7 +308,7 @@ fun LecturerRatesPageView() {
                     OutlinedTextField(
                         label = {
                             Text(
-                                text = "Search",
+                                text = stringResource(R.string.search),
                                 style = MaterialTheme.typography.titleMedium,
                                 color = UISingleton.textColor1,
                                 fontWeight = FontWeight.Light
@@ -316,7 +316,7 @@ fun LecturerRatesPageView() {
                         },
                         placeholder = {
                             Text(
-                                text = "Wprowadz cos",
+                                text = stringResource(R.string.search_lecturer_placeholder),
                                 style = MaterialTheme.typography.titleMedium,
                                 color = UISingleton.textColor1,
                                 fontWeight = FontWeight.Light
@@ -393,7 +393,7 @@ fun LecturerRatesPageView() {
                     visible = showElements && showSearch && !lecturerRatesPageViewModel.lecturersSearchError && !lecturerRatesPageViewModel.lecturersSearchLoading && lecturerRatesPageViewModel.lastQuery.isNotEmpty()
                 ) {
                     Text(
-                        text = "Wyniki wyszukiwania dla \"${lecturerRatesPageViewModel.lastQuery}\"",
+                        text = "${stringResource(R.string.search_results)} \"${lecturerRatesPageViewModel.lastQuery}\"",
                         style = MaterialTheme.typography.headlineMedium,
                         color = UISingleton.textColor1,
                         fontWeight = FontWeight.Bold,
@@ -409,7 +409,7 @@ fun LecturerRatesPageView() {
                     ) {
                         if (lecturerRatesPageViewModel.lastQueryResults!!.getOrNull(index) != null) {
                             GroupLecturerCardView(
-                                lecturer = lecturerRatesPageViewModel.lastQueryResults!![index], // I suppose it is safe to use !! here?
+                                lecturer = PeopleSingleton.lecturers[lecturerRatesPageViewModel.lastQueryResults!![index].human.id] ?: lecturerRatesPageViewModel.lastQueryResults!![index], // I suppose it is safe to use !! here?
                                 modifier = paddingModifier,
                                 prefix = "${index + 1}. ",
                                 elevation = 3.dp

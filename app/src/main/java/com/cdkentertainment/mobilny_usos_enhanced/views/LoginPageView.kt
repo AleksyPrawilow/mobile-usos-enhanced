@@ -40,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -141,8 +142,8 @@ fun LoginPageView(screenManagerViewModel: ScreenManagerViewModel = viewModel<Scr
                     tint = UISingleton.textColor4
                 )
                 Text(
-                    text = "Cancel",
-                    style = MaterialTheme.typography.titleLarge,
+                    text = stringResource(R.string.go_back),
+                    style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = UISingleton.textColor4
                 )
@@ -191,7 +192,7 @@ private fun UsosAutoLoginView() {
         modifier = Modifier.fillMaxWidth()
     ) {
         Text(
-            text = "Sprawdzam połączenie z serwisami USOS...",
+            text = stringResource(R.string.checking_the_connection),
             textAlign = TextAlign.Center,
             color = UISingleton.textColor1,
             style = MaterialTheme.typography.titleLarge,
@@ -206,7 +207,7 @@ private fun UsosLoginView(coroutineScope: CoroutineScope) {
     val context: Context = LocalContext.current
     val viewModel: LoginPageViewModel = viewModel<LoginPageViewModel>()
     TextAndIconCardView(
-        title = "Zaloguj się do USOS",
+        title = stringResource(R.string.sign_in),
         icon = ImageVector.vectorResource(R.drawable.rounded_login_24),
         elevation = 3.dp,
         modifier = Modifier.fillMaxWidth(),
@@ -227,7 +228,7 @@ private fun UsosRequestTokenView() {
         modifier = Modifier.fillMaxWidth()
     ) {
         Text(
-            text = "Sprawdzam połączenie z serwisami USOS...",
+            text = stringResource(R.string.checking_the_connection),
             textAlign = TextAlign.Center,
             color = UISingleton.textColor1,
             style = MaterialTheme.typography.titleLarge,
@@ -276,7 +277,7 @@ private fun LastStepsView(coroutineScope: CoroutineScope) {
         modifier = Modifier.fillMaxWidth()
     ) {
         Text(
-            text = "Jeszcze chwilka...",
+            text = stringResource(R.string.almost_there),
             color = UISingleton.textColor1,
             style = MaterialTheme.typography.titleLarge,
             textAlign = TextAlign.Center,
@@ -294,7 +295,7 @@ private fun SuccessView() {
         screenManagerViewModel.authorize()
     }
     Text(
-        text = "Zalogowany",
+        text = stringResource(R.string.logged_in),
         style = MaterialTheme.typography.titleLarge,
         color = UISingleton.textColor1,
         textAlign = TextAlign.Center,

@@ -32,7 +32,7 @@ enum class Screens(val pageName: Int) {
     CALENDAR(R.string.schedule_page),
     GROUPS(R.string.class_groups_page),
     PAYMENTS(R.string.payments_page),
-    ATTENDANCE(R.string.attendance_page),
+    //ATTENDANCE(R.string.attendance_page),
     LECTURERS(R.string.lecturers_page),
     SETTINGS(R.string.settings_page);
 

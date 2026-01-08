@@ -58,10 +58,11 @@ object UserDataSingleton {
         try {
             val theme: Theme? = UISingleton.themes[UISingleton.themes.keys.elementAt(selectedTheme)]
             if (theme != null) {
+                println(theme)
                 UISingleton.changeTheme(theme)
             }
         } catch (e: Exception) {
-            
+            e.printStackTrace()
         }
         currentSettings = SettingsObject(selectedTheme = selectedTheme)
     }

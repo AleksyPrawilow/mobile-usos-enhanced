@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Mobilny USOS</string>
+    <string name="app_name">Mobilny\nUSOS</string>
     <string name="home_page">Home</string>
     <string name="grade_page">Oceny</string>
     <string name="tests_page">Sprawdziany</string>
@@ -94,4 +94,35 @@
     <string name="no_unpinned_courses">Brak niepodpiętych przedmiotów</string>
     <string name="lecturer_room">pokój</string>
     <string name="office_hours">Dyżur</string>
+    <string name="based_on_reviews">Na podstawie</string>
+    <string name="review_singular">oceny</string>
+    <string name="reviews_plural">ocen</string>
+    <string name="share_opinion">Podziel się swoją opinią!</string>
+    <string name="not_chosen">Nie wybrano</string>
+    <string name="disaster_rate">Tragedia</string>
+    <string name="meh_rate">Może być</string>
+    <string name="ok_rate">Spoko</string>
+    <string name="nice_rate">Super</string>
+    <string name="awesome_rate">Ekstra</string>
+    <string name="clarity_rate">Jak oceniasz jasność i zrozumiałość tłumaczenia materiału?</string>
+    <string name="organization_rate">Jak oceniasz przygotowanie i organizację zajęć?</string>
+    <string name="engagement_rate">Jak oceniasz zaangażowanie prowadzącego w prowadzeniu zajęć?</string>
+    <string name="communication_rate">Jak oceniasz sposób komunikacji i kontakt ze studentami?</string>
+    <string name="fairness_rate">Jak oceniasz sprawiedliwość i obiektywność oceniania?</string>
+    <string name="clarity_rate_name">Jasność</string>
+    <string name="organization_rate_name">Organizacja</string>
+    <string name="engagement_rate_name">Zaangażowanie</string>
+    <string name="communication_rate_name">Komunikacja</string>
+    <string name="fairness_rate_name">Obiektywność</string>
+    <string name="rate_thanks">Dziękujemy za opinię!</string>
+    <string name="sending_rate">Wysyłam ocenę...</string>
+    <string name="go_back">Wróć</string>
+    <string name="search">Wyszukaj</string>
+    <string name="search_lecturer_placeholder">Kogo szukamy?</string>
+    <string name="no_lecturers_on_faculty">Brak prowadzących na wydziale</string>
+    <string name="search_results">Wyniki wyszukiwania dla</string>
+    <string name="logged_in">Hejka!</string>
+    <string name="sign_in">Zaloguj się do USOS</string>
+    <string name="checking_the_connection">Sprawdzam połączenie z serwisami USOS...</string>
+    <string name="almost_there">Jeszcze chwilka...</string>
 </resources>

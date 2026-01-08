@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.cdkentertainment.mobilny_usos_enhanced.models.SharedDataClasses
 
 object UISingleton {
     var isDarkTheme: Boolean by mutableStateOf(false)
@@ -56,11 +57,12 @@ object UISingleton {
 
     private val lightTheme: Theme = Theme(
         id = 0,
-        color1 = Color(0xFFF9F3EF),
-        color2 = Color(0xFFD2C1B6),
+        color1 = Color(0xFFFFFFFF),
+        color2 = Color(0xFFEAEAEA),
         color3 = Color(0xFF456882),
         color4 = Color(0xFF1B3C53),
-        isDark = false
+        isDark = false,
+        textTheme = standardLightTextTheme
     )
 
     private val lowDarkTheme: Theme = Theme(
@@ -73,15 +75,6 @@ object UISingleton {
         textTheme = standardDarkTextTheme
     )
 
-    private val testTheme: Theme = Theme(
-        id = 2,
-        color1 = Color(0xFFFFFFFF),
-        color2 = Color(0xFFEAEAEA),
-        color3 = Color(0xFF456882),
-        color4 = Color(0xFF1B3C53),
-        isDark = false
-    )
-
     private val oledTheme: Theme = Theme(
         id = 3,
         color1 = Color(0xFF000000),
@@ -92,11 +85,10 @@ object UISingleton {
         textTheme = oledTextTheme
     )
 
-    val themes: Map<String, Theme> = mapOf(
-        "Jasny" to lightTheme,
-        "Ciemny" to lowDarkTheme,
-        "Test" to testTheme,
-        "OLED" to oledTheme
+    val themes: Map<SharedDataClasses.LangDict, Theme> = mapOf(
+        SharedDataClasses.LangDict("Jasny", "Light") to lightTheme,
+        SharedDataClasses.LangDict("Ciemny", "Dark") to lowDarkTheme,
+        SharedDataClasses.LangDict("Wysoki kontrast", "High contrast") to oledTheme
     )
 
     val uiElementsCornerRadius: Int = 16
@@ -127,8 +119,8 @@ object UISingleton {
 data class TextTheme(
     val color1: Color = Color(0xFF1B3C53),
     val color2: Color = Color(0xFF456882),
-    val color3: Color = Color(0xFFD2C1B6),
-    val color4: Color = Color(0xFFF9F3EF),
+    val color3: Color = Color(0xFFBDC3C7),
+    val color4: Color = Color(0xFFECF0F1),
 )
 
 data class Theme(
