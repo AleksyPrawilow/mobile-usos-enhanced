@@ -28,7 +28,7 @@ fun ScreenManager(
             Screens.CALENDAR -> SchedulePageView()
             Screens.GROUPS -> ClassGroupsPageView()
             Screens.PAYMENTS -> PaymentsPageView()
-            Screens.ATTENDANCE -> AttendancePageView()
+            //Screens.ATTENDANCE -> AttendancePageView()
             Screens.LECTURERS -> LecturerRatesPageView()
             Screens.SETTINGS -> SettingsPageView()
         }

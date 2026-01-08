@@ -1,12 +1,9 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
 import android.content.Context
-import androidx.compose.animation.core.EaseOut
 import androidx.compose.animation.core.EaseOutQuad
 import androidx.compose.animation.core.Easing
-import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -19,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -59,23 +57,9 @@ fun FloatingButtonView(
     modifier: Modifier = Modifier
 ) {
     val buttonSize = 72
-    val subButtonSize = 58
+    val subButtonSize = 64
     val circleRadius = 110.0
-    val iconRotation: Float by animateFloatAsState(
-        targetValue = if (fabViewModel.expanded) -45.0f else 0.0f,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioHighBouncy,
-            stiffness = Spring.StiffnessLow
-        )
-    )
-    val iconYRotation: Float by animateFloatAsState(
-        targetValue = if (screenManagerViewModel.authorized) 360f else 0f,
-        animationSpec = tween(
-            durationMillis = 750,
-            easing = EaseOut
-        )
-    )
-    val color2: Color =UISingleton.color2
+    val color2: Color = UISingleton.color2
     val color4: Color = UISingleton.textColor1
     val buttonScale: Float by animateFloatAsState(if (fabViewModel.expanded) 1.25f else 1.0f)
     val subButtonDelayNormal: Int = if (fabViewModel.expanded) 150 else 0
@@ -96,8 +80,8 @@ fun FloatingButtonView(
 
     val context: Context = LocalContext.current
 
-    repeat(9) { index ->
-        val angle: Double = index * 40.0 - 90.0
+    repeat(8) { index ->
+        val angle: Double = index * 45.0 - 90.0
         val x = cos(toRadians(angle)) * circleRadius
         val y = sin(toRadians(angle)) * circleRadius
         val image: ImageVector = when(index) {
@@ -107,14 +91,15 @@ fun FloatingButtonView(
             3 -> ImageVector.vectorResource(R.drawable.rounded_calendar_month_24)
             4 -> ImageVector.vectorResource(R.drawable.rounded_group_24)
             5 -> ImageVector.vectorResource(R.drawable.rounded_payments_24)
-            6 -> ImageVector.vectorResource(R.drawable.rounded_alarm_24)
-            7 -> ImageVector.vectorResource(R.drawable.rounded_school_24)
+            //6 -> ImageVector.vectorResource(R.drawable.rounded_alarm_24)
+            6 -> ImageVector.vectorResource(R.drawable.rounded_school_24)
             else -> ImageVector.vectorResource(R.drawable.rounded_settings_24)
         }
 
         Box(
             modifier = Modifier
                 .offset(x = x.dp * subButtonOffsetsRatios[index], y = y.dp * subButtonOffsetsRatios[index])
+                .systemBarsPadding()
                 .graphicsLayer(
                     transformOrigin = TransformOrigin.Center,
                     scaleX = subButtonOffsetsRatios[index] * if (screenManagerViewModel.selectedScreen.ordinal == index + 1) 1.15f else 1.0f,
@@ -144,6 +129,7 @@ fun FloatingButtonView(
             contentAlignment = Alignment.BottomCenter,
             modifier = Modifier
                 .offset(x = x.dp * subButtonOffsetsRatios[index], y = y.dp * subButtonOffsetsRatios[index] + 26.dp)
+                .systemBarsPadding()
                 .graphicsLayer(
                     transformOrigin = TransformOrigin.Center,
                     scaleX = subButtonOffsetsRatios[index] * if (screenManagerViewModel.selectedScreen.ordinal == index + 1) 1.15f else 1.0f,
@@ -184,7 +170,8 @@ fun FloatingButtonView(
             fabViewModel.changeExpanded(!fabViewModel.expanded)
         },
         modifier = Modifier
-            .padding(16.dp)
+            .systemBarsPadding()
+            .padding(start = 16.dp, end = 16.dp, bottom = 16.dp, top = 16.dp)
             .graphicsLayer(
                 scaleX = buttonScale,
                 scaleY = buttonScale,

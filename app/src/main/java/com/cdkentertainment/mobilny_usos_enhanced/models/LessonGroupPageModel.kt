@@ -1,6 +1,7 @@
 package com.cdkentertainment.mobilny_usos_enhanced.models
 
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
+import com.cdkentertainment.mobilny_usos_enhanced.StudentData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
@@ -19,8 +20,8 @@ class LessonGroupPageModel {
     public suspend fun getLessonGroups(): SeasonGroupsGroupedBySubject {
         return withContext(Dispatchers.IO) {
             val response: BackendDataSender.BackendResponse = BackendDataSender.get(requestUrl)
-            if (response.statusCode == 200) {
-                val parsedLessonGroups: SeasonGroupsGroupedBySubject = parser.decodeFromString<SeasonGroupsGroupedBySubject>(response.body)
+            if (response.statusCode == 200 && response.body != null) {
+                val parsedLessonGroups: SeasonGroupsGroupedBySubject = parser.decodeFromString<SeasonGroupsGroupedBySubject>(response.body!!)
                 return@withContext parsedLessonGroups
             } else {
                 throw(Exception("API Error"))
@@ -31,13 +32,24 @@ class LessonGroupPageModel {
        return withContext(Dispatchers.IO) {
            val apiRequest: String = "$participantUrl?courseUnitId=$courseUnitId&groupNumber=$groupNumber"
            val response: BackendDataSender.BackendResponse = BackendDataSender.get(apiRequest)
-           if (response.statusCode == 200) {
-               val parsedLessonGroups: Participants = parser.decodeFromString<Participants>(response.body)
+           if (response.statusCode == 200 && response.body != null) {
+               val parsedLessonGroups: Participants = parser.decodeFromString<Participants>(response.body!!)
                return@withContext parsedLessonGroups
            } else {
                throw (Exception("API Error"))
            }
        }
+    }
+    public suspend fun fetchUserInfo(human: SharedDataClasses.Human): StudentData {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response: String = OAuthSingleton.get("users/user?user_id=${human.id}&fields=id|first_name|last_name|sex|email|has_photo|photo_urls[100x100]|student_status|has_email|mobile_numbers")["response"]!!
+                val parsedStudentData: StudentData = parser.decodeFromString<StudentData>(response)
+                return@withContext parsedStudentData
+            } catch (e: Exception) {
+                throw (Exception("API Error"))
+            }
+        }
     }
 }
 @Serializable

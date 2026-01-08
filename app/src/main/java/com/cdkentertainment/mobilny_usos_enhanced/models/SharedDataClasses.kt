@@ -1,5 +1,6 @@
 package com.cdkentertainment.mobilny_usos_enhanced.models
 
+import androidx.compose.runtime.Stable
 import kotlinx.serialization.Serializable
 
 class SharedDataClasses {
@@ -15,6 +16,7 @@ class SharedDataClasses {
         val name: LangDict
     )
 
+    @Stable
     @Serializable
     data class Human (
         val id: String,
@@ -30,7 +32,6 @@ class SharedDataClasses {
 }
 
 // from https://gist.github.com/mayankmkh/92084bdf2b59288d3e74c3735cccbf9f
-// Only for tests!!
 fun Any.prettyPrint(): String {
 
     var indentLevel = 0

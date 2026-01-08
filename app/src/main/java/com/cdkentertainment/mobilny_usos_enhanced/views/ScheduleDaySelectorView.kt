@@ -1,6 +1,7 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -9,7 +10,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -21,14 +24,15 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.SchedulePageViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -43,6 +47,7 @@ import kotlin.math.min
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScheduleDaySelectorView(
+    coroutineScope: CoroutineScope,
     modifier: Modifier = Modifier,
     onDaySelected: (Int) -> Unit = {}
 ) {
@@ -53,9 +58,8 @@ fun ScheduleDaySelectorView(
         "cz",
         "pt"
     )
-    val coroutineScope: CoroutineScope = rememberCoroutineScope()
     val schedulePageViewModel: SchedulePageViewModel = viewModel<SchedulePageViewModel>()
-    val datePickerState = rememberDatePickerState()
+    val datePickerState = rememberDatePickerState(Instant.now().toEpochMilli())
 
     LaunchedEffect(Unit) {
         schedulePageViewModel.selectDay(min(LocalDate.now().dayOfWeek.value - 1, 4))
@@ -63,14 +67,14 @@ fun ScheduleDaySelectorView(
 
     if (schedulePageViewModel.displayDateSelector) {
         DatePickerDialog(
-//            colors = DatePickerDefaults.colors(
-//
-//            ),
+            colors = DatePickerDefaults.colors(
+                containerColor = UISingleton.color3,
+            ),
+            shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp),
             onDismissRequest = { },
             confirmButton = {
                 TextButton(
                     onClick = {
-                        println(datePickerState.selectedDateMillis)
                         val localDate = datePickerState.selectedDateMillis?.let {
                             Instant.ofEpochMilli(it)
                                 .atZone(ZoneId.of("Europe/Warsaw"))
@@ -80,12 +84,18 @@ fun ScheduleDaySelectorView(
                             CoroutineScope(Dispatchers.IO).launch {
                                 schedulePageViewModel.resetSchedule()
                                 schedulePageViewModel.fetchWeekData(localDate)
+                                schedulePageViewModel.selectDay(min(localDate.dayOfWeek.value - 1, 4))
                             }
                         }
                         schedulePageViewModel.setDateSelectorVisibility(false)
                     }
                 ) {
-                    Text("OK")
+                    Text(
+                        text = "Ok",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = UISingleton.textColor4
+                    )
                 }
             },
             dismissButton = {
@@ -94,11 +104,44 @@ fun ScheduleDaySelectorView(
                         schedulePageViewModel.setDateSelectorVisibility(false)
                     }
                 ) {
-                    Text("Cancel")
+                    Text(
+                        text = stringResource(R.string.cancel),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = UISingleton.textColor4
+                    )
                 }
-            }
+            },
+            modifier = Modifier
+                .shadow(3.dp, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
+                .border(5.dp, UISingleton.color1, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
         ) {
-            DatePicker(state = datePickerState)
+            DatePicker(
+                state = datePickerState,
+                colors = DatePickerDefaults.colors(
+                    selectedDayContainerColor = UISingleton.color3,
+                    dayInSelectionRangeContainerColor = UISingleton.color3,
+                    disabledSelectedDayContainerColor = UISingleton.color3,
+                    containerColor = UISingleton.color2,
+                    titleContentColor = UISingleton.textColor1,
+                    headlineContentColor = UISingleton.textColor1,
+                    weekdayContentColor = UISingleton.textColor1,
+                    subheadContentColor = UISingleton.textColor1,
+                    todayDateBorderColor = UISingleton.textColor1,
+                    dayContentColor = UISingleton.textColor1,
+                    selectedDayContentColor = UISingleton.textColor4,
+                    todayContentColor = UISingleton.textColor1,
+                    currentYearContentColor = UISingleton.textColor1,
+                    yearContentColor = UISingleton.textColor1,
+                    navigationContentColor = UISingleton.textColor1,
+                    selectedYearContentColor = UISingleton.textColor4,
+                    selectedYearContainerColor = UISingleton.color3,
+                    dividerColor = UISingleton.color1
+                ),
+                showModeToggle = false,
+
+                modifier = Modifier.verticalScroll(rememberScrollState())
+            )
         }
     }
     Box(
@@ -129,6 +172,9 @@ fun ScheduleDaySelectorView(
                             count = 2,
                         ),
                         onClick = {
+                            if (schedulePageViewModel.loading) {
+                                return@SegmentedButton
+                            }
                             if (weekOptionIndex == 0) {
                                 if (schedulePageViewModel.selectedWeekOption != weekOptionIndex) {
                                     val dayIndex: Int = min(LocalDate.now().dayOfWeek.value - 1, 4)
@@ -136,7 +182,7 @@ fun ScheduleDaySelectorView(
                                     schedulePageViewModel.selectDay(dayIndex)
                                     coroutineScope.launch {
                                         withContext(Dispatchers.IO) {
-                                            schedulePageViewModel.fetchWeekData(LocalDate.of(2025, 5, 13))
+                                            schedulePageViewModel.fetchWeekData(LocalDate.now())
                                             onDaySelected(dayIndex)
                                         }
                                     }
@@ -145,7 +191,6 @@ fun ScheduleDaySelectorView(
                                 schedulePageViewModel.setDateSelectorVisibility(true)
                             }
                             schedulePageViewModel.selectWeekOption(weekOptionIndex)
-                            onDaySelected(schedulePageViewModel.selectedDay)
                         },
                         colors = SegmentedButtonDefaults.colors(
                             activeContentColor = UISingleton.textColor4,

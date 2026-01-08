@@ -1,5 +1,6 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
+import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,11 +19,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
+import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 
 @Composable
@@ -32,13 +36,14 @@ fun RatingStageView(
     headerMaxHeight: Int,
     onRatingChange: (Int) -> Unit
 ) {
+    val context: Context = LocalContext.current
     val rateNames: List<String> = listOf(
-        "Nie wybrano",
-        "Tragedia",
-        "Może być",
-        "Spoko",
-        "Super",
-        "Ekstra"
+        stringResource(R.string.not_chosen),
+        stringResource(R.string.disaster_rate),
+        stringResource(R.string.meh_rate),
+        stringResource(R.string.ok_rate),
+        stringResource(R.string.nice_rate),
+        stringResource(R.string.awesome_rate)
     )
     val density: Density = LocalDensity.current
 

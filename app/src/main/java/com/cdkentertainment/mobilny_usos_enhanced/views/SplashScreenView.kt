@@ -1,5 +1,6 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
+import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
@@ -14,10 +15,8 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -37,14 +36,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -56,12 +56,13 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun SplashScreenView(modifier: Modifier) {
+    val context: Context = LocalContext.current
     var animateTitleHeight: Boolean by rememberSaveable { mutableStateOf(false) }
     var animateIconOffset: Boolean by rememberSaveable { mutableStateOf(false) }
     var showEnhancedLabel: Boolean by rememberSaveable { mutableStateOf(false) }
     val density: Density = LocalDensity.current
     val textMeasurer: TextMeasurer = rememberTextMeasurer()
-    val appName: String = "Mobilny\nUSOS"
+    val appName: String = stringResource(R.string.app_name)
     val titleStyle: TextStyle = TextStyle(
         fontSize = 48.sp.scaleIndependent,
         color = UISingleton.textColor1,
@@ -147,8 +148,6 @@ fun SplashScreenView(modifier: Modifier) {
             AnimatedVisibility(
                 visible = iconHeight == titleHeightDp,
                 enter = expandHorizontally(tween(500, 250)),
-//                modifier = Modifier
-//                    .width(IntrinsicSize.Min)
             ) {
                 Box(
                     modifier = Modifier
@@ -178,17 +177,5 @@ fun SplashScreenView(modifier: Modifier) {
                 }
             }
         }
-    }
-}
-
-@Preview
-@Composable
-fun SplashScreenPreview() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(UISingleton.color1)
-    ) {
-        SplashScreenView(modifier = Modifier.weight(1f))
     }
 }

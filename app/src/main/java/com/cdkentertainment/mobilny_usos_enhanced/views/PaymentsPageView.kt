@@ -6,17 +6,17 @@ import androidx.compose.animation.core.EaseOutQuad
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -24,6 +24,7 @@ import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Done
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -38,14 +39,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.R
@@ -63,28 +62,36 @@ fun PaymentsPageView() {
     val coroutineScope: CoroutineScope = rememberCoroutineScope()
     val enterTransition: (Int) -> EnterTransition = UIHelper.slideEnterTransition
     val paymentsPageViewModel: PaymentsPageViewModel = viewModel<PaymentsPageViewModel>()
+
     var showElements: Boolean by rememberSaveable { mutableStateOf(false) }
     var showTexts: Boolean by rememberSaveable { mutableStateOf(false) }
+
     val unpaidSum: Float by animateFloatAsState(
         targetValue = if (showTexts) paymentsPageViewModel.unpaidSum else 0f,
         animationSpec = tween(2000, 0, EaseOutQuad)
     )
+
     var showPaid: Boolean by rememberSaveable { mutableStateOf(false) }
     var showUnpaid: Boolean by rememberSaveable { mutableStateOf(false) }
     var shownDebts: ShownDebts by rememberSaveable { mutableStateOf(ShownDebts.UNPAID) }
-    val density: Density = LocalDensity.current
-    val insets = WindowInsets.systemBars
-    val topInset = insets.getTop(density)
-    val bottomInset = insets.getBottom(density)
-    val topPadding = with(density) { topInset.toDp() }
-    val bottomPadding = with(density) { bottomInset.toDp() }
-    val paddingModifier: Modifier = Modifier.padding(horizontal = UISingleton.horizontalPadding, vertical = 8.dp)
+
+    val paddingModifier: Modifier = Modifier.padding(
+        horizontal = UISingleton.horizontalPadding,
+        vertical = 8.dp
+    )
 
     val textMeasurer = rememberTextMeasurer()
     val cardLabels: List<Pair<String, ImageVector>> = listOf(
-        Pair(stringResource(R.string.unpaid_debts), ImageVector.vectorResource(R.drawable.rounded_payments_24)),
-        Pair(stringResource(R.string.paid_debts), Icons.Rounded.Done),
+        Pair(
+            stringResource(R.string.unpaid_debts),
+            ImageVector.vectorResource(R.drawable.rounded_payments_24)
+        ),
+        Pair(
+            stringResource(R.string.paid_debts),
+            Icons.Rounded.Done
+        )
     )
+
     val cardLabelStyle: TextStyle = MaterialTheme.typography.titleLarge
     val maxCardWidth: Int = remember(cardLabels, cardLabelStyle) {
         cardLabels.maxOf {
@@ -95,20 +102,26 @@ fun PaymentsPageView() {
         }
     }
 
+    val onStart: () -> Unit = {
+        coroutineScope.launch {
+            paymentsPageViewModel.fetchPayments()
+            delay(150)
+            showElements = true
+            delay(150)
+            showUnpaid = true
+            showTexts = true
+        }
+    }
+
     LaunchedEffect(Unit) {
-        paymentsPageViewModel.fetchPayments()
-        delay(150)
-        showElements = true
-        delay(150)
-        showUnpaid = true
-        showTexts = true
+        onStart()
     }
 
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(0.dp),
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = topPadding, bottom = bottomPadding)
+            .systemBarsPadding()
     ) {
         item {
             PageHeaderView(
@@ -116,11 +129,40 @@ fun PaymentsPageView() {
                 icon = ImageVector.vectorResource(R.drawable.rounded_payments_24)
             )
         }
+
+        item { Spacer(modifier = Modifier.height(8.dp)) }
+
         item {
-            Spacer(modifier = Modifier.height(8.dp))
+            AnimatedVisibility(
+                visible = paymentsPageViewModel.loading,
+                modifier = paddingModifier
+            ) {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    CircularProgressIndicator(
+                        color = UISingleton.textColor2,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
+            }
         }
+
+        item {
+            AnimatedVisibility(
+                visible = paymentsPageViewModel.error && showElements,
+                enter = enterTransition(1)
+            ) {
+                TextAndIconCardView(
+                    stringResource(R.string.failed_to_fetch),
+                    paddingModifier
+                ) {
+                    onStart()
+                }
+            }
+        }
+
         val unpaidPayments: List<Payment>? = paymentsPageViewModel.unpaidPayments
         val paidPayments: List<Payment>? = paymentsPageViewModel.paidPayments
+
         item {
             FlowRow(
                 verticalArrangement = Arrangement.Center,
@@ -129,7 +171,10 @@ fun PaymentsPageView() {
                     .fillMaxWidth()
                     .padding(horizontal = 6.dp)
             ) {
-                AnimatedVisibility(showTexts, enter = scaleEnterTransition(1)) {
+                AnimatedVisibility(
+                    showTexts && paymentsPageViewModel.loaded,
+                    enter = scaleEnterTransition(1)
+                ) {
                     LatestSomethingView(
                         icon = cardLabels[0].second,
                         title = cardLabels[0].first,
@@ -147,7 +192,11 @@ fun PaymentsPageView() {
                         }
                     }
                 }
-                AnimatedVisibility(showTexts, enter = scaleEnterTransition(2)) {
+
+                AnimatedVisibility(
+                    showTexts && paymentsPageViewModel.loaded,
+                    enter = scaleEnterTransition(2)
+                ) {
                     LatestSomethingView(
                         icon = cardLabels[1].second,
                         title = cardLabels[1].first,
@@ -167,9 +216,13 @@ fun PaymentsPageView() {
                 }
             }
         }
+
         if (shownDebts == ShownDebts.UNPAID) {
             item {
-                AnimatedVisibility(showElements && showUnpaid, enter = enterTransition(2)) {
+                AnimatedVisibility(
+                    showElements && showUnpaid && paymentsPageViewModel.loaded,
+                    enter = enterTransition(2)
+                ) {
                     Card(
                         colors = CardDefaults.cardColors(
                             containerColor = UISingleton.color2,
@@ -179,15 +232,12 @@ fun PaymentsPageView() {
                         ),
                         elevation = CardDefaults.cardElevation(3.dp),
                         shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp),
-                        //border = BorderStroke(3.dp, UISingleton.color3),
-                        modifier = paddingModifier
-                            .fillMaxWidth()
+                        modifier = paddingModifier.fillMaxWidth()
                     ) {
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(6.dp),
                             verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .padding(12.dp)
+                            modifier = Modifier.padding(12.dp)
                         ) {
                             Icon(
                                 imageVector = ImageVector.vectorResource(R.drawable.rounded_payments_24),
@@ -197,8 +247,12 @@ fun PaymentsPageView() {
                                     .size(36.dp)
                                     .padding(end = 6.dp)
                             )
+
                             Column {
-                                AnimatedVisibility(showTexts, enter = enterTransition(2)) {
+                                AnimatedVisibility(
+                                    showTexts && paymentsPageViewModel.loaded,
+                                    enter = enterTransition(2)
+                                ) {
                                     Text(
                                         text = "${"%.2f".format(unpaidSum)} zł",
                                         style = MaterialTheme.typography.headlineMedium,
@@ -206,9 +260,13 @@ fun PaymentsPageView() {
                                         color = UISingleton.textColor1
                                     )
                                 }
-                                AnimatedVisibility(showTexts, enter = enterTransition(3)) {
+
+                                AnimatedVisibility(
+                                    showTexts && paymentsPageViewModel.loaded,
+                                    enter = enterTransition(3)
+                                ) {
                                     Text(
-                                        text = "Do zapłaty",
+                                        text = stringResource(R.string.to_pay),
                                         style = MaterialTheme.typography.titleMedium,
                                         fontWeight = FontWeight.Light,
                                         color = UISingleton.textColor1
@@ -219,10 +277,11 @@ fun PaymentsPageView() {
                     }
                 }
             }
+
             if (!unpaidPayments.isNullOrEmpty()) {
                 items(unpaidPayments.size) { index ->
                     AnimatedVisibility(
-                        visible = showTexts && showUnpaid,
+                        visible = showTexts && showUnpaid && paymentsPageViewModel.loaded,
                         enter = enterTransition(3 + index)
                     ) {
                         PaymentView(
@@ -234,14 +293,14 @@ fun PaymentsPageView() {
             } else {
                 item {
                     AnimatedVisibility(
-                        showTexts && showUnpaid,
+                        showTexts && showUnpaid && paymentsPageViewModel.loaded,
                         enter = enterTransition(3)
                     ) {
                         TextAndIconCardView(
-                            title = "Brak nierozliczonych płatności",
+                            title = stringResource(R.string.no_unpaid_debts),
                             icon = Icons.Rounded.Done,
                             modifier = paddingModifier,
-                            backgroundColor = UISingleton.color2,
+                            backgroundColor = UISingleton.color2
                         )
                     }
                 }
@@ -250,8 +309,8 @@ fun PaymentsPageView() {
             if (!paidPayments.isNullOrEmpty()) {
                 items(paidPayments.size) { index ->
                     AnimatedVisibility(
-                        visible = showTexts && showPaid,
-                        enter = enterTransition(2 + index),
+                        visible = showTexts && showPaid && paymentsPageViewModel.loaded,
+                        enter = enterTransition(2 + index)
                     ) {
                         PaymentView(
                             payment = paidPayments[index],
@@ -262,25 +321,23 @@ fun PaymentsPageView() {
             } else {
                 item {
                     AnimatedVisibility(
-                        showTexts && showPaid,
+                        showTexts && showPaid && paymentsPageViewModel.loaded,
                         enter = enterTransition(2)
                     ) {
                         TextAndIconCardView(
-                            title = "Brak rozliczonych płatności",
+                            title = stringResource(R.string.no_paid_debts),
                             icon = Icons.Rounded.Close,
                             modifier = paddingModifier,
-                            backgroundColor = UISingleton.color2,
+                            backgroundColor = UISingleton.color2
                         )
                     }
                 }
             }
-            item {
-                Spacer(modifier = Modifier.height(24.dp))
-            }
+
+            item { Spacer(modifier = Modifier.height(24.dp)) }
         }
-        item {
-            Spacer(modifier = Modifier.height(64.dp))
-        }
+
+        item { Spacer(modifier = Modifier.height(64.dp)) }
     }
 }
 

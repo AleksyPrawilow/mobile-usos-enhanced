@@ -5,6 +5,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
+import com.cdkentertainment.mobilny_usos_enhanced.PeopleSingleton
+import com.cdkentertainment.mobilny_usos_enhanced.Student
+import com.cdkentertainment.mobilny_usos_enhanced.StudentData
 import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.models.GradesPageModel
 import com.cdkentertainment.mobilny_usos_enhanced.models.LessonGroup
@@ -29,26 +32,23 @@ class LessonGroupPageViewModel: ViewModel() {
     var lessonGroups: SeasonGroupsGroupedBySubject? by mutableStateOf(null)
         private set
     var groupDetails = mutableMapOf<String, GroupDetails>()
+    var loading: Boolean by mutableStateOf(false)
+    var loaded: Boolean by mutableStateOf(false)
+    var error: Boolean by mutableStateOf(false)
 
     private val model: LessonGroupPageModel = LessonGroupPageModel()
     private val gradesPageModel: GradesPageModel = GradesPageModel()
     var classtypeIdInfo: Map<String, SharedDataClasses.IdAndName>? by mutableStateOf(null)
 
     suspend fun fetchLessonGroups() {
+        classtypeIdInfo = UIHelper.classTypeIds
+        if (lessonGroups != null) {
+            return
+        }
         withContext(Dispatchers.IO) {
-            if (UIHelper.classTypeIds.isEmpty()) {
-                try {
-                    UIHelper.classTypeIds = gradesPageModel.fetchClasstypeIds()
-                    classtypeIdInfo = UIHelper.classTypeIds
-                } catch (e: Exception) {
-                    println(e)
-                }
-            } else {
-                classtypeIdInfo = UIHelper.classTypeIds
-            }
-            if (lessonGroups != null) {
-                return@withContext
-            }
+            error = false
+            loaded = false
+            loading = true
             try {
                 lessonGroups = model.getLessonGroups()
                 for (seasonId in lessonGroups!!.groups.keys) {
@@ -64,8 +64,13 @@ class LessonGroupPageViewModel: ViewModel() {
                         }
                     }
                 }
+                loading = false
+                error = false
+                loaded = true
             } catch (e: Exception) {
-                // TODO: Add error handling
+                loading = false
+                loaded = false
+                error = true
                 return@withContext
             }
         }
@@ -73,11 +78,20 @@ class LessonGroupPageViewModel: ViewModel() {
 
     suspend fun fetchParticipants(groupNumber: String, courseUnitId: String): Participants? {
         return withContext(Dispatchers.IO) {
+            return@withContext model.getParticipantOfGivenGroup(groupNumber, courseUnitId)
+        }
+    }
+
+    suspend fun fetchUserInfo(human: SharedDataClasses.Human): Boolean {
+        if (PeopleSingleton.students.containsKey(human.id)) return true
+        return withContext(Dispatchers.IO) {
             try {
-                return@withContext model.getParticipantOfGivenGroup(groupNumber, courseUnitId)
+                val studentData: StudentData = model.fetchUserInfo(human)
+                PeopleSingleton.students[human.id] = Student(human, studentData)
+                return@withContext true
             } catch (e: Exception) {
-                // TODO: Add error handling
-                return@withContext null
+                e.printStackTrace()
+                return@withContext false
             }
         }
     }

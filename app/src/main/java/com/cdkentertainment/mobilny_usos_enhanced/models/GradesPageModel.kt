@@ -12,23 +12,11 @@ class GradesPageModel {
     private val classtypeUrl: String = "ClassTypeIds"
     private val examDistributionUrl: String = "Distribution"
 
-    public suspend fun fetchClasstypeIds(): Map<String, SharedDataClasses.IdAndName> {
-        return withContext(Dispatchers.IO) {
-            val apiResponse: BackendDataSender.BackendResponse = BackendDataSender.get("$gradesUrl/$classtypeUrl")
-            if (apiResponse.statusCode == 200)  {
-                val responseString: String = apiResponse.body
-                val parsedResponse: Map<String, SharedDataClasses.IdAndName> = parser.decodeFromString<Map<String, SharedDataClasses.IdAndName>>(responseString)
-                return@withContext parsedResponse
-            } else {
-                throw(Exception("API Error"))
-            }
-        }
-    }
     public suspend fun fetchUserGrades(seasonId: String) : Season{
         return withContext(Dispatchers.IO) {
             val response: BackendDataSender.BackendResponse = BackendDataSender.get("$gradesUrl?seasonId=$seasonId")
-            if (response.statusCode == 200) {
-                val responseString: String = response.body
+            if (response.statusCode == 200 && response.body != null) {
+                val responseString: String = response.body!!
                 val parsedGrades: Season = parser.decodeFromString<Season>(responseString)
                 return@withContext parsedGrades
             } else {
@@ -39,23 +27,10 @@ class GradesPageModel {
     public suspend fun getGivenExamGradesDistribution(examId: Int): GradesDistribution {
         return withContext(Dispatchers.IO) {
             val response: BackendDataSender.BackendResponse = BackendDataSender.get("$gradesUrl/$examDistributionUrl?id=$examId")
-            if (response.statusCode == 200) {
-                val responseString: String = response.body
+            if (response.statusCode == 200 && response.body != null) {
+                val responseString: String = response.body!!
                 val parsedExamDistribution: GradesDistribution = parser.decodeFromString<GradesDistribution>(responseString)
                 return@withContext parsedExamDistribution
-            } else {
-                throw(Exception("API Error"))
-            }
-        }
-    }
-
-    public suspend fun getTermIds(): List<String> {
-        return withContext(Dispatchers.IO) {
-            val response: BackendDataSender.BackendResponse = BackendDataSender.get("$gradesUrl/$termIdsUrl")
-            if (response.statusCode == 200) {
-                val responseString: String = response.body
-                val parsedResponse: List<String> = parser.decodeFromString<List<String>>(responseString)
-                return@withContext parsedResponse
             } else {
                 throw(Exception("API Error"))
             }

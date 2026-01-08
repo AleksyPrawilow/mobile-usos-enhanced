@@ -4,9 +4,10 @@ import android.app.Activity
 import android.graphics.Color.TRANSPARENT
 import android.os.Bundle
 import android.view.Window
-import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
@@ -22,6 +23,7 @@ import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
@@ -35,15 +37,16 @@ import com.cdkentertainment.mobilny_usos_enhanced.views.FloatingButtonView
 import com.cdkentertainment.mobilny_usos_enhanced.views.ScreenManager
 import kotlinx.coroutines.runBlocking
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        runBlocking {
+            UserDataSingleton.readSettings(this@MainActivity)
+        }
+        enableEdgeToEdge(
+            navigationBarStyle = SystemBarStyle.dark(Color.Transparent.toArgb())
+        )
         setContent {
-            val context = LocalContext.current
-            runBlocking {
-                UserDataSingleton.readSettings(context)
-            }
             MobilnyUSOSEnhancedTheme {
                 ContentView()
             }
@@ -57,6 +60,7 @@ fun SetStatusBarIconsLight(window: Window, lightIcons: Boolean) {
     if (!view.isInEditMode) {
         val insetsController = WindowInsetsControllerCompat(window, view)
         insetsController.isAppearanceLightStatusBars = !lightIcons
+        insetsController.isAppearanceLightNavigationBars = !lightIcons
     }
 }
 
@@ -86,7 +90,7 @@ fun ContentView() {
         )
     )
     val fabOffsetRatio: Float by animateFloatAsState(
-        targetValue = if (screenManagerViewModel.authorized) 0f else 1f,
+        targetValue = if (screenManagerViewModel.showFab) 0f else 1f,
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioMediumBouncy,
             stiffness = 100f

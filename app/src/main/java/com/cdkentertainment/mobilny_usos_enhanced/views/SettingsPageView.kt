@@ -10,11 +10,10 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -28,12 +27,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -57,12 +54,6 @@ fun SettingsPageView() {
     var showLogOutConfirm: Boolean by rememberSaveable { mutableStateOf(false) }
     var showPrivacyPolicy: Boolean by rememberSaveable { mutableStateOf(false) }
     val context: Context = LocalContext.current
-    val density: Density = LocalDensity.current
-    val insets = WindowInsets.systemBars
-    val topInset = insets.getTop(density)
-    val bottomInset = insets.getBottom(density)
-    val topPadding = with(density) { topInset.toDp() }
-    val bottomPadding = with(density) { bottomInset.toDp() }
     val paddingModifier: Modifier = Modifier.padding(horizontal = UISingleton.horizontalPadding, vertical = 8.dp)
     val textStyle: TextStyle = MaterialTheme.typography.titleMedium
     val fontWeight: FontWeight = FontWeight.Bold
@@ -112,10 +103,7 @@ fun SettingsPageView() {
         verticalArrangement = Arrangement.spacedBy(0.dp),
         modifier = Modifier
             .fillMaxSize()
-            .padding(
-                top = topPadding,
-                bottom = bottomPadding
-            )
+            .systemBarsPadding()
     ) {
         item {
             PageHeaderView(

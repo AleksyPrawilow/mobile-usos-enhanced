@@ -5,28 +5,17 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.models.SubjectTestContainer
 import com.cdkentertainment.mobilny_usos_enhanced.models.TestsContainer
 import com.cdkentertainment.mobilny_usos_enhanced.models.TestsPageModel
-import com.cdkentertainment.mobilny_usos_enhanced.models.prettyPrint
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.util.Stack
 
-fun main(): Unit = runBlocking { //dla testów
-    OAuthSingleton.setTestAccessToken()
-    val model = TestsPageModel()
-    launch {
-        val test = model.getAllTests()
-        val testData = model.getSingleTestInfo(94530)
-        println(testData.prettyPrint())
-    }
-}
-
 class TestsPageViewModel: ViewModel() {
+    var loading: Boolean by mutableStateOf(false)
+    var loaded: Boolean by mutableStateOf(false)
+    var error: Boolean by mutableStateOf(false)
     var tests: TestsContainer? by mutableStateOf(null)
     var testDetails: MutableMap<Int, SubjectTestContainer> = mutableStateMapOf()
     var testsSelectedFolder: MutableMap<Int, SubjectTestContainer> = mutableStateMapOf()
@@ -34,14 +23,23 @@ class TestsPageViewModel: ViewModel() {
     val model = TestsPageModel()
 
     suspend fun fetchTests() {
+        if (tests != null || loaded) {
+            return
+        }
         withContext(Dispatchers.IO) {
-            if (tests != null) {
+            if (loading) {
                 return@withContext
             }
             try {
                 tests = model.getAllTests()
+                loaded = true
+                loading = false
+                error = false
             } catch(e: Exception) {
-                println(e)
+                loaded = false
+                loading = false
+                error = true
+                return@withContext
             }
         }
     }
@@ -57,7 +55,6 @@ class TestsPageViewModel: ViewModel() {
                 testsSelectedFolder[testId] = details
                 return@withContext true
             } catch(e: Exception) {
-                println(e)
                 return@withContext false
             }
         }

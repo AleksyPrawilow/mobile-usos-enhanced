@@ -1,6 +1,7 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
 import android.content.Context
+import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -15,7 +16,6 @@ import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.getLocalized
 import com.cdkentertainment.mobilny_usos_enhanced.models.Course
 import com.cdkentertainment.mobilny_usos_enhanced.models.CourseUnitData
-import com.cdkentertainment.mobilny_usos_enhanced.models.SharedDataClasses
 import com.cdkentertainment.mobilny_usos_enhanced.models.TermGrade
 
 
@@ -23,7 +23,6 @@ import com.cdkentertainment.mobilny_usos_enhanced.models.TermGrade
 fun CourseGradesView(
     data: Course,
     nameMap: Map<String, CourseUnitData>,
-    classtypeIdInfo: Map<String, SharedDataClasses.IdAndName>?,
     modifier: Modifier = Modifier
 ) {
     val context: Context = LocalContext.current
@@ -32,7 +31,7 @@ fun CourseGradesView(
 
     if (showDetails && popupGrade != null) {
         GradePopupView(
-            popupGrade!!,
+            grade = popupGrade!!,
             title = nameMap[data.courseGrades.course_units_grades.keys.first()]?.course_name?.getLocalized(context) ?: "N/A"
         ) {
             UISingleton.dropBlurContent()
@@ -47,17 +46,20 @@ fun CourseGradesView(
     ) {
         for (courseUnit in data.courseGrades.course_units_grades.keys) {
             val unitClassType: String = nameMap[courseUnit]?.classtype_id ?: "N/A"
-            val condition: Boolean = data.courseGrades.course_units_grades[courseUnit] != null && data.courseGrades.course_units_grades[courseUnit]!![0]["1"] != null
+            val condition: Boolean = data.courseGrades.course_units_grades[courseUnit] != null && data.courseGrades.course_units_grades[courseUnit]?.first()["1"] != null
             GradeCardView(
                 courseName = UIHelper.classTypeIds[unitClassType]?.name?.getLocalized(context) ?: "N/A",
-                grade = if (condition) data.courseGrades.course_units_grades[courseUnit]!![0]["1"]!!.value_symbol else "—",
+                grade = if (condition) data.courseGrades.course_units_grades[courseUnit]?.first()["1"]?.value_symbol ?: "—" else "—",
                 showArrow = condition,
                 backgroundColor = UISingleton.color1,
                 sideIcon = ImageVector.vectorResource(UIHelper.activityTypeIconMapping[nameMap[courseUnit]?.classtype_id] ?: UIHelper.otherIcon)
             ) {
                 UISingleton.blurContent()
-                showDetails = true
-                popupGrade = data.courseGrades.course_units_grades[courseUnit]!![0]["1"]
+                popupGrade = data.courseGrades.course_units_grades[courseUnit]?.first()["1"]
+                showDetails = popupGrade != null
+                if (!showDetails) {
+                    Toast.makeText(context, "Coś poszło nie tak.", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }

@@ -1,11 +1,10 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
 import android.content.Context
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,6 +12,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -20,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -40,6 +42,8 @@ import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.getLocalized
 import com.cdkentertainment.mobilny_usos_enhanced.models.AttendanceDatesObject
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.AttendancePageViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
@@ -48,16 +52,37 @@ fun UnpinnedCoursePopupView(
     onDismissRequest: () -> Unit,
     onAddPin: () -> Unit
 ) {
+    var loading: Boolean by rememberSaveable { mutableStateOf(false) }
+    var loaded: Boolean by rememberSaveable { mutableStateOf(false) }
+    var error: Boolean by rememberSaveable { mutableStateOf(false) }
+    val coroutineScope: CoroutineScope = rememberCoroutineScope()
     val viewModel: AttendancePageViewModel = viewModel<AttendancePageViewModel>()
     val formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale.getDefault())
     val context: Context = LocalContext.current
     val classType: String? = viewModel.popupData?.classGroupData?.class_type_id
     var showPinDialog: Boolean by rememberSaveable { mutableStateOf(false) }
-    val meetings: List<AttendanceDatesObject>? = viewModel.unitMeetings[viewModel.popupData!!.classGroupData.course_unit_id.toString()]
+    val meetings: List<AttendanceDatesObject>? = viewModel.unitMeetings[viewModel.popupData?.classGroupData?.course_unit_id.toString()]
+
+    val loadMeetingsData: () -> Unit = {
+        coroutineScope.launch {
+            try {
+                loading = true
+                loaded = false
+                error = false
+                viewModel.readAllCourseMeetings(viewModel.popupData!!.classGroupData)
+                loading = false
+                error = false
+                loaded = true
+            } catch (e: Exception) {
+                loading = false
+                loaded = false
+                error = true
+            }
+        }
+    }
 
     LaunchedEffect(Unit) {
-        viewModel.readAllCourseMeetings(viewModel.popupData!!.classGroupData)
-        println(viewModel.unitMeetings)
+        loadMeetingsData()
     }
 
     if (showPinDialog) {
@@ -92,16 +117,6 @@ fun UnpinnedCoursePopupView(
                     PopupHeaderView(viewModel.popupData?.classGroupData?.course_name?.getLocalized(context) ?: "N/A")
                 }
                 item {
-                    TextAndIconCardView(
-                        title = stringResource(R.string.add_pin),
-                        icon = ImageVector.vectorResource(R.drawable.rounded_pin_24),
-                        modifier = Modifier.padding(top = 12.dp, start = 12.dp, end = 12.dp),
-                        backgroundColor = UISingleton.color1
-                    ) {
-                        showPinDialog = true
-                    }
-                }
-                item {
                     GroupedContentContainerView(
                         title = stringResource(R.string.subject),
                         backgroundColor = UISingleton.color1,
@@ -123,11 +138,26 @@ fun UnpinnedCoursePopupView(
                     }
                 }
                 item {
+                    AnimatedVisibility(
+                        visible = loaded,
+                        enter = UIHelper.slideEnterTransition(1)
+                    ) {
+                        TextAndIconCardView(
+                            title = stringResource(R.string.add_pin),
+                            icon = ImageVector.vectorResource(R.drawable.rounded_pin_24),
+                            modifier = Modifier.padding(top = 12.dp, start = 12.dp, end = 12.dp),
+                            backgroundColor = UISingleton.color1
+                        ) {
+                            showPinDialog = true
+                        }
+                    }
+                }
+                item {
                     Spacer(
                         modifier = Modifier.height(12.dp)
                     )
                 }
-                if (meetings != null) {
+                if (loaded && meetings != null) {
                     item {
                         Text(
                             text = stringResource(R.string.meetings),
@@ -153,16 +183,34 @@ fun UnpinnedCoursePopupView(
                             modifier = Modifier.animateItem()
                         )
                     }
-                } else {
-                    item {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(0.dp, alignment = Alignment.CenterHorizontally),
-                            modifier = Modifier
-                                .fillMaxWidth()
+                }
+                item {
+                    AnimatedVisibility(
+                        visible = loading,
+                        enter = UIHelper.slideEnterTransition(1)
+                    ) {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.fillMaxWidth().padding(12.dp)
                         ) {
-                            CircularProgressIndicator(
-                                color = UISingleton.textColor2,
-                            )
+                            CircularProgressIndicator(color = UISingleton.textColor2)
+                        }
+                    }
+                }
+                item {
+                    AnimatedVisibility(
+                        visible = error,
+                        enter = UIHelper.slideEnterTransition(1)
+                    ) {
+                        TextAndIconCardView(
+                            title = stringResource(R.string.failed_to_fetch),
+                            icon = Icons.Rounded.Refresh,
+                            iconSize = 40.dp,
+                            iconPadding = 6.dp,
+                            backgroundColor = UISingleton.color1,
+                            modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 0.dp)
+                        ) {
+                            loadMeetingsData()
                         }
                     }
                 }

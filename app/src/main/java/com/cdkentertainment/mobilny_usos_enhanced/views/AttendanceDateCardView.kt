@@ -50,7 +50,7 @@ fun AttendanceDateCardView(
         Icons.Rounded.Close,
         ImageVector.vectorResource(R.drawable.rounded_door_open_24),
     )
-    val state = remember { mutableStateOf(0) }
+    val state = remember { mutableStateOf(1) }
     val shape: RoundedCornerShape = remember {
         RoundedCornerShape(
             topStart = 0.dp,

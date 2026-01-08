@@ -43,7 +43,6 @@ class GradesPageViewModel: ViewModel() {
     }
     fun fetchSemesterGrades(semester: String) {
         if (userSubjects.containsKey(semester) || loadingMap[semester] == true) return
-        println("fetch")
         loadingMap[semester] = true
         errorMap[semester] = false
         loadedMap[semester] = false

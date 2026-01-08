@@ -16,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -37,12 +38,14 @@ fun GroupParticipantCardView(
     if (showDetails) {
         StudentInfoPopupView(data = participant, onDismissRequest = { showDetails = false })
     }
-    val shape: RoundedCornerShape = RoundedCornerShape(
-        topStart = 0.dp,
-        topEnd = 0.dp,
-        bottomStart = if (index == participantsSize - 1) UISingleton.uiElementsCornerRadius.dp else 0.dp,
-        bottomEnd = if (index == participantsSize - 1) UISingleton.uiElementsCornerRadius.dp else 0.dp,
-    )
+    val shape: RoundedCornerShape = remember {
+        RoundedCornerShape(
+            topStart = 0.dp,
+            topEnd = 0.dp,
+            bottomStart = if (index == participantsSize - 1) UISingleton.uiElementsCornerRadius.dp else 0.dp,
+            bottomEnd = if (index == participantsSize - 1) UISingleton.uiElementsCornerRadius.dp else 0.dp,
+        )
+    }
     Card(
         colors = CardColors(
             contentColor = UISingleton.textColor1,

@@ -33,8 +33,8 @@ class SchedulePageModel {
         return withContext(Dispatchers.IO) {
             val firstDayOFWeekString = getDayOfWeekDate(date, true)
             val response: BackendDataSender.BackendResponse = BackendDataSender.get("$requestWeekUrl?date=$firstDayOFWeekString")
-            if (response.statusCode == 200) {
-                val responseString: String = response.body
+            if (response.statusCode == 200 && response.body != null) {
+                val responseString: String = response.body!!
                 val parsedSchedule: Schedule = parser.decodeFromString<Schedule>(responseString)
                 return@withContext parsedSchedule
             } else {
@@ -46,8 +46,8 @@ class SchedulePageModel {
         return withContext(Dispatchers.IO) {
             val dayString: String = getFormattedDateString(date)
             val response: BackendDataSender.BackendResponse = BackendDataSender.get("$requestDayUrl?date=$dayString")
-            if (response.statusCode == 200) {
-                val responseString: String = response.body
+            if (response.statusCode == 200 && response.body != null) {
+                val responseString: String = response.body!!
                 val parsedSchedule: Schedule = parser.decodeFromString<Schedule>(responseString)
                 return@withContext parsedSchedule
             } else {
