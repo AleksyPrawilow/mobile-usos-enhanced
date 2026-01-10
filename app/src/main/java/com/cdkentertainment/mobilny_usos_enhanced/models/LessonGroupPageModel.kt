@@ -11,7 +11,7 @@ class LessonGroupPageModel {
     private val parser = Json {ignoreUnknownKeys = true}
     private val requestUrl = "LessonGroups/Groups"
     private val participantUrl = "LessonGroups/Participants"
-    private val userUrl = "users/user"
+    private val userUrl = "Users/User"
     public fun mergeGroupsBySubjects(seasonGroups: List<LessonGroup>): Map<String, List<LessonGroup>> {
         val groupedBySubjects = seasonGroups.groupBy { group ->
             group.course_id
