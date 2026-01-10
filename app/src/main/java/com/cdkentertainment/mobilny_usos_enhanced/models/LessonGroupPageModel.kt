@@ -11,6 +11,7 @@ class LessonGroupPageModel {
     private val parser = Json {ignoreUnknownKeys = true}
     private val requestUrl = "LessonGroups/Groups"
     private val participantUrl = "LessonGroups/Participants"
+    private val userUrl = "users/user"
     public fun mergeGroupsBySubjects(seasonGroups: List<LessonGroup>): Map<String, List<LessonGroup>> {
         val groupedBySubjects = seasonGroups.groupBy { group ->
             group.course_id
@@ -42,11 +43,12 @@ class LessonGroupPageModel {
     }
     public suspend fun fetchUserInfo(human: SharedDataClasses.Human): StudentData {
         return withContext(Dispatchers.IO) {
-            try {
-                val response: String = OAuthSingleton.get("users/user?user_id=${human.id}&fields=id|first_name|last_name|sex|email|has_photo|photo_urls[100x100]|student_status|has_email|mobile_numbers")["response"]!!
-                val parsedStudentData: StudentData = parser.decodeFromString<StudentData>(response)
+            val request: String = "$userUrl?userId=${human.id}"
+            val response: BackendDataSender.BackendResponse = BackendDataSender.get(request)
+            if (response.statusCode == 200 && response.body != null) {
+                val parsedStudentData: StudentData = parser.decodeFromString<StudentData>(response.body!!)
                 return@withContext parsedStudentData
-            } catch (e: Exception) {
+            } else {
                 throw (Exception("API Error"))
             }
         }
