@@ -53,8 +53,9 @@ class TestsPageViewModel: ViewModel() {
                 val details = model.getSingleTestInfo(testId)
                 testDetails[testId] = details
                 testsSelectedFolder[testId] = details
-                return@withContext true
+                return@withContext false
             } catch(e: Exception) {
+                e.printStackTrace()
                 return@withContext false
             }
         }

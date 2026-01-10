@@ -1,18 +1,15 @@
 package com.cdkentertainment.mobilny_usos_enhanced.models
 
 
-import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import javax.security.auth.Subject
 
 class TestsPageModel {
     private val parser: Json = Json { ignoreUnknownKeys = true }
     private val allTestsUrl: String = "Tests"
-    private val singleSubjectUrl: String = "Tests/Details"
+    private val singleSubjectUrl: String = "Tests/Core"
     private fun parseAllTests(responseString: String): TestsContainer {
         val participantTests: TestsContainer = parser.decodeFromString<TestsContainer>(responseString)
         return participantTests
@@ -29,11 +26,12 @@ class TestsPageModel {
             }
         }
     }
-    public suspend fun getSingleTestInfo(nodeId: Int): SubjectTestWithSubnodes {
+    public suspend fun getSingleTestInfo(nodeId: Int): SubjectTestContainer {
         return withContext(Dispatchers.IO) {
             val response: BackendDataSender.BackendResponse = BackendDataSender.get("$singleSubjectUrl?id=$nodeId")
+            println(response)
             if (response.statusCode == 200 && response.body != null) {
-                val parsedTests: SubjectTestWithSubnodes = parser.decodeFromString<SubjectTestWithSubnodes>(response.body!!)
+                val parsedTests: SubjectTestContainer = parser.decodeFromString<SubjectTestContainer>(response.body!!)
                 return@withContext parsedTests
             } else {
                 throw(Exception("API Error"))
@@ -42,24 +40,6 @@ class TestsPageModel {
     }
 }
 
-@Serializable
-data class Subnodes (
-    val id: Int,
-    val order: Int,
-    val name: SharedDataClasses.LangDict
-)
-
-@Serializable
-data class SubjectTestWithSubnodes (
-    val name: SharedDataClasses.LangDict ?,
-    val description: SharedDataClasses.LangDict ?,
-    val id: Int ?,
-    val students_points: StudentsPoints ?,
-    val folder_node_details: FolderNodeDetails ?,
-    val grade_node_details: GradeNodeDetails ?,
-    val task_node_details: TaskNodeDetails ?,
-    val subnodes: List<Subnodes?>?
-)
 @Serializable
 data class TestsContainer ( val tests: Map<String, Map<String, Test>>)
 @Serializable
@@ -86,8 +66,6 @@ data class SubjectTestContainer (
     val name: SharedDataClasses.LangDict ?,
     val description: SharedDataClasses.LangDict ?,
     val id: Int ?,
-    val students_points: StudentsPoints ?,
-    val folder_node_details: FolderNodeDetails ?,
     val grade_node_details: GradeNodeDetails ?,
     val task_node_details: TaskNodeDetails ?,
     val subnodes_deep: List<SubjectTestContainer ?>?
@@ -95,39 +73,20 @@ data class SubjectTestContainer (
 @Serializable
 data class StudentsPoints (
     val points: Float?,
-    val comment: String ?,
-    val grader: SharedDataClasses.Human?,
-    val last_changed: String?
-)
-@Serializable
-data class FolderNodeDetails (
-    val points_max: Float?,
-    val points_min: Float?
 )
 @Serializable
 data class TaskNodeDetails (
-    val points_min: Float ?,
-    val points_max: Float ?,
-    val points_precision: Float ?,
-    val variables: String ?,
-    val algorithm: String ?,
-    val algorithm_description: SharedDataClasses.LangDict ?
+    val students_points: StudentsPoints?
 )
 @Serializable
 data class GradeNodeDetails (
     val students_grade: StudentsGrade ?,
-    //val all_students_grades: List<>
 )
 @Serializable
 data class StudentsGrade (
-    val grade_value: GradeValue ?,
-    val automatic_grade_value: GradeValue ?,
-    val comment: String ?,
-    val last_changed: String ?
+    val grade_value: GradeValue ?
 )
 @Serializable
 data class GradeValue (
-    val order_key: Int ?,
-    val symbol: String ?,
-    val name: SharedDataClasses.LangDict ?
+    val symbol: String ?
 )

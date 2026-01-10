@@ -247,11 +247,10 @@ fun TestCardView(
                             )
                             for (node in folder.subnodes_deep ?: listOf()) {
                                 when {
-                                    node!!.folder_node_details != null -> {
+                                    node!!.task_node_details == null && node.grade_node_details == null -> {
                                         NodeFolderView(
                                             node.name?.getLocalized(context) ?: "N/A",
-                                            node.folder_node_details,
-                                            node.students_points
+                                            null
                                         ) {
                                             viewModel.changeCurrentFolder(
                                                 data.node_id,
@@ -268,7 +267,7 @@ fun TestCardView(
                                         NodeTaskView(
                                             node.name?.getLocalized(context) ?: "N/A",
                                             node.task_node_details,
-                                            node.students_points,
+                                            node.task_node_details.students_points,
                                             node.subnodes_deep
                                         ) {
                                             viewModel.changeCurrentFolder(

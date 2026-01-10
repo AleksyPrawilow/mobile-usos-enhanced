@@ -1,13 +1,11 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
 import androidx.compose.runtime.Composable
-import com.cdkentertainment.mobilny_usos_enhanced.models.FolderNodeDetails
 import com.cdkentertainment.mobilny_usos_enhanced.models.StudentsPoints
 
 @Composable
 fun NodeFolderView(
     nodeName: String,
-    folderNodeDetails: FolderNodeDetails,
     studentsPoints: StudentsPoints? = null,
     onClick: () -> Unit = {}
 ) {
