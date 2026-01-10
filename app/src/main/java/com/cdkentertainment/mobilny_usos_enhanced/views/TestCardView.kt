@@ -265,10 +265,11 @@ fun TestCardView(
 
                                     node.task_node_details != null -> {
                                         NodeTaskView(
-                                            node.name?.getLocalized(context) ?: "N/A",
-                                            node.task_node_details,
-                                            node.task_node_details.students_points,
-                                            node.subnodes_deep
+                                            nodeName = node.name?.getLocalized(context) ?: "N/A",
+                                            taskNodeDetails = node.task_node_details,
+                                            studentsPoints = node.task_node_details.students_points,
+                                            subnodes = node.subnodes_deep,
+                                            nodeId = node.id!!
                                         ) {
                                             viewModel.changeCurrentFolder(
                                                 data.node_id,
@@ -283,8 +284,9 @@ fun TestCardView(
 
                                     node.grade_node_details != null -> {
                                         NodeGradeView(
-                                            node.name?.getLocalized(context) ?: "N/A",
-                                            node.grade_node_details
+                                            courseName = node.name?.getLocalized(context) ?: "N/A",
+                                            data = node.grade_node_details,
+                                            nodeId = node.id!!
                                         )
                                     }
                                 }

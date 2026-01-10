@@ -10,10 +10,8 @@ class TestsPageModel {
     private val parser: Json = Json { ignoreUnknownKeys = true }
     private val allTestsUrl: String = "Tests"
     private val singleSubjectUrl: String = "Tests/Core"
-    private fun parseAllTests(responseString: String): TestsContainer {
-        val participantTests: TestsContainer = parser.decodeFromString<TestsContainer>(responseString)
-        return participantTests
-    }
+    private val specificTaskDetailsUrl: String = "Tests/TaskDetails"
+    private val specifigGradeDetailsUrl: String = "Tests/GradeDetails"
     public suspend fun getAllTests(): TestsContainer {
         return withContext(Dispatchers.IO) {
             val response: BackendDataSender.BackendResponse = BackendDataSender.get(allTestsUrl)
@@ -29,10 +27,33 @@ class TestsPageModel {
     public suspend fun getSingleTestInfo(nodeId: Int): SubjectTestContainer {
         return withContext(Dispatchers.IO) {
             val response: BackendDataSender.BackendResponse = BackendDataSender.get("$singleSubjectUrl?id=$nodeId")
-            println(response)
             if (response.statusCode == 200 && response.body != null) {
                 val parsedTests: SubjectTestContainer = parser.decodeFromString<SubjectTestContainer>(response.body!!)
                 return@withContext parsedTests
+            } else {
+                throw(Exception("API Error"))
+            }
+        }
+    }
+    public suspend fun getSpecificTaskDetails(nodeId: Int): TaskNodeDetailsContainer {
+        return withContext(Dispatchers.IO) {
+            val response: BackendDataSender.BackendResponse = BackendDataSender.get("$specificTaskDetailsUrl?nodeId=$nodeId")
+            println(response)
+            if (response.statusCode == 200 && response.body != null) {
+                val parsedDetails: TaskNodeDetailsContainer = parser.decodeFromString<TaskNodeDetailsContainer>(response.body!!)
+                return@withContext parsedDetails
+            } else {
+                throw(Exception("API Error"))
+            }
+        }
+    }
+    public suspend fun getSpecificGradeDetails(nodeId: Int): GradeNodeDetailsContainer {
+        return withContext(Dispatchers.IO) {
+            val response: BackendDataSender.BackendResponse = BackendDataSender.get("$specifigGradeDetailsUrl?nodeId=$nodeId")
+            println(response)
+            if (response.statusCode == 200 && response.body != null) {
+                val parsedDetails: GradeNodeDetailsContainer = parser.decodeFromString<GradeNodeDetailsContainer>(response.body!!)
+                return@withContext parsedDetails
             } else {
                 throw(Exception("API Error"))
             }
@@ -73,6 +94,9 @@ data class SubjectTestContainer (
 @Serializable
 data class StudentsPoints (
     val points: Float?,
+    val comment: String ? = null,
+    val grader: SharedDataClasses.Human? = null,
+    val last_changed: String? = null
 )
 @Serializable
 data class TaskNodeDetails (
@@ -89,4 +113,42 @@ data class StudentsGrade (
 @Serializable
 data class GradeValue (
     val symbol: String ?
+)
+
+@Serializable
+data class SpecificTaskNodeDetails (
+    val students_points: StudentsPoints?,
+    val points_min: Float ?,
+    val points_max: Float ?,
+    val points_precision: Float ?,
+    val variables: String ?,
+    val algorithm: String ?,
+    val algorithm_description: SharedDataClasses.LangDict ?
+)
+
+@Serializable
+data class SpecificGradeNodeDetails (
+    val students_grade: StudentsGrade ?,
+    val grade_type: String?,
+    val variables: String?,
+    val algorithm: String?,
+    val algorithm_description: SharedDataClasses.LangDict ?,
+)
+
+@Serializable
+data class GradesStats(
+    val value: Float,
+    val number_of_values: Int
+)
+
+@Serializable
+data class TaskNodeDetailsContainer(
+    val task_node_details: SpecificTaskNodeDetails?,
+    val students_points: List<GradesStats>?
+)
+
+@Serializable
+data class GradeNodeDetailsContainer(
+    val grade_node_details: SpecificGradeNodeDetails?,
+    val students_points: List<GradesStats>?
 )

@@ -183,7 +183,7 @@ fun GradePopupView(
                                         .padding(12.dp)
                                 ) {
                                     Text(
-                                        text = "Nie udało się pobrać danych",
+                                        text = stringResource(R.string.failed_to_fetch),
                                         style = MaterialTheme.typography.titleMedium,
                                         color = UISingleton.textColor1,
                                         modifier = Modifier.weight(1f)
@@ -214,7 +214,8 @@ fun GradePopupView(
 }
 
 @Composable
-fun GradeChart(gradeData: Map<String, Int>, modifier: Modifier = Modifier) {
+fun GradeChart(gradeData: Map<String, Int>, modifier: Modifier = Modifier, addPercent: Boolean = true) {
+    println(gradeData)
     val modelProducer = remember { CartesianChartModelProducer() }
     LaunchedEffect(Unit) {
         modelProducer.runTransaction {
@@ -239,7 +240,7 @@ fun GradeChart(gradeData: Map<String, Int>, modifier: Modifier = Modifier) {
             ),
             dataLabel = textComponent,
             dataLabelValueFormatter = { _, value, _ ->
-                "${value.toInt()}%"
+                "${value.toInt()}${if (addPercent) "%" else ""}"
             },
             rangeProvider = remember { CartesianLayerRangeProvider.fixed(minY = 0.0, maxY = gradeData.values.max() * 1.25) }
         ),
@@ -257,7 +258,7 @@ fun GradeChart(gradeData: Map<String, Int>, modifier: Modifier = Modifier) {
                 shape = CorneredShape.rounded(bottomLeftPercent = 50, topLeftPercent = 50)
             ),
             valueFormatter = { _, value, _ ->
-                "${value.toInt()}%"
+                "${value.toInt()}${if (addPercent) "%" else ""}"
             },
             guideline = rememberLineComponent(
                 fill = Fill(UISingleton.color2.toArgb()),

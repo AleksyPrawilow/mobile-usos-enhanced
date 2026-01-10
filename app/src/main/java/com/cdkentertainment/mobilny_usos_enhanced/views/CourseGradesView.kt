@@ -1,7 +1,6 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
 import android.content.Context
-import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -57,9 +56,6 @@ fun CourseGradesView(
                 UISingleton.blurContent()
                 popupGrade = data.courseGrades.course_units_grades[courseUnit]?.first()["1"]
                 showDetails = popupGrade != null
-                if (!showDetails) {
-                    Toast.makeText(context, "Coś poszło nie tak.", Toast.LENGTH_SHORT).show()
-                }
             }
         }
     }
