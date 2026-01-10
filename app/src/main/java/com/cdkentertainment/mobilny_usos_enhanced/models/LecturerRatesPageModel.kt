@@ -15,6 +15,7 @@ class LecturerRatesPageModel {
     private val usersInfoUrl: String = "Users/Info"
     private val userRateUrl: String = "LecturerRates/UserRates"
     private val lecturerRateUrl: String = "LecturerRates/LecturerRates"
+    private val multipleLecturerRatesUrl: String = "LecturerRates/MultipleLecturersAvgRates"
     private val addUserRateUrl: String = "LecturerRates/AddRate"
     private val deleteUserRateUrl: String = "LecturerRates/DeleteRate"
     private val patchUserRateUrl: String = "LecturerRates/UpdateRate"
@@ -63,13 +64,29 @@ class LecturerRatesPageModel {
             }
         }
     }
+    public suspend fun getMultipleLecturersAvgRates(lecturersIds: List<Int>): List<LecturerAvgRates?> {
+        return withContext(Dispatchers.IO) {
+            val body: String = parser.encodeToString(lecturersIds)
+            println(body)
+            val response: BackendDataSender.BackendResponse = BackendDataSender.postHeaders("$multipleLecturerRatesUrl?universityId=1", body) //TEMPORARY
+            println(response)
+            if (response.statusCode == 200 && response.body != null) {
+                val parsedResponse: List<LecturerAvgRates?> = parser.decodeFromString<List<LecturerAvgRates?>>(response.body!!)
+                return@withContext parsedResponse
+            } else if (response.statusCode == 200) {
+                return@withContext listOf()
+            } else {
+                throw(Exception("API Error"))
+            }
+        }
+    }
     public suspend fun getLecturerAvgRates(lecturerId: Int) : LecturerAvgRates? {
         return withContext(Dispatchers.IO) {
             val response: BackendDataSender.BackendResponse = BackendDataSender.get("$lecturerRateUrl?lecturerId=$lecturerId&universityId=1") //TEMPORARY
             if (response.statusCode == 200 && response.body != null) {
                 val parsedResponse: LecturerAvgRates? = parser.decodeFromString<LecturerAvgRates?>(response.body!!)
                 return@withContext parsedResponse
-            } else if (response.statusCode == 200 && response.body == null) {
+            } else if (response.statusCode == 200) {
                 return@withContext null
             } else {
                 throw(Exception("API Error"))
@@ -98,10 +115,11 @@ class LecturerRatesPageModel {
                 print(response.body)
                 if (response.statusCode == 200 && response.body != null) {
                     val lecturersInfo: List<LecturerData> = parser.decodeFromString<List<LecturerData>>(response.body!!)
+                    val lecturersRatings: List<LecturerAvgRates?> = getMultipleLecturersAvgRates(lecturerIds.map { it.toInt() })
                     for (lecturer in lecturersInfo) {
+                        val lecturerRate: LecturerAvgRates? = lecturersRatings.filter { it?.lecturerId.toString() == lecturer.id }.getOrNull(0)
                         if (withRates) {
-                            val lecturerRating: LecturerAvgRates? = getLecturerAvgRates(lecturer.id.toInt())
-                            if (lecturerRating == null) {
+                            if (lecturerRate == null) {
                                 lecturers[lecturer.id] = Lecturer(
                                     human = SharedDataClasses.Human(
                                         lecturer.id,
@@ -128,7 +146,7 @@ class LecturerRatesPageModel {
                                         lecturer.last_name
                                     ),
                                     lecturerData = lecturer,
-                                    rating = lecturerRating
+                                    rating = lecturerRate
                                 )
                             }
                         } else {
@@ -155,9 +173,10 @@ class LecturerRatesPageModel {
     public suspend fun getLecturersInfo(lecturers: List<SharedDataClasses.Human>) {
         return withContext(Dispatchers.IO) {
             try {
+                val lecturersRatings: List<LecturerAvgRates?> = getMultipleLecturersAvgRates(lecturers.map { it.id.toInt() })
                 for (lecturer in lecturers) {
-                    val lecturerRating: LecturerAvgRates? = getLecturerAvgRates(lecturer.id.toInt())
-                    if (lecturerRating == null) {
+                    val lecturerRate: LecturerAvgRates? = lecturersRatings.filter { it?.lecturerId.toString() == lecturer.id }.getOrNull(0)
+                    if (lecturerRate == null) {
                         PeopleSingleton.lecturers[lecturer.id] = Lecturer(
                             human = SharedDataClasses.Human(lecturer.id, lecturer.first_name, lecturer.last_name),
                             rating = LecturerAvgRates(
@@ -171,12 +190,12 @@ class LecturerRatesPageModel {
                                 avgRate5 = 0f
                             )
                         )
-                    } else {
-                        PeopleSingleton.lecturers[lecturer.id] = Lecturer(
-                            human = SharedDataClasses.Human(lecturer.id, lecturer.first_name, lecturer.last_name),
-                            rating = lecturerRating
-                        )
+                        continue
                     }
+                    PeopleSingleton.lecturers[lecturer.id] = Lecturer(
+                        human = SharedDataClasses.Human(lecturer.id, lecturer.first_name, lecturer.last_name),
+                        rating = lecturerRate
+                    )
                 }
             } catch (e: Exception) {
                 e.printStackTrace()

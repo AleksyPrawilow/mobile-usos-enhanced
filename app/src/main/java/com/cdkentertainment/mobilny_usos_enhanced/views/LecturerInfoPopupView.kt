@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -143,7 +144,7 @@ fun LecturerInfoPopupView(
                                             .error(android.R.drawable.ic_menu_help)
                                             .build()
                                     ) else null
-                                    if (profilePicture != null) {
+                                    if (profilePicture != null && extendedData != null && extendedData.has_photo) {
                                         Icon(
                                             painter = profilePicture,
                                             contentDescription = "Person",
@@ -154,6 +155,36 @@ fun LecturerInfoPopupView(
                                                     scaleX = 0.85f,
                                                     scaleY = 0.85f
                                                 )
+                                        )
+                                    }
+                                }
+                                AnimatedVisibility(
+                                    visible = (extendedData != null && !extendedData.has_photo) || lecturerDataFetchError,
+                                    enter = UIHelper.scaleEnterTransition(1)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Rounded.Person,
+                                        contentDescription = "Person",
+                                        tint = UISingleton.textColor1,
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .graphicsLayer(
+                                                scaleX = 0.75f,
+                                                scaleY = 0.75f
+                                            )
+                                    )
+                                }
+                                AnimatedVisibility(
+                                    visible = extendedData == null && !lecturerDataFetchError,
+                                    enter = UIHelper.scaleEnterTransition(1)
+                                ) {
+                                    Box(
+                                        modifier = Modifier.fillMaxSize()
+                                    ) {
+                                        CircularProgressIndicator(
+                                            color = UISingleton.textColor1,
+                                            modifier = Modifier.size(24.dp)
+                                                .align(Alignment.Center)
                                         )
                                     }
                                 }
