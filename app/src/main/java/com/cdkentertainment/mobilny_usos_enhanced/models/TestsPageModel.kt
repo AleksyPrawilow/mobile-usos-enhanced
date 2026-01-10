@@ -29,11 +29,11 @@ class TestsPageModel {
             }
         }
     }
-    public suspend fun getSingleTestInfo(nodeId: Int): SubjectTestContainer {
+    public suspend fun getSingleTestInfo(nodeId: Int): SubjectTestWithSubnodes {
         return withContext(Dispatchers.IO) {
             val response: BackendDataSender.BackendResponse = BackendDataSender.get("$singleSubjectUrl?id=$nodeId")
             if (response.statusCode == 200 && response.body != null) {
-                val parsedTests: SubjectTestContainer = parser.decodeFromString<SubjectTestContainer>(response.body!!)
+                val parsedTests: SubjectTestWithSubnodes = parser.decodeFromString<SubjectTestWithSubnodes>(response.body!!)
                 return@withContext parsedTests
             } else {
                 throw(Exception("API Error"))
@@ -41,6 +41,25 @@ class TestsPageModel {
         }
     }
 }
+
+@Serializable
+data class Subnodes (
+    val id: Int,
+    val order: Int,
+    val name: SharedDataClasses.LangDict
+)
+
+@Serializable
+data class SubjectTestWithSubnodes (
+    val name: SharedDataClasses.LangDict ?,
+    val description: SharedDataClasses.LangDict ?,
+    val id: Int ?,
+    val students_points: StudentsPoints ?,
+    val folder_node_details: FolderNodeDetails ?,
+    val grade_node_details: GradeNodeDetails ?,
+    val task_node_details: TaskNodeDetails ?,
+    val subnodes: List<Subnodes?>?
+)
 @Serializable
 data class TestsContainer ( val tests: Map<String, Map<String, Test>>)
 @Serializable
