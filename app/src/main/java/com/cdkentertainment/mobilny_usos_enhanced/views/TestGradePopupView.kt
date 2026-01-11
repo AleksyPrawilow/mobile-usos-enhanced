@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -74,8 +75,15 @@ fun TestGradePopupView(
             modifier = Modifier
                 .fillMaxWidth()
                 .shadow(10.dp, shape = RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
-                .background(UISingleton.color2, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
-                .border(5.dp, UISingleton.color1, RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
+                .background(
+                    UISingleton.color2,
+                    RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp)
+                )
+                .border(
+                    5.dp,
+                    UISingleton.color1,
+                    RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp)
+                )
         ) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -97,64 +105,74 @@ fun TestGradePopupView(
                 ) {
                     GradeCardView(
                         courseName = stringResource(R.string.your_grade),
-                        grade = if (grade.grade_value != null) grade.grade_value.symbol.toString() else "-",
+                        grade = if (grade.grade_value != null) grade.grade_value.symbol.toString() else "—",
                         backgroundColor = UISingleton.color2
                     )
                 }
-                if (!viewModel.gradeNodeDetails[nodeId]?.students_points.isNullOrEmpty()) {
-                    GroupedContentContainerView(
-                        title = stringResource(R.string.grade_distribution),
-                        backgroundColor = UISingleton.color1,
-                        modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 12.dp)
-                    ) {
-                        if (viewModel.loadedGradeNodeDetails[nodeId] == true)  {
+                GroupedContentContainerView(
+                    title = stringResource(R.string.grade_distribution),
+                    backgroundColor = UISingleton.color1,
+                    modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 12.dp)
+                ) {
+                    if (viewModel.loadedGradeNodeDetails[nodeId] == true)  {
+                        if (!viewModel.gradeNodeDetails[nodeId]?.students_points.isNullOrEmpty()) {
                             GradeChart(
-                                gradeData = viewModel.gradeNodeDetails[nodeId]?.students_points?.associate { it.value.toString() to it.number_of_values.toInt() } ?: emptyMap(),
+                                gradeData = viewModel.gradeNodeDetails[nodeId]?.students_points?.associate { it.value to it.number_of_values } ?: emptyMap(),
                                 modifier = Modifier
                                     .fillMaxWidth(),
                                 addPercent = false
                             )
-                        }
-                    }
-                } else {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        androidx.compose.animation.AnimatedVisibility(viewModel.errorGradeNodeDetails[nodeId] == true) {
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
-                                verticalAlignment = Alignment.CenterVertically,
+                        } else {
+                            Text(
+                                text = stringResource(R.string.nothing_to_display),
+                                textAlign = TextAlign.Center,
+                                color = UISingleton.textColor1,
+                                style = MaterialTheme.typography.titleLarge,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
-                                    .background(UISingleton.color2)
-                                    .clickable(onClick = {
-                                        fetchDetails()
-                                    })
                                     .padding(12.dp)
-                            ) {
-                                Text(
-                                    text = stringResource(R.string.failed_to_fetch),
-                                    style = MaterialTheme.typography.titleMedium,
-                                    color = UISingleton.textColor1,
-                                    modifier = Modifier.weight(1f)
-                                )
-                                Icon(
-                                    imageVector = Icons.Rounded.Refresh,
-                                    contentDescription = null,
-                                    tint = UISingleton.textColor4,
+                            )
+                        }
+                    } else {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            androidx.compose.animation.AnimatedVisibility(viewModel.errorGradeNodeDetails[nodeId] == true) {
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
+                                    verticalAlignment = Alignment.CenterVertically,
                                     modifier = Modifier
-                                        .size(48.dp)
-                                        .background(UISingleton.color3, CircleShape)
-                                        .padding(8.dp)
+                                        .fillMaxWidth()
+                                        .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
+                                        .background(UISingleton.color2)
+                                        .clickable(onClick = {
+                                            fetchDetails()
+                                        })
+                                        .padding(12.dp)
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.failed_to_fetch),
+                                        style = MaterialTheme.typography.titleMedium,
+                                        color = UISingleton.textColor1,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                    Icon(
+                                        imageVector = Icons.Rounded.Refresh,
+                                        contentDescription = null,
+                                        tint = UISingleton.textColor4,
+                                        modifier = Modifier
+                                            .size(48.dp)
+                                            .background(UISingleton.color3, CircleShape)
+                                            .padding(8.dp)
+                                    )
+                                }
+                            }
+                            androidx.compose.animation.AnimatedVisibility(viewModel.loadingGradeNodeDetails[nodeId] == true){
+                                CircularProgressIndicator(
+                                    color = UISingleton.textColor2
                                 )
                             }
-                        }
-                        androidx.compose.animation.AnimatedVisibility(viewModel.loadingGradeNodeDetails[nodeId] == true){
-                            CircularProgressIndicator(
-                                color = UISingleton.textColor2
-                            )
                         }
                     }
                 }

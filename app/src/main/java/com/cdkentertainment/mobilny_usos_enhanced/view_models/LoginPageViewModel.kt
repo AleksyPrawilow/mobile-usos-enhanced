@@ -41,6 +41,7 @@ class LoginPageViewModel: ViewModel() {
             oauthUrl = urlAndTokens.url
             loginState = LoginState.USOS_RETREIVING_OAUTH_VERIFIER
         } catch (e: Exception) {
+            e.printStackTrace()
             val message: SharedDataClasses.LangDict = SharedDataClasses.LangDict(
                 pl = "Nie udało się zalogować.",
                 en = "Failed to login."

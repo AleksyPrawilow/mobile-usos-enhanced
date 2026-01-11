@@ -125,4 +125,11 @@
     <string name="sign_in">Zaloguj się do USOS</string>
     <string name="checking_the_connection">Sprawdzam połączenie z serwisami USOS...</string>
     <string name="almost_there">Jeszcze chwilka...</string>
+    <string name="nothing_to_display">Nie ma danych do wyświetlenia</string>
+    <string name="grader">Wystawiający</string>
+    <string name="modification_date">Data modyfikacji</string>
+    <string name="inactive_student">Nieaktywny student</string>
+    <string name="all_participants">Wszyscy uczestnicy</string>
+    <string name="group_singular">Grupa</string>
+    <string name="groups_plural">Grupy</string>
 </resources>

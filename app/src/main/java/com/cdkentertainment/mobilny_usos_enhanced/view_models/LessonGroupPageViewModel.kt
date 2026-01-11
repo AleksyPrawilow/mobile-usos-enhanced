@@ -4,7 +4,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.PeopleSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.Student
 import com.cdkentertainment.mobilny_usos_enhanced.StudentData
@@ -18,15 +17,6 @@ import com.cdkentertainment.mobilny_usos_enhanced.models.SharedDataClasses
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-
-fun main(): Unit = runBlocking {
-    OAuthSingleton.setTestAccessToken()
-    val model = LessonGroupPageModel()
-    val lessonGroups = model.getLessonGroups()
-    val participants = model.getParticipantOfGivenGroup("13", "461821") //do argumentów trzeba przekonwertować numer grupy i unitid z int na string
-    println(lessonGroups)
-    println(participants)
-}
 
 class LessonGroupPageViewModel: ViewModel() {
     var lessonGroups: SeasonGroupsGroupedBySubject? by mutableStateOf(null)

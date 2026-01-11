@@ -130,7 +130,7 @@ fun GradePopupView(
                     )
                     if (grade.date_modified != null) {
                         Text(
-                            text = "Data wprowadzenia: ${grade.date_modified}",
+                            text = "${stringResource(R.string.modification_date)}: ${grade.date_modified}",
                             style = MaterialTheme.typography.titleMedium,
                             color = UISingleton.textColor1,
                             modifier = Modifier
@@ -142,7 +142,7 @@ fun GradePopupView(
                     }
                     if (grade.modification_author != null) {
                         Text(
-                            text = "Wystawiający: ${grade.modification_author.first_name} ${grade.modification_author.last_name}",
+                            text = "${stringResource(R.string.grader)}: ${grade.modification_author.first_name} ${grade.modification_author.last_name}",
                             style = MaterialTheme.typography.titleMedium,
                             color = UISingleton.textColor1,
                             modifier = Modifier

@@ -83,7 +83,7 @@ fun LecturerRatesPageView() {
     var showIndex      : Boolean   by rememberSaveable { mutableStateOf(true)  }
     var showSearch     : Boolean   by rememberSaveable { mutableStateOf(false) }
     var showLecturers  : Boolean   by rememberSaveable { mutableStateOf(false) }
-    var selectedFaculty: String    by rememberSaveable { mutableStateOf("0600000000") }
+    var selectedFaculty: String    by rememberSaveable { mutableStateOf(UserDataSingleton.userFaculties.keys.first()) }
     var searchValue    : String    by rememberSaveable { mutableStateOf("") }
     var selectedPage   : Int       by rememberSaveable { mutableStateOf(0) }
     val pageSize: Int = 20

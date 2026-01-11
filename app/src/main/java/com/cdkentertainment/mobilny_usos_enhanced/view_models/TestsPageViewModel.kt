@@ -90,6 +90,7 @@ class TestsPageViewModel: ViewModel() {
                         loadingGradeNodeDetails[nodeId] = false
                         errorGradeNodeDetails[nodeId] = false
                     } catch (e: Exception) {
+                        e.printStackTrace()
                         errorGradeNodeDetails[nodeId] = true
                         loadedGradeNodeDetails[nodeId] = false
                         loadingGradeNodeDetails[nodeId] = false
@@ -105,7 +106,9 @@ class TestsPageViewModel: ViewModel() {
                     loadedTaskNodeDetails[nodeId] = false
                     try {
                         val details: TaskNodeDetailsContainer = model.getSpecificTaskDetails(nodeId)
+                        println(taskNodeDetails[nodeId])
                         taskNodeDetails[nodeId] = details
+                        println(taskNodeDetails[nodeId])
                         loadedTaskNodeDetails[nodeId] = true
                         loadingTaskNodeDetails[nodeId] = false
                         errorTaskNodeDetails[nodeId] = false

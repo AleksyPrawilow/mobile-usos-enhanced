@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.models.Lesson
 import com.cdkentertainment.mobilny_usos_enhanced.models.Schedule
 import com.cdkentertainment.mobilny_usos_enhanced.models.SchedulePageModel
@@ -18,17 +17,6 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-
-fun main(): Unit = runBlocking {
-    OAuthSingleton.setTestAccessToken()
-    val boom = SchedulePageViewModel()
-    launch {
-        boom.fetchWeekData(LocalDate.of(2025, 5, 13))
-        val model = SchedulePageModel()
-        println(model.getSingleDaySchedule(LocalDate.of(2025, 5, 13)))
-        println(model.getWeekSchedule(LocalDate.of(2025, 5, 13)).prettyPrint())
-    }
-}
 
 class SchedulePageViewModel: ViewModel() {
     private val timeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")

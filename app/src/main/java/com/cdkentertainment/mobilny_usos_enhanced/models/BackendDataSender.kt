@@ -78,9 +78,9 @@ object BackendDataSender {
     public fun setAuthHeader(accessToken: String) {
         authHeader = "Bearer $accessToken"
     }
-    public suspend fun getWithoutHeaders(requestUrl: String): BackendResponse {
+    public suspend fun getWithoutHeaders(requestUrl: String, authorization: Boolean = true): BackendResponse {
         return withContext(Dispatchers.IO) {
-            if (isJwtExpiringSoon(authHeader)) {
+            if (isJwtExpiringSoon(authHeader) && authorization) {
                 refreshToken()
             }
             val requestUrl = "$developmentUrl/$requestUrl"
@@ -109,9 +109,6 @@ object BackendDataSender {
     }
     public suspend fun getWithAuthHeaders(requestUrl: String, pin: String, token: String, tokenSecret: String): BackendResponse {
         return withContext(Dispatchers.IO) {
-            if (isJwtExpiringSoon(authHeader)) {
-                refreshToken()
-            }
             val requestUrl = "$developmentUrl/$requestUrl"
             val request = Request.Builder()
                 .url(requestUrl)

@@ -1,7 +1,6 @@
 package com.cdkentertainment.mobilny_usos_enhanced.models
 
 import android.content.Context
-import com.cdkentertainment.mobilny_usos_enhanced.OAuthSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.UserDataSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.LoginPageViewModel
@@ -15,7 +14,7 @@ class OAuthModel {
     private val tokenAndUrl: String = "Auth/Url"
     private val finalTokensUrl: String = "Auth/AccessToken"
     private val parser: Json = Json { ignoreUnknownKeys = true }
-    private val userInfoUrl: String = "users/user?fields=id|first_name|last_name|student_number|sex|email|photo_urls[100x100]|mobile_numbers|student_programmes[id|programme[all_faculties|id|name]]"
+    private val userInfoUrl: String = "Users/User"
 
     @Serializable
     data class UrlAndToken(
@@ -50,11 +49,9 @@ class OAuthModel {
     public suspend fun checkIfTokenExpired(): Boolean {
         return withContext(Dispatchers.IO) {
             try {
-                UserDataSingleton.userData = getUserData()
-                // FIXME FIXME FIXME FIXME
                 val token = BackendDataSender.getWithOnlyAuthHeaders("Auth/AutoLogin").body
                 BackendDataSender.setAuthHeader(token!!)
-                // FIXME FIXME FIXME FIXME
+                UserDataSingleton.userData = getUserData()
                 return@withContext UserDataSingleton.userData == null
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -64,7 +61,7 @@ class OAuthModel {
     }
     public suspend fun getUserData(): UserInfo {
         return withContext(Dispatchers.IO) {
-            val responseString: String = OAuthSingleton.get(userInfoUrl)["response"]!!
+            val responseString: String = BackendDataSender.get(userInfoUrl).body!!
             val parsedResponse: UserInfo = parser.decodeFromString<UserInfo>(responseString)
             return@withContext parsedResponse
         }
@@ -78,7 +75,7 @@ class OAuthModel {
     }
     public suspend fun getRequestToken(): UrlAndToken {
         return withContext(Dispatchers.IO) {
-            val response: BackendDataSender.BackendResponse = BackendDataSender.getWithoutHeaders(tokenAndUrl)
+            val response: BackendDataSender.BackendResponse = BackendDataSender.getWithoutHeaders(tokenAndUrl, false)
             if (response.statusCode == 200 && response.body != null) {
                 println("parsing")
                 println(response.body)
@@ -143,6 +140,7 @@ data class UserInfo(
     val sex: String,
     val email: String,
     val photo_urls: Map<String, String>,
+    val student_status: Int?,
     val mobile_numbers: List<String>,
     val student_programmes: List<StudentProgramme>
 )
