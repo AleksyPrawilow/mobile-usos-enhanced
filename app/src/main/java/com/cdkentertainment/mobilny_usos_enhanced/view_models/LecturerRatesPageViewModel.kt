@@ -18,13 +18,8 @@ import com.cdkentertainment.mobilny_usos_enhanced.models.UserRate
 import com.cdkentertainment.mobilny_usos_enhanced.models.UserRatePatch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 
-fun main(): Unit = runBlocking {
-    val model = LecturerRatesPageModel()
-    println(model.getStaffIndex("1234", 10, 10))
-}
 class LecturerRatesPageViewModel: ViewModel() {
     var selectedLecturer: SharedDataClasses.Human? by mutableStateOf(null)
         private set
@@ -102,7 +97,6 @@ class LecturerRatesPageViewModel: ViewModel() {
             try {
                 model.deleteUserRate(lecturerId.toInt(), 1)
                 val userRate: UserRate = userRatings[lecturerId]!!
-                println(userRate)
                 userRatings.remove(lecturerId)
                 lecturerRates.remove(lecturerId) // for testing only, will most likely work in another way
                 val prevRate: LecturerAvgRates = PeopleSingleton.lecturers[lecturerId]!!.rating
@@ -206,7 +200,6 @@ class LecturerRatesPageViewModel: ViewModel() {
                     onSuccess()
                     return@withContext
                 }
-                println(nonFetchedIds)
                 try {
                     model.getExtendedLecturersInfo(nonFetchedIds, false)
                     onSuccess()

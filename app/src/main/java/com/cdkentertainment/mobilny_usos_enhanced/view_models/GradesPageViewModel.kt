@@ -70,7 +70,7 @@ class GradesPageViewModel: ViewModel() {
                 gradesDistribution[examId] = map
                 return@withContext true
             } catch (e: Exception) {
-                println(e)
+                e.printStackTrace()
                 return@withContext false
             }
         }

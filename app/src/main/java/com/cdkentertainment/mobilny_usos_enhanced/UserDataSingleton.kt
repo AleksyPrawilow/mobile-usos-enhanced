@@ -44,21 +44,18 @@ object UserDataSingleton {
     }
 
     suspend fun saveUserSettings(context: Context) {
-        println("Saving user settings...")
         context.dataStore.edit { settings ->
             settings[SELECTED_THEME] = currentSettings.selectedTheme
         }
     }
 
     suspend fun readSettings(context: Context) {
-        println("Reading user settings...")
         val selectedTheme = context.dataStore.data
             .map { prefs -> prefs[SELECTED_THEME] ?: 0 }
             .first()
         try {
             val theme: Theme? = UISingleton.themes[UISingleton.themes.keys.elementAt(selectedTheme)]
             if (theme != null) {
-                println(theme)
                 UISingleton.changeTheme(theme)
             }
         } catch (e: Exception) {
@@ -97,7 +94,6 @@ object UserDataSingleton {
                 faculties[faculty.id] = faculty.name
             }
         }
-        println(faculties)
         return faculties
     }
 }

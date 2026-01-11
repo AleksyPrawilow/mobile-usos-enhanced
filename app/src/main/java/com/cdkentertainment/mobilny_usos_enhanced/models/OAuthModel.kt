@@ -77,13 +77,9 @@ class OAuthModel {
         return withContext(Dispatchers.IO) {
             val response: BackendDataSender.BackendResponse = BackendDataSender.getWithoutHeaders(tokenAndUrl, false)
             if (response.statusCode == 200 && response.body != null) {
-                println("parsing")
-                println(response.body)
                 val parsedResponse: UrlAndToken = parser.decodeFromString<UrlAndToken>(response.body!!)
-                println(parsedResponse.token)
                 return@withContext parsedResponse
             } else {
-                println("error")
                 throw(Exception("API Login Error"))
             }
         }

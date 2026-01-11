@@ -106,9 +106,7 @@ class TestsPageViewModel: ViewModel() {
                     loadedTaskNodeDetails[nodeId] = false
                     try {
                         val details: TaskNodeDetailsContainer = model.getSpecificTaskDetails(nodeId)
-                        println(taskNodeDetails[nodeId])
                         taskNodeDetails[nodeId] = details
-                        println(taskNodeDetails[nodeId])
                         loadedTaskNodeDetails[nodeId] = true
                         loadingTaskNodeDetails[nodeId] = false
                         errorTaskNodeDetails[nodeId] = false

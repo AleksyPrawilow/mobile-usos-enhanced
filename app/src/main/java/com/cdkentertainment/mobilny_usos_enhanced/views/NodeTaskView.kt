@@ -32,7 +32,6 @@ fun NodeTaskView(
             showDetails = false
         }
     }
-    println(subnodes)
     val clicked: () -> Unit = if (!subnodes.isNullOrEmpty()) onClick else clickedNoSubnodes
     GradeCardView(
         courseName = nodeName,

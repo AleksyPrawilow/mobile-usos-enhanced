@@ -59,7 +59,7 @@ fun LecturerRateView(
     showNumberOfReviews: Boolean = true,
     rate: LecturerRate = LecturerRate(),
     onAddRate: (LecturerRate) -> Unit = { rate ->
-        println(rate)
+
     },
     onEditRate: () -> Unit = {},
 ) {
