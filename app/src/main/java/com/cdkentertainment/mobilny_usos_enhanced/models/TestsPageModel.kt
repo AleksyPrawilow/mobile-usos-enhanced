@@ -129,7 +129,7 @@ data class SpecificTaskNodeDetails (
 @Serializable
 data class SpecificGradeNodeDetails (
     val students_grade: StudentsGrade ?,
-    val grade_type: String?,
+    val grade_type: SharedDataClasses.IdAndName?,
     val variables: String?,
     val algorithm: String?,
     val algorithm_description: SharedDataClasses.LangDict ?,
