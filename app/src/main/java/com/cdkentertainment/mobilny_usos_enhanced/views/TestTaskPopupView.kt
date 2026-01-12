@@ -68,7 +68,6 @@ fun TestTaskPopupView(
         }
     }
     LaunchedEffect(Unit) {
-        println(grade)
         fetchDetails()
     }
     Dialog(

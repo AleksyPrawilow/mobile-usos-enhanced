@@ -110,6 +110,7 @@ fun HomePageView() {
             loadingError = false
 
             paymentsPageViewModel.fetchPayments()
+            gradesViewModel.fetchLatestGrades()
             gradesViewModel.fetchSemesterGrades(UIHelper.termIds.last())
             loadingError = !viewModel.fetchSchedule()
 
@@ -197,7 +198,7 @@ fun HomePageView() {
                         icon = cardLabels[0].second,
                         title = cardLabels[0].first,
                         maxWidth = maxCardWidth,
-                        badge = "2!"
+                        badge = if (gradesViewModel.latestGrades.isNullOrEmpty()) null else gradesViewModel.latestGrades?.size.toString() + "!"
                     ) {
                         screenManagerViewModel.changeScreen(Screens.GRADES, context)
                     }

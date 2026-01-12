@@ -38,7 +38,6 @@ class TestsPageModel {
     public suspend fun getSpecificTaskDetails(nodeId: Int): TaskNodeDetailsContainer {
         return withContext(Dispatchers.IO) {
             val response: BackendDataSender.BackendResponse = BackendDataSender.get("$specificTaskDetailsUrl?nodeId=$nodeId")
-            println(response)
             if (response.statusCode == 200 && response.body != null) {
                 val parsedDetails: TaskNodeDetailsContainer = parser.decodeFromString<TaskNodeDetailsContainer>(response.body!!)
                 return@withContext parsedDetails
@@ -50,7 +49,6 @@ class TestsPageModel {
     public suspend fun getSpecificGradeDetails(nodeId: Int): GradeNodeDetailsContainer {
         return withContext(Dispatchers.IO) {
             val response: BackendDataSender.BackendResponse = BackendDataSender.get("$specifigGradeDetailsUrl?nodeId=$nodeId")
-            println(response)
             if (response.statusCode == 200 && response.body != null) {
                 val parsedDetails: GradeNodeDetailsContainer = parser.decodeFromString<GradeNodeDetailsContainer>(response.body!!)
                 return@withContext parsedDetails

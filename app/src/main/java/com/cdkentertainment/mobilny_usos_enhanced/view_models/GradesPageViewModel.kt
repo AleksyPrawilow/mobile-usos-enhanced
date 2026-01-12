@@ -10,6 +10,7 @@ import com.cdkentertainment.mobilny_usos_enhanced.models.GradesDistribution
 import com.cdkentertainment.mobilny_usos_enhanced.models.GradesPageModel
 import com.cdkentertainment.mobilny_usos_enhanced.models.Season
 import com.cdkentertainment.mobilny_usos_enhanced.models.SharedDataClasses
+import com.cdkentertainment.mobilny_usos_enhanced.models.TermGrade
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -17,6 +18,10 @@ import kotlinx.coroutines.withContext
 class GradesPageViewModel: ViewModel() {
     var gradesDistribution: MutableMap<Int, Map<String, Int>> = mutableStateMapOf()
     var userSubjects: MutableMap<String, Season> = mutableStateMapOf<String, Season>()
+    var latestGrades: List<TermGrade>? by mutableStateOf(null)
+        private set
+    var loadingLatestGrades: Boolean by mutableStateOf(false)
+    var errorLatestGrades: Boolean by mutableStateOf(false)
     var loadingMap: MutableMap<String, Boolean> = mutableStateMapOf<String, Boolean>()
     var errorMap: MutableMap<String, Boolean> = mutableStateMapOf<String, Boolean>()
     var loadedMap: MutableMap<String, Boolean> = mutableStateMapOf<String, Boolean>()
@@ -39,6 +44,26 @@ class GradesPageViewModel: ViewModel() {
                 loadedMap[semester] = false
             }
             loadingMap[semester] = false
+        }
+    }
+    fun fetchLatestGrades() {
+        if (latestGrades != null) {
+            return
+        }
+        loadingLatestGrades = true
+        errorLatestGrades = false
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                try {
+                    latestGrades = gradesPageModel.fetchLatestGrades()
+                    loadingLatestGrades = false
+                    errorLatestGrades = false
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    loadingLatestGrades = false
+                    errorLatestGrades = true
+                }
+            }
         }
     }
     fun fetchSemesterGrades(semester: String) {
@@ -70,7 +95,7 @@ class GradesPageViewModel: ViewModel() {
                 gradesDistribution[examId] = map
                 return@withContext true
             } catch (e: Exception) {
-                println(e)
+                e.printStackTrace()
                 return@withContext false
             }
         }

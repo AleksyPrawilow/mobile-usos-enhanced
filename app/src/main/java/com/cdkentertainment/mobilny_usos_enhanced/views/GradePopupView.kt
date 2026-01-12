@@ -215,7 +215,6 @@ fun GradePopupView(
 
 @Composable
 fun GradeChart(gradeData: Map<String, Int>, modifier: Modifier = Modifier, addPercent: Boolean = true) {
-    println(gradeData)
     val modelProducer = remember { CartesianChartModelProducer() }
     LaunchedEffect(Unit) {
         modelProducer.runTransaction {

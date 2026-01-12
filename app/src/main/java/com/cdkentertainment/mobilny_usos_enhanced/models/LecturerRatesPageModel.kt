@@ -67,9 +67,7 @@ class LecturerRatesPageModel {
     public suspend fun getMultipleLecturersAvgRates(lecturersIds: List<Int>): List<LecturerAvgRates?> {
         return withContext(Dispatchers.IO) {
             val body: String = parser.encodeToString(lecturersIds)
-            println(body)
             val response: BackendDataSender.BackendResponse = BackendDataSender.postHeaders("$multipleLecturerRatesUrl?universityId=1", body) //TEMPORARY
-            println(response)
             if (response.statusCode == 200 && response.body != null) {
                 val parsedResponse: List<LecturerAvgRates?> = parser.decodeFromString<List<LecturerAvgRates?>>(response.body!!)
                 return@withContext parsedResponse
@@ -97,7 +95,6 @@ class LecturerRatesPageModel {
         return withContext(Dispatchers.IO) {
             val start = offset * pageSize
             val response: BackendDataSender.BackendResponse = BackendDataSender.get("$staffUrl?facultyId=$facultyId&start=$start&pageSize=$pageSize")
-            println(response.body)
             if(response.statusCode == 200 && response.body != null) {
                 val parsedResponse: LecturersIndex = parser.decodeFromString<LecturersIndex>(response.body!!)
                 return@withContext parsedResponse
@@ -110,7 +107,6 @@ class LecturerRatesPageModel {
         return withContext(Dispatchers.IO) {
             try {
                 val json = parser.encodeToString<List<String>>(lecturerIds)
-                println(json)
                 val response: BackendDataSender.BackendResponse = BackendDataSender.postHeaders(usersInfoUrl, json)
                 print(response.body)
                 if (response.statusCode == 200 && response.body != null) {
