@@ -24,6 +24,18 @@ class GradesPageModel {
             }
         }
     }
+    public suspend fun fetchLatestGrades(): List<TermGrade> {
+        return withContext(Dispatchers.IO) {
+            val response: BackendDataSender.BackendResponse = BackendDataSender.get("$gradesUrl/LatestGrades?days=128")
+            if (response.statusCode == 200 && response.body != null) {
+                val responseString: String = response.body!!
+                val parsedGrades: List<TermGrade> = parser.decodeFromString<List<TermGrade>>(responseString)
+                return@withContext parsedGrades
+            } else {
+                throw(Exception("API Error"))
+            }
+        }
+    }
     public suspend fun getGivenExamGradesDistribution(examId: Int): GradesDistribution {
         return withContext(Dispatchers.IO) {
             val response: BackendDataSender.BackendResponse = BackendDataSender.get("$gradesUrl/$examDistributionUrl?id=$examId")
@@ -65,7 +77,6 @@ data class TermGrade (
     val value_description: SharedDataClasses.LangDict,
     val exam_id: Int,
     val exam_session_number: Int,
-    val grade_value: Float ? = null,
     val date_modified: String? = null,
     val modification_author: SharedDataClasses.Human? = null,
     val counts_into_average: String
