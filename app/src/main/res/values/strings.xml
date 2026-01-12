@@ -124,4 +124,11 @@
     <string name="sign_in">Sign in to USOS</string>
     <string name="checking_the_connection">Connecting to USOS services…</string>
     <string name="almost_there">Almost there...</string>
+    <string name="nothing_to_display">Nothing to display yet</string>
+    <string name="grader">Grader</string>
+    <string name="modification_date">Modification date</string>
+    <string name="inactive_student">Inactive student</string>
+    <string name="all_participants">All participants</string>
+    <string name="group_singular">Group</string>
+    <string name="groups_plural">Groups</string>
 </resources>

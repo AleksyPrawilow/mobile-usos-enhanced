@@ -32,11 +32,12 @@ fun NodeTaskView(
             showDetails = false
         }
     }
+    println(subnodes)
     val clicked: () -> Unit = if (!subnodes.isNullOrEmpty()) onClick else clickedNoSubnodes
     GradeCardView(
         courseName = nodeName,
-        grade = studentsPoints?.points.toString(),
-        showGrade = studentsPoints != null && studentsPoints.points != null,
+        grade = studentsPoints?.points?.toString() ?: "—",
+        showGrade = (studentsPoints != null && studentsPoints.points != null) || (subnodes.isNullOrEmpty()),
         showArrow = !subnodes.isNullOrEmpty(),
         onClick = clicked
     )

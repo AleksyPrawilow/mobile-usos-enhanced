@@ -42,6 +42,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -65,16 +66,17 @@ fun TestCardView(
 
     }
 ) {
+    val rootFolderName: String = if (data.limit_to_groups.isEmpty()) stringResource(R.string.all_participants) else "${if (data.limit_to_groups.size < 2) stringResource(R.string.group_singular) else stringResource(R.string.groups_plural)} ${data.limit_to_groups.joinToString(", ") { it.group_number.toString() }}"
     val context: Context = LocalContext.current
     var expanded: Boolean by rememberSaveable { mutableStateOf(false) }
     var isRootFolder: Boolean by rememberSaveable { mutableStateOf(true) }
     var lastClickedBack: Boolean by rememberSaveable { mutableStateOf(false) }
     var fetchDetailsSuccess: Boolean by rememberSaveable { mutableStateOf(true) }
     var fetchingDetails: Boolean by rememberSaveable { mutableStateOf(false) }
-    var currentFolderName: String by rememberSaveable { mutableStateOf("Wszyscy uczestnicy") }
+    var currentFolderName: String by rememberSaveable { mutableStateOf(rootFolderName) }
     val coroutineScope: CoroutineScope = rememberCoroutineScope()
     val viewModel: TestsPageViewModel = viewModel<TestsPageViewModel>()
-    val currentFolderIcon: ImageVector = ImageVector.vectorResource(if (!expanded) R.drawable.rounded_groups_24 else R.drawable.rounded_search_insights_24)
+    val currentFolderIcon: ImageVector = ImageVector.vectorResource(if (!expanded) (if (data.limit_to_groups.isEmpty()) R.drawable.rounded_groups_24 else R.drawable.rounded_group_24) else R.drawable.rounded_search_insights_24)
     val fetchDetails: () -> Unit = {
         fetchDetailsSuccess = true
         if (viewModel.testDetails.getOrDefault(data.node_id, null) == null) {
@@ -100,7 +102,7 @@ fun TestCardView(
                         data.node_id,
                         viewModel.testDetails[data.node_id]!!
                     )
-                    currentFolderName = "Wszyscy uczestnicy"
+                    currentFolderName = rootFolderName
                     viewModel.clearStack(data.node_id)
                     lastClickedBack = false
                     isRootFolder = true

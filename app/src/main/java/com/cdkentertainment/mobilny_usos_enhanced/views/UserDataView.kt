@@ -114,7 +114,7 @@ fun UserDataView(modifier: Modifier = Modifier) {
                     color = UISingleton.textColor1
                 )
                 Text(
-                    text = stringResource(R.string.active_student),
+                    text = if (UserDataSingleton.userData?.student_status == 2) stringResource(R.string.active_student) else stringResource(R.string.inactive_student),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Light,
                     color = UISingleton.textColor1

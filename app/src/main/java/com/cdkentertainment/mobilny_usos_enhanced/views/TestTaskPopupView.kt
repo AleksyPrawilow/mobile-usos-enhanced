@@ -37,6 +37,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
+import com.cdkentertainment.mobilny_usos_enhanced.models.SharedDataClasses
 import com.cdkentertainment.mobilny_usos_enhanced.models.StudentsPoints
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.TestsPageViewModel
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianValueFormatter
@@ -58,6 +59,8 @@ fun TestTaskPopupView(
     onDismiss: () -> Unit
 ) {
     val viewModel: TestsPageViewModel = viewModel<TestsPageViewModel>()
+    val grader: SharedDataClasses.Human? = viewModel.taskNodeDetails[nodeId]?.task_node_details?.students_points?.grader
+    val lastChanged: String? = viewModel.taskNodeDetails[nodeId]?.task_node_details?.students_points?.last_changed
     val coroutineScope: CoroutineScope = rememberCoroutineScope()
     val fetchDetails: () -> Unit = {
         coroutineScope.launch {
@@ -99,12 +102,12 @@ fun TestTaskPopupView(
                 ) {
                     GradeCardView(
                         courseName = stringResource(R.string.your_grade),
-                        grade = if (grade.points != null) grade.points.toString() else "-",
+                        grade = if (grade.points != null) grade.points.toString() else "—",
                         backgroundColor = UISingleton.color2
                     )
-                    if (grade.last_changed != null) {
+                    if (lastChanged != null) {
                         Text(
-                            text = "Data wprowadzenia: ${grade.last_changed}",
+                            text = "${stringResource(R.string.modification_date)}: $lastChanged",
                             style = MaterialTheme.typography.titleMedium,
                             color = UISingleton.textColor1,
                             modifier = Modifier
@@ -114,9 +117,9 @@ fun TestTaskPopupView(
                                 .padding(12.dp)
                         )
                     }
-                    if (grade.grader != null) {
+                    if (grader != null) {
                         Text(
-                            text = "Wystawiający: ${grade.grader.first_name} ${grade.grader.last_name}",
+                            text = "${stringResource(R.string.grader)}: ${grader.first_name} ${grader.last_name}",
                             style = MaterialTheme.typography.titleMedium,
                             color = UISingleton.textColor1,
                             modifier = Modifier
@@ -127,60 +130,58 @@ fun TestTaskPopupView(
                         )
                     }
                 }
-                if (!viewModel.taskNodeDetails[nodeId]?.students_points.isNullOrEmpty()) {
-                    GroupedContentContainerView(
-                        title = stringResource(R.string.grade_distribution),
-                        backgroundColor = UISingleton.color1,
-                        modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 12.dp)
-                    ) {
-                        if (viewModel.loadedTaskNodeDetails[nodeId] == true)  {
-                            GradeChart(
-                                gradeData = viewModel.taskNodeDetails[nodeId]?.students_points?.associate { it.value.toString() to it.number_of_values.toInt() } ?: emptyMap(),
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-                                addPercent = false
-                            )
-                        }
-                    }
-                } else {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        androidx.compose.animation.AnimatedVisibility(viewModel.errorTaskNodeDetails[nodeId] == true) {
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
-                                    .background(UISingleton.color2)
-                                    .clickable(onClick = {
-                                        fetchDetails()
-                                    })
-                                    .padding(12.dp)
-                            ) {
-                                Text(
-                                    text = stringResource(R.string.failed_to_fetch),
-                                    style = MaterialTheme.typography.titleMedium,
-                                    color = UISingleton.textColor1,
-                                    modifier = Modifier.weight(1f)
-                                )
-                                Icon(
-                                    imageVector = Icons.Rounded.Refresh,
-                                    contentDescription = null,
-                                    tint = UISingleton.textColor4,
+                GroupedContentContainerView(
+                    title = stringResource(R.string.grade_distribution),
+                    backgroundColor = UISingleton.color1,
+                    modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 12.dp)
+                ) {
+                    if (viewModel.loadedTaskNodeDetails[nodeId] == true)  {
+                        GradeChart(
+                            gradeData = viewModel.taskNodeDetails[nodeId]?.students_points?.associate { it.value.toString() to it.number_of_values.toInt() } ?: emptyMap(),
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            addPercent = false
+                        )
+                    } else {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            androidx.compose.animation.AnimatedVisibility(viewModel.errorTaskNodeDetails[nodeId] == true) {
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
+                                    verticalAlignment = Alignment.CenterVertically,
                                     modifier = Modifier
-                                        .size(48.dp)
-                                        .background(UISingleton.color3, CircleShape)
-                                        .padding(8.dp)
+                                        .fillMaxWidth()
+                                        .clip(RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
+                                        .background(UISingleton.color2)
+                                        .clickable(onClick = {
+                                            fetchDetails()
+                                        })
+                                        .padding(12.dp)
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.failed_to_fetch),
+                                        style = MaterialTheme.typography.titleMedium,
+                                        color = UISingleton.textColor1,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                    Icon(
+                                        imageVector = Icons.Rounded.Refresh,
+                                        contentDescription = null,
+                                        tint = UISingleton.textColor4,
+                                        modifier = Modifier
+                                            .size(48.dp)
+                                            .background(UISingleton.color3, CircleShape)
+                                            .padding(8.dp)
+                                    )
+                                }
+                            }
+                            androidx.compose.animation.AnimatedVisibility(viewModel.loadingTaskNodeDetails[nodeId] == true) {
+                                CircularProgressIndicator(
+                                    color = UISingleton.textColor2
                                 )
                             }
-                        }
-                        androidx.compose.animation.AnimatedVisibility(viewModel.loadingTaskNodeDetails[nodeId] == true){
-                            CircularProgressIndicator(
-                                color = UISingleton.textColor2
-                            )
                         }
                     }
                 }

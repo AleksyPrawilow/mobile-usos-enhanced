@@ -77,7 +77,7 @@ data class LimitToGroupsObject (
 data class Test (
     val node_id: Int,
     val course_edition: CourseEdition ?,
-//    val limit_to_groups: LimitToGroupsObject, //narazie nie działa
+    val limit_to_groups: List<LimitToGroupsObject>,
     val name: SharedDataClasses.LangDict,
     val description: SharedDataClasses.LangDict
 )
@@ -142,6 +142,12 @@ data class GradesStats(
 )
 
 @Serializable
+data class GradesStatsForGrades(
+    val value: String,
+    val number_of_values: Int
+)
+
+@Serializable
 data class TaskNodeDetailsContainer(
     val task_node_details: SpecificTaskNodeDetails?,
     val students_points: List<GradesStats>?
@@ -150,5 +156,5 @@ data class TaskNodeDetailsContainer(
 @Serializable
 data class GradeNodeDetailsContainer(
     val grade_node_details: SpecificGradeNodeDetails?,
-    val students_points: List<GradesStats>?
+    val students_points: List<GradesStatsForGrades>?
 )

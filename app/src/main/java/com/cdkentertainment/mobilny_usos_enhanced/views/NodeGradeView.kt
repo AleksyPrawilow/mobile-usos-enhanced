@@ -26,7 +26,7 @@ fun NodeGradeView(
     }
     GradeCardView(
         courseName = courseName,
-        grade = data.students_grade?.grade_value?.symbol ?: "-",
+        grade = data.students_grade?.grade_value?.symbol ?: "—",
         onClick = {
             showDetails = true
         }
