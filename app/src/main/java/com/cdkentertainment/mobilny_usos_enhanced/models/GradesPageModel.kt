@@ -26,7 +26,7 @@ class GradesPageModel {
     }
     public suspend fun fetchLatestGrades(): List<TermGrade> {
         return withContext(Dispatchers.IO) {
-            val response: BackendDataSender.BackendResponse = BackendDataSender.get("$gradesUrl/LatestGrades?days=128")
+            val response: BackendDataSender.BackendResponse = BackendDataSender.get("$gradesUrl/LatestGrades?days=7")
             if (response.statusCode == 200 && response.body != null) {
                 val responseString: String = response.body!!
                 val parsedGrades: List<TermGrade> = parser.decodeFromString<List<TermGrade>>(responseString)
