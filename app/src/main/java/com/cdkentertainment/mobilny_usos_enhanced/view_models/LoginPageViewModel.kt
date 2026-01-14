@@ -6,14 +6,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.cdkentertainment.mobilny_usos_enhanced.UserDataSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.getLocalized
+import com.cdkentertainment.mobilny_usos_enhanced.models.BackendDataSender
 import com.cdkentertainment.mobilny_usos_enhanced.models.OAuthModel
 import com.cdkentertainment.mobilny_usos_enhanced.models.SharedDataClasses
 import com.github.scribejava.core.model.OAuth1RequestToken
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class LoginPageViewModel: ViewModel() {
     enum class LoginState {
+        SELECT_UNIVERSITY,
         USOS_AUTO_LOGIN,
         USOS_LOGIN,
         USOS_RETREIVING_REQUEST_TOKEN,
@@ -26,6 +30,14 @@ class LoginPageViewModel: ViewModel() {
     var oauthUrl: String by mutableStateOf("")
     var requestToken: OAuth1RequestToken? = null
     val model: OAuthModel = OAuthModel()
+
+    suspend fun readTokenAndUniversity(context: Context) {
+        BackendDataSender.oAuth1AccessToken = UserDataSingleton.readAccessToken(context)
+        if (UserDataSingleton.selectedUniversity == 0) {
+            delay(4000)
+            loginState = LoginState.SELECT_UNIVERSITY
+        }
+    }
 
     fun tryAutoLogin(context: Context) {
         viewModelScope.launch {

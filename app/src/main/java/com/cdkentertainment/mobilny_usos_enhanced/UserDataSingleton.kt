@@ -2,6 +2,7 @@ package com.cdkentertainment.mobilny_usos_enhanced
 
 import android.content.Context
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -12,6 +13,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.cdkentertainment.mobilny_usos_enhanced.models.BackendDataSender
 import com.cdkentertainment.mobilny_usos_enhanced.models.SharedDataClasses
 import com.cdkentertainment.mobilny_usos_enhanced.models.UserInfo
+import com.cdkentertainment.mobilny_usos_enhanced.usos_installations.Universities
 import com.github.scribejava.core.model.OAuth1AccessToken
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -22,9 +24,11 @@ val Context.dataStore by preferencesDataStore("user_settings")
 object UserDataSingleton {
     private val ACCESS_TOKEN_KEY = stringPreferencesKey("access_token_key")
     private val ACCESS_TOKEN_SECRET = stringPreferencesKey("access_token_secret")
+    private val SELECTED_UNIVERSITY = intPreferencesKey("SELECTED_UNIVERSITY")
     private val SELECTED_THEME = intPreferencesKey("SELECTED_THEME")
 
     var currentSettings: SettingsObject = SettingsObject()
+    var selectedUniversity: Int by mutableIntStateOf(0)
     var userData: UserInfo? by mutableStateOf(null)
     var userFaculties: MutableMap<String, SharedDataClasses.LangDict> = mutableStateMapOf()
 
@@ -32,6 +36,7 @@ object UserDataSingleton {
         context.dataStore.edit { settings ->
             settings[ACCESS_TOKEN_KEY] = accessToken.token
             settings[ACCESS_TOKEN_SECRET] = accessToken.tokenSecret
+            settings[SELECTED_UNIVERSITY] = selectedUniversity
         }
     }
 
@@ -40,6 +45,7 @@ object UserDataSingleton {
         context.dataStore.edit { settings ->
             settings[ACCESS_TOKEN_KEY] = ""
             settings[ACCESS_TOKEN_SECRET] = ""
+            settings[SELECTED_UNIVERSITY] = Universities.NOT_CHOSEN.id
         }
     }
 
@@ -74,9 +80,15 @@ object UserDataSingleton {
             .map { prefs -> prefs[ACCESS_TOKEN_SECRET] ?: "" }
     }
 
+    fun readSelectedUniversity(context: Context): Flow<Int> {
+        return context.dataStore.data
+            .map { prefs -> prefs[SELECTED_UNIVERSITY] ?: 0 }
+    }
+
     suspend fun readAccessToken(context: Context): OAuth1AccessToken? {
         val key: String = readAccessTokenKey(context).first()
         val secret: String = readAccessTokenSecret(context).first()
+        selectedUniversity = readSelectedUniversity(context).first()
         if (key != "" && secret != "") {
             return OAuth1AccessToken(key, secret)
         }

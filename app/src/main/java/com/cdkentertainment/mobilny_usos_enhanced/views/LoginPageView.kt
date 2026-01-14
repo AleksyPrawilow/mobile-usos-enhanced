@@ -2,12 +2,15 @@ package com.cdkentertainment.mobilny_usos_enhanced.views
 
 import android.content.Context
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -22,6 +25,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
@@ -47,7 +51,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.R
+import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
+import com.cdkentertainment.mobilny_usos_enhanced.UserDataSingleton
 import com.cdkentertainment.mobilny_usos_enhanced.getLocalized
 import com.cdkentertainment.mobilny_usos_enhanced.models.SharedDataClasses
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.LecturerRatesPageViewModel
@@ -75,16 +81,37 @@ fun LoginPageView(screenManagerViewModel: ScreenManagerViewModel = viewModel<Scr
         }
     }
 
+    LaunchedEffect(pageViewModel.loginState) {
+        if (pageViewModel.loginState == LoginPageViewModel.LoginState.USOS_LOGIN && !showLoginStuff) {
+            delay(500)
+            showLoginStuff = true
+        }
+    }
+
     LaunchedEffect(Unit) {
-        pageViewModel.tryAutoLogin(context)
-        delay(3000)
-        showLoginStuff = true
+        pageViewModel.readTokenAndUniversity(context)
+        println(UserDataSingleton.selectedUniversity)
+        if (UserDataSingleton.selectedUniversity != 0) {
+            pageViewModel.tryAutoLogin(context)
+            delay(3000)
+            showLoginStuff = true
+        }
+    }
+
+    BackHandler(
+        enabled = pageViewModel.loginState == LoginPageViewModel.LoginState.USOS_LOGIN
+    ) {
+        showLoginStuff = false
+        UserDataSingleton.selectedUniversity = 0
+        pageViewModel.loginState = LoginPageViewModel.LoginState.SELECT_UNIVERSITY
     }
 
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxSize().systemBarsPadding()
+        modifier = Modifier
+            .fillMaxSize()
+            .systemBarsPadding()
     ) {
         SplashScreenView(
             modifier = Modifier.weight(1f)
@@ -93,7 +120,10 @@ fun LoginPageView(screenManagerViewModel: ScreenManagerViewModel = viewModel<Scr
             contentAlignment = Alignment.BottomCenter,
             modifier = Modifier
                 .weight(loginWeight)
-                .padding(horizontal = UISingleton.horizontalPadding, vertical = UISingleton.verticalPadding)
+                .padding(
+                    horizontal = UISingleton.horizontalPadding,
+                    vertical = UISingleton.verticalPadding
+                )
         ) {
             androidx.compose.animation.AnimatedVisibility(
                 visible = showLoginStuff,
@@ -103,9 +133,12 @@ fun LoginPageView(screenManagerViewModel: ScreenManagerViewModel = viewModel<Scr
                 AnimatedContent(
                     transitionSpec = { fadeIn() + slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Start) togetherWith fadeOut() + slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Start) },
                     targetState = currentState,
-                    modifier = Modifier.fillMaxWidth().padding(12.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp)
                 ) { state ->
                     when (state) {
+                        LoginPageViewModel.LoginState.SELECT_UNIVERSITY              -> {}
                         LoginPageViewModel.LoginState.USOS_AUTO_LOGIN                -> UsosAutoLoginView()
                         LoginPageViewModel.LoginState.USOS_LOGIN                     -> UsosLoginView(coroutineScope)
                         LoginPageViewModel.LoginState.USOS_RETREIVING_REQUEST_TOKEN  -> UsosRequestTokenView()
@@ -116,6 +149,17 @@ fun LoginPageView(screenManagerViewModel: ScreenManagerViewModel = viewModel<Scr
                 }
             }
         }
+    }
+
+    AnimatedVisibility(
+        visible = pageViewModel.loginState == LoginPageViewModel.LoginState.SELECT_UNIVERSITY,
+        enter = fadeIn(tween(1000)),
+        exit = fadeOut(),
+        modifier = Modifier
+            .fillMaxSize()
+            .systemBarsPadding()
+    ) {
+        SelectUniversityView()
     }
 
     AnimatedVisibility(
@@ -170,6 +214,76 @@ private fun UsosOauthLoginView(authUrl: String, modifier: Modifier = Modifier) {
         val oauthVerifier = uri.getQueryParameter("oauth_verifier")
         coroutineScope.launch {
             viewModel.onOAuthRedirect(oauthToken, oauthVerifier, context)
+        }
+    }
+}
+
+@Composable
+private fun SelectUniversityView() {
+    data class University(
+        val id: Int,
+        val name: SharedDataClasses.LangDict
+    )
+
+    val viewModel: LoginPageViewModel = viewModel<LoginPageViewModel>()
+    var showContent: Boolean by rememberSaveable { mutableStateOf(false) }
+    val context: Context = LocalContext.current
+    val enterTransition: (Int) -> EnterTransition = UIHelper.slideEnterTransition
+    val universities: List<University> = listOf(
+        University(1, SharedDataClasses.LangDict(
+            pl = "Uniwersytet im. Adama Mickiewicza w Poznaniu",
+            en = "Adam Mickiewicz University in Poznań"
+        )),
+        University(2, SharedDataClasses.LangDict(
+            pl = "Politechnika Poznańska",
+            en = "Poznań University of Technology"
+        ))
+    )
+
+    val onUniversitySelect: (Int) -> Unit = { universityId ->
+        viewModel.loginState = LoginPageViewModel.LoginState.USOS_LOGIN
+        UserDataSingleton.selectedUniversity = universityId
+    }
+
+    LaunchedEffect(Unit) {
+        showContent = true
+    }
+
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth(0.85f)
+                .background(UISingleton.color2.copy(alpha = 0.85f), RoundedCornerShape(UISingleton.uiElementsCornerRadius.dp))
+                .padding(12.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.choose_your_university),
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.ExtraBold,
+                color = UISingleton.textColor1
+            )
+            for (university in universities) {
+                AnimatedVisibility(
+                    visible = showContent,
+                    enter = enterTransition(university.id)
+                ) {
+                    GradeCardView(
+                        modifier = Modifier.fillMaxWidth(),
+                        courseName = university.name.getLocalized(context),
+                        showGrade = false,
+                        showArrow = true,
+                        sideIcon = ImageVector.vectorResource(R.drawable.rounded_school_24),
+                        onClick = {
+                            onUniversitySelect(university.id)
+                        }
+                    )
+                }
+            }
         }
     }
 }

@@ -35,12 +35,10 @@ class OAuthModel {
     )
     public suspend fun checkIfAccessTokenExists(context: Context): Boolean {
         return withContext(Dispatchers.IO) {
-            if (BackendDataSender.oAuth1AccessToken != null) {
-                return@withContext !checkIfTokenExpired()
+            if (UserDataSingleton.selectedUniversity == 0) {
+                return@withContext false
             }
-            val accessToken: OAuth1AccessToken? = UserDataSingleton.readAccessToken(context)
-            if (accessToken != null) {
-                BackendDataSender.oAuth1AccessToken = accessToken
+            if (BackendDataSender.oAuth1AccessToken != null) {
                 return@withContext !checkIfTokenExpired()
             }
             return@withContext false
@@ -49,7 +47,7 @@ class OAuthModel {
     public suspend fun checkIfTokenExpired(): Boolean {
         return withContext(Dispatchers.IO) {
             try {
-                val token = BackendDataSender.getWithOnlyAuthHeaders("Auth/AutoLogin").body
+                val token = BackendDataSender.getWithOnlyAuthHeaders("Auth/AutoLogin?universityId=${UserDataSingleton.selectedUniversity}").body
                 BackendDataSender.setAuthHeader(token!!)
                 UserDataSingleton.userData = getUserData()
                 return@withContext UserDataSingleton.userData == null
@@ -75,7 +73,7 @@ class OAuthModel {
     }
     public suspend fun getRequestToken(): UrlAndToken {
         return withContext(Dispatchers.IO) {
-            val response: BackendDataSender.BackendResponse = BackendDataSender.getWithoutHeaders(tokenAndUrl, false)
+            val response: BackendDataSender.BackendResponse = BackendDataSender.getWithoutHeaders("$tokenAndUrl?universityId=${UserDataSingleton.selectedUniversity}", false)
             if (response.statusCode == 200 && response.body != null) {
                 val parsedResponse: UrlAndToken = parser.decodeFromString<UrlAndToken>(response.body!!)
                 return@withContext parsedResponse
@@ -86,7 +84,7 @@ class OAuthModel {
     }
     public suspend fun getAccessToken(pin: String, requestToken: String, tokenSecret: String, context: Context): OAuth1AccessToken {
         return withContext(Dispatchers.IO) {
-            val result: BackendDataSender.BackendResponse = BackendDataSender.getWithAuthHeaders(finalTokensUrl, pin, requestToken, tokenSecret)
+            val result: BackendDataSender.BackendResponse = BackendDataSender.getWithAuthHeaders("$finalTokensUrl?universityId=${UserDataSingleton.selectedUniversity}", pin, requestToken, tokenSecret)
             if (result.statusCode == 200  && result.body != null) {
                 val parsedLoginData: TokenSet = parser.decodeFromString<TokenSet>(result.body!!)
                 val oAuthToken = OAuth1AccessToken(parsedLoginData.usosToken, parsedLoginData.usosTokenSecret)

@@ -2,6 +2,7 @@ package com.cdkentertainment.mobilny_usos_enhanced.models
 
 
 import android.util.Base64
+import com.cdkentertainment.mobilny_usos_enhanced.UserDataSingleton
 import com.github.scribejava.core.model.OAuth1AccessToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -52,7 +53,7 @@ object BackendDataSender {
         val oauth = oAuth1AccessToken ?: throw IllegalStateException("Missing OAuth token")
 
         val request = Request.Builder()
-            .url("$developmentUrl/Auth/AutoLogin")
+            .url("$developmentUrl/Auth/AutoLogin?universityId=${UserDataSingleton.selectedUniversity}")
             .header("OAuth-Key", oauth.token)
             .header("OAuth-Secret", oauth.tokenSecret)
             .build()
