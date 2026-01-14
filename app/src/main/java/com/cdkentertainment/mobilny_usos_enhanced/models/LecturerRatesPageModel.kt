@@ -23,7 +23,7 @@ class LecturerRatesPageModel {
 
     public suspend fun getUserRates(userId: Int): List<UserRate> {
         return withContext(Dispatchers.IO) {
-            val response: BackendDataSender.BackendResponse = BackendDataSender.get("$userRateUrl?userId=$userId&universityId=1")
+            val response: BackendDataSender.BackendResponse = BackendDataSender.get("$userRateUrl?userId=$userId")
             if (response.statusCode == 200 && response.body != null) {
                 val parsedResponse: List<UserRate> = parser.decodeFromString<List<UserRate>>(response.body!!)
                 return@withContext parsedResponse
@@ -45,7 +45,7 @@ class LecturerRatesPageModel {
     }
     public suspend fun deleteUserRate(lecturerId: Int, universityId: Int): String {
         return withContext(Dispatchers.IO) {
-            val response = BackendDataSender.delete("$deleteUserRateUrl?lecturerId=$lecturerId&universityId=$universityId")
+            val response = BackendDataSender.delete("$deleteUserRateUrl?lecturerId=$lecturerId")
             if (response.statusCode == 200) {
                 return@withContext "ok"
             } else {
@@ -67,7 +67,7 @@ class LecturerRatesPageModel {
     public suspend fun getMultipleLecturersAvgRates(lecturersIds: List<Int>): List<LecturerAvgRates?> {
         return withContext(Dispatchers.IO) {
             val body: String = parser.encodeToString(lecturersIds)
-            val response: BackendDataSender.BackendResponse = BackendDataSender.postHeaders("$multipleLecturerRatesUrl?universityId=1", body) //TEMPORARY
+            val response: BackendDataSender.BackendResponse = BackendDataSender.postHeaders(multipleLecturerRatesUrl, body) //TEMPORARY
             if (response.statusCode == 200 && response.body != null) {
                 val parsedResponse: List<LecturerAvgRates?> = parser.decodeFromString<List<LecturerAvgRates?>>(response.body!!)
                 return@withContext parsedResponse
@@ -80,7 +80,7 @@ class LecturerRatesPageModel {
     }
     public suspend fun getLecturerAvgRates(lecturerId: Int) : LecturerAvgRates? {
         return withContext(Dispatchers.IO) {
-            val response: BackendDataSender.BackendResponse = BackendDataSender.get("$lecturerRateUrl?lecturerId=$lecturerId&universityId=1") //TEMPORARY
+            val response: BackendDataSender.BackendResponse = BackendDataSender.get("$lecturerRateUrl?lecturerId=$lecturerId")
             if (response.statusCode == 200 && response.body != null) {
                 val parsedResponse: LecturerAvgRates? = parser.decodeFromString<LecturerAvgRates?>(response.body!!)
                 return@withContext parsedResponse
