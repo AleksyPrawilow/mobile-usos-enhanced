@@ -151,7 +151,7 @@ fun TestsPageView() {
                                         ) {
                                             coroutineScope.launch {
                                                 listState.animateScrollToItem(
-                                                    index = captureIndex,
+                                                    index = captureIndex + 1,
                                                     scrollOffset = with(density) { -96.dp.toPx() }.toInt()
                                                 )
                                             }
@@ -164,6 +164,7 @@ fun TestsPageView() {
                 }
 
                 item { Spacer(modifier = Modifier.height(24.dp)) }
+                currentIndex++
             }
         }
 
