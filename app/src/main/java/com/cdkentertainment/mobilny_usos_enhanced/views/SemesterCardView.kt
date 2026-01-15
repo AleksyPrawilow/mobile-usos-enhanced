@@ -35,7 +35,7 @@ fun SemesterCardView(text: String, modifier: Modifier = Modifier) {
             semester = if (semesterParts[1][1] == 'L') stringResource(R.string.summer_semester) else stringResource(R.string.winter_semester)
         }
         2 -> {
-            year = "${text[0]}${text[1]}${text[2]}${text[3]}"
+            year = "${if (text[4] == 'L') text.take(4).toInt() + 1 else text.take(4)}"
             semester = if (text[4] == 'L') stringResource(R.string.summer_semester) else stringResource(R.string.winter_semester)
         }
         else -> {
