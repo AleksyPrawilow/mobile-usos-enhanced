@@ -22,12 +22,26 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
+import com.cdkentertainment.mobilny_usos_enhanced.UserDataSingleton
 
 @Composable
 fun SemesterCardView(text: String, modifier: Modifier = Modifier) {
-    val semesterParts: List<String> = text.split("/")
-    val year = semesterParts[0]
-    val semester = if (semesterParts[1][1] == 'L') stringResource(R.string.summer_semester) else stringResource(R.string.winter_semester)
+    var year: String = ""
+    var semester: String = ""
+    when (UserDataSingleton.selectedUniversity) {
+        1 -> {
+            val semesterParts: List<String> = text.split("/")
+            year = semesterParts[0]
+            semester = if (semesterParts[1][1] == 'L') stringResource(R.string.summer_semester) else stringResource(R.string.winter_semester)
+        }
+        2 -> {
+            year = "${text[0]}${text[1]}${text[2]}${text[3]}"
+            semester = if (text[4] == 'L') stringResource(R.string.summer_semester) else stringResource(R.string.winter_semester)
+        }
+        else -> {
+            semester = text
+        }
+    }
     Card(
         colors = CardColors(
             contentColor = UISingleton.textColor1,

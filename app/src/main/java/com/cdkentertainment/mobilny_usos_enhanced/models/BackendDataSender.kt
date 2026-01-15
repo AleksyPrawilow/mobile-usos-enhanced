@@ -93,9 +93,6 @@ object BackendDataSender {
     }
     public suspend fun getWithOnlyAuthHeaders(requestUrl: String): BackendResponse {
         return withContext(Dispatchers.IO) {
-            if (isJwtExpiringSoon(authHeader)) {
-                refreshToken()
-            }
             val accessToken = oAuth1AccessToken!!.token
             val accessSecret = oAuth1AccessToken!!.tokenSecret
             val requestUrl = "$developmentUrl/$requestUrl"
