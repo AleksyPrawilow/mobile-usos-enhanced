@@ -56,6 +56,7 @@ dependencies {
     implementation("androidx.compose.animation:animation:1.9.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.9.3")
     implementation("com.github.scribejava:scribejava-apis:8.3.3")
+    implementation("androidx.browser:browser:1.9.0")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

@@ -26,13 +26,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -70,6 +66,7 @@ fun LoginPageView(screenManagerViewModel: ScreenManagerViewModel = viewModel<Scr
     val pageViewModel: LoginPageViewModel = viewModel<LoginPageViewModel>()
     val currentState: LoginPageViewModel.LoginState = pageViewModel.loginState
     var showLoginStuff: Boolean by rememberSaveable { mutableStateOf(false) }
+
     val loginWeight: Float by animateFloatAsState(
         targetValue = if (showLoginStuff) 0.3f else 0.01f,
         spring(stiffness = Spring.StiffnessLow)
@@ -89,12 +86,21 @@ fun LoginPageView(screenManagerViewModel: ScreenManagerViewModel = viewModel<Scr
     }
 
     LaunchedEffect(Unit) {
-        pageViewModel.readTokenAndUniversity(context)
-        println(UserDataSingleton.selectedUniversity)
-        if (UserDataSingleton.selectedUniversity != 0) {
-            pageViewModel.tryAutoLogin(context)
-            delay(3000)
-            showLoginStuff = true
+        if (!showLoginStuff) {
+            pageViewModel.readTokenAndUniversity(context)
+            if (UserDataSingleton.selectedUniversity != 0) {
+                pageViewModel.tryAutoLogin(context)
+                delay(3000)
+                showLoginStuff = true
+            }
+        }
+
+        pageViewModel.redirects.collect { uri ->
+            val oauthToken = uri.getQueryParameter("oauth_token")
+            val oauthVerifier = uri.getQueryParameter("oauth_verifier")
+            coroutineScope.launch {
+                pageViewModel.onOAuthRedirect(oauthToken, oauthVerifier, context)
+            }
         }
     }
 
@@ -143,6 +149,7 @@ fun LoginPageView(screenManagerViewModel: ScreenManagerViewModel = viewModel<Scr
                         LoginPageViewModel.LoginState.USOS_LOGIN                     -> UsosLoginView(coroutineScope)
                         LoginPageViewModel.LoginState.USOS_RETREIVING_REQUEST_TOKEN  -> UsosRequestTokenView()
                         LoginPageViewModel.LoginState.USOS_RETREIVING_OAUTH_VERIFIER -> {}
+                        LoginPageViewModel.LoginState.USOS_RETREIVING_ACCESS_TOKEN   -> {}
                         LoginPageViewModel.LoginState.LAST_STEPS                     -> LastStepsView(coroutineScope)
                         LoginPageViewModel.LoginState.SUCCESS                        -> SuccessView()
                     }
@@ -170,52 +177,19 @@ fun LoginPageView(screenManagerViewModel: ScreenManagerViewModel = viewModel<Scr
             .fillMaxSize()
             .systemBarsPadding()
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(UISingleton.color3)
-        ) {
-            TextButton(
-                onClick = {
-                    pageViewModel.loginCancelled(context)
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                    contentDescription = null,
-                    tint = UISingleton.textColor4
-                )
-                Text(
-                    text = stringResource(R.string.go_back),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = UISingleton.textColor4
-                )
-            }
-            UsosOauthLoginView(
-                authUrl = pageViewModel.oauthUrl,
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-            )
-        }
+        UsosOauthLoginView(pageViewModel.oauthUrl)
     }
 }
 
 @Composable
-private fun UsosOauthLoginView(authUrl: String, modifier: Modifier = Modifier) {
-    val coroutineScope: CoroutineScope = rememberCoroutineScope()
+private fun UsosOauthLoginView(authUrl: String) {
     val viewModel: LoginPageViewModel = viewModel<LoginPageViewModel>()
     val authUrl = authUrl
-    val context: Context = LocalContext.current
-
-    OAuthWebView(url = authUrl, modifier) { uri ->
-        val oauthToken = uri.getQueryParameter("oauth_token")
-        val oauthVerifier = uri.getQueryParameter("oauth_verifier")
-        coroutineScope.launch {
-            viewModel.onOAuthRedirect(oauthToken, oauthVerifier, context)
-        }
+    LaunchedEffect(Unit) {
+        delay(500)
+        viewModel.loginState = LoginPageViewModel.LoginState.USOS_LOGIN
     }
+    OAuthWebView(authUrl)
 }
 
 @Composable

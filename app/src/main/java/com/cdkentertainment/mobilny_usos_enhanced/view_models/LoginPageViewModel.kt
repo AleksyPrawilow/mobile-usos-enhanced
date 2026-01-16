@@ -1,6 +1,7 @@
 package com.cdkentertainment.mobilny_usos_enhanced.view_models
 
 import android.content.Context
+import android.net.Uri
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -13,6 +14,8 @@ import com.cdkentertainment.mobilny_usos_enhanced.models.OAuthModel
 import com.cdkentertainment.mobilny_usos_enhanced.models.SharedDataClasses
 import com.github.scribejava.core.model.OAuth1RequestToken
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 class LoginPageViewModel: ViewModel() {
@@ -22,6 +25,7 @@ class LoginPageViewModel: ViewModel() {
         USOS_LOGIN,
         USOS_RETREIVING_REQUEST_TOKEN,
         USOS_RETREIVING_OAUTH_VERIFIER,
+        USOS_RETREIVING_ACCESS_TOKEN,
         LAST_STEPS,
         SUCCESS
     }
@@ -30,6 +34,15 @@ class LoginPageViewModel: ViewModel() {
     var oauthUrl: String by mutableStateOf("")
     var requestToken: OAuth1RequestToken? = null
     val model: OAuthModel = OAuthModel()
+
+    private val _redirects = MutableSharedFlow<Uri>(
+        extraBufferCapacity = 1
+    )
+    val redirects = _redirects.asSharedFlow()
+
+    fun handleRedirect(uri: Uri) {
+        _redirects.tryEmit(uri)
+    }
 
     suspend fun readTokenAndUniversity(context: Context) {
         BackendDataSender.oAuth1AccessToken = UserDataSingleton.readAccessToken(context)
@@ -76,6 +89,7 @@ class LoginPageViewModel: ViewModel() {
 
     suspend fun onOAuthRedirect(token: String?, verifier: String?, context: Context) {
         if (token != null && verifier != null) {
+            loginState = LoginState.USOS_RETREIVING_ACCESS_TOKEN
             getAccessToken(
                 pin = verifier,
                 context = context

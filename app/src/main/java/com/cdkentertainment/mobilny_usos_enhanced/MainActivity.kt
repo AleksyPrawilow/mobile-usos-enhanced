@@ -1,12 +1,14 @@
 package com.cdkentertainment.mobilny_usos_enhanced
 
 import android.app.Activity
+import android.content.Intent
 import android.graphics.Color.TRANSPARENT
 import android.os.Bundle
 import android.view.Window
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
@@ -32,12 +34,15 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton.color1
 import com.cdkentertainment.mobilny_usos_enhanced.ui.theme.MobilnyUSOSEnhancedTheme
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.FloatingButtonViewModel
+import com.cdkentertainment.mobilny_usos_enhanced.view_models.LoginPageViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.ScreenManagerViewModel
 import com.cdkentertainment.mobilny_usos_enhanced.views.FloatingButtonView
 import com.cdkentertainment.mobilny_usos_enhanced.views.ScreenManager
 import kotlinx.coroutines.runBlocking
 
 class MainActivity : AppCompatActivity() {
+    private val loginViewModel: LoginPageViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         runBlocking {
@@ -49,6 +54,19 @@ class MainActivity : AppCompatActivity() {
         setContent {
             MobilnyUSOSEnhancedTheme {
                 ContentView()
+            }
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+
+        intent.data?.let { uri ->
+            if (
+                uri.scheme == "mobile-usos-enhanced" &&
+                uri.host == "login"
+            ) {
+                loginViewModel.handleRedirect(uri)
             }
         }
     }
