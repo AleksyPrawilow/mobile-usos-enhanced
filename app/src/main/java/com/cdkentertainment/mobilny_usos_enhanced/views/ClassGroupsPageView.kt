@@ -33,6 +33,7 @@ import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
 import com.cdkentertainment.mobilny_usos_enhanced.models.LessonGroup
+import com.cdkentertainment.mobilny_usos_enhanced.models.SharedDataClasses
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.LessonGroupPageViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -111,7 +112,7 @@ fun ClassGroupsPageView() {
             for (seasonId in groupsPageViewModel.lessonGroups!!.groups.keys.reversed()) {
                 val season: Map<String, List<LessonGroup>>? =
                     groupsPageViewModel.lessonGroups!!.groups[seasonId]
-
+                val semesterName: SharedDataClasses.IdAndName? = UIHelper.termIds.find { it.id == seasonId }
                 var groupCount: Int = 0
                 val courses: List<List<LessonGroup>> = season?.values?.toList() ?: emptyList()
                 for (course in courses) {
@@ -124,7 +125,7 @@ fun ClassGroupsPageView() {
                         enter = enterTransition(1)
                     ) {
                         SemesterCardView(
-                            seasonId,
+                            semesterName ?: SharedDataClasses.IdAndName(seasonId, SharedDataClasses.LangDict(seasonId, seasonId)),
                             modifier = paddingModifier
                         )
                     }

@@ -111,7 +111,7 @@ fun HomePageView() {
 
             paymentsPageViewModel.fetchPayments()
             gradesViewModel.fetchLatestGrades()
-            gradesViewModel.fetchSemesterGrades(UIHelper.termIds.last())
+            gradesViewModel.fetchSemesterGrades(UIHelper.termIds.last().id)
             loadingError = !viewModel.fetchSchedule()
 
             loading = false

@@ -52,7 +52,7 @@ class AttendancePageViewModel: ViewModel() {
                 loaded = false
                 userId = UserDataSingleton.userData!!.id
                 val groups = lessongGroupModel.getLessonGroups()
-                lessonGroups = groups.groups[UIHelper.termIds.last()]?.values?.toList() ?: emptyList()
+                lessonGroups = groups.groups[UIHelper.termIds.last().id]?.values?.toList() ?: emptyList()
                 loading = false
                 loaded = true
                 error = false

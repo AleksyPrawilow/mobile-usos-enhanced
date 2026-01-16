@@ -30,7 +30,7 @@ object UIHelper {
     val slideEnterTransition: (Int) -> EnterTransition = { delayIndex: Int -> slideInHorizontally(tweenSlideSpec(delayIndex)) + fadeIn(tweenFadeSpec(delayIndex)) }
     val scaleEnterTransition: (Int) -> EnterTransition = { delayIndex: Int -> scaleIn(tweenFadeSpec(delayIndex)) + fadeIn(tweenFadeSpec(delayIndex)) }
     var classTypeIds: Map<String, SharedDataClasses.IdAndName> by mutableStateOf(emptyMap())
-    var termIds: List<String> = mutableListOf()
+    var termIds: List<SharedDataClasses.IdAndName> = mutableListOf()
 
     private val lectureIcon: Int = R.drawable.rounded_school_24
     private val labsIcon: Int = R.drawable.rounded_science_24

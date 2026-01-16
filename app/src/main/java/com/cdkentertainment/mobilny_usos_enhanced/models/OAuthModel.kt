@@ -105,7 +105,7 @@ class OAuthModel {
             if (UIHelper.termIds.isEmpty()) {
                 if (termsResponse.statusCode == 200 && termsResponse.body != null) {
                     val responseString: String = termsResponse.body!!
-                    val parsedResponse: List<String> = parser.decodeFromString<List<String>>(responseString)
+                    val parsedResponse: List<SharedDataClasses.IdAndName> = parser.decodeFromString<List<SharedDataClasses.IdAndName>>(responseString)
                     UIHelper.termIds = parsedResponse
                 } else {
                     throw Exception("API Error")

@@ -33,6 +33,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UIHelper
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
+import com.cdkentertainment.mobilny_usos_enhanced.models.SharedDataClasses
 import com.cdkentertainment.mobilny_usos_enhanced.models.Test
 import com.cdkentertainment.mobilny_usos_enhanced.view_models.TestsPageViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -116,14 +117,14 @@ fun TestsPageView() {
             for (semester in testsPageViewModel.tests!!.tests.keys.reversed()) {
                 currentIndex++
                 val semesterTests: Map<String, Test>? = testsPageViewModel.tests?.tests[semester]
-
+                val semesterName: SharedDataClasses.IdAndName? = UIHelper.termIds.find { it.id == semester }
                 stickyHeader {
                     AnimatedVisibility(
                         visible = showElements && testsPageViewModel.loaded,
                         enter = enterTransition(1)
                     ) {
                         SemesterCardView(
-                            semester,
+                            text = semesterName ?: SharedDataClasses.IdAndName(semester, SharedDataClasses.LangDict(semester, semester)),
                             modifier = paddingModifier
                         )
                     }

@@ -1,5 +1,6 @@
 package com.cdkentertainment.mobilny_usos_enhanced.views
 
+import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,32 +17,34 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.cdkentertainment.mobilny_usos_enhanced.R
 import com.cdkentertainment.mobilny_usos_enhanced.UISingleton
-import com.cdkentertainment.mobilny_usos_enhanced.UserDataSingleton
+import com.cdkentertainment.mobilny_usos_enhanced.getLocalized
+import com.cdkentertainment.mobilny_usos_enhanced.models.SharedDataClasses
 
 @Composable
-fun SemesterCardView(text: String, modifier: Modifier = Modifier) {
-    var year: String = ""
-    var semester: String = ""
-    when (UserDataSingleton.selectedUniversity) {
-        1 -> {
-            val semesterParts: List<String> = text.split("/")
-            year = semesterParts[0]
-            semester = if (semesterParts[1][1] == 'L') stringResource(R.string.summer_semester) else stringResource(R.string.winter_semester)
-        }
-        2 -> {
-            year = "${if (text[4] == 'L') text.take(4).toInt() + 1 else text.take(4)}"
-            semester = if (text[4] == 'L') stringResource(R.string.summer_semester) else stringResource(R.string.winter_semester)
-        }
-        else -> {
-            semester = text
-        }
-    }
+fun SemesterCardView(text: SharedDataClasses.IdAndName, modifier: Modifier = Modifier) {
+    val context: Context = LocalContext.current
+//    var year: String = ""
+//    var semester: String = ""
+//    when (UserDataSingleton.selectedUniversity) {
+//        1 -> {
+//            val semesterParts: List<String> = text.split("/")
+//            year = semesterParts[0]
+//            semester = if (semesterParts[1][1] == 'L') stringResource(R.string.summer_semester) else stringResource(R.string.winter_semester)
+//        }
+//        2 -> {
+//            year = "${if (text[4] == 'L') text.take(4).toInt() + 1 else text.take(4)}"
+//            semester = if (text[4] == 'L') stringResource(R.string.summer_semester) else stringResource(R.string.winter_semester)
+//        }
+//        else -> {
+//            semester = text
+//        }
+//    }
     Card(
         colors = CardColors(
             contentColor = UISingleton.textColor1,
@@ -65,7 +68,7 @@ fun SemesterCardView(text: String, modifier: Modifier = Modifier) {
                 modifier = Modifier.size(32.dp)
             )
             Text(
-                text = "$year - $semester",
+                text = text.name.getLocalized(context),
                 color = UISingleton.textColor1,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,

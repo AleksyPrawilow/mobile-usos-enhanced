@@ -48,12 +48,12 @@ fun GradesPageView() {
     )
 
     LaunchedEffect(Unit) {
-        gradesPageViewModel.suspendFetchSemesterGrades(UIHelper.termIds.last())
+        gradesPageViewModel.suspendFetchSemesterGrades(UIHelper.termIds.last().id)
         delay(150)
         showElements = true
 
         for (semester in UIHelper.termIds.reversed()) {
-            gradesPageViewModel.fetchSemesterGrades(semester)
+            gradesPageViewModel.fetchSemesterGrades(semester.id)
         }
     }
 
@@ -84,7 +84,7 @@ fun GradesPageView() {
         }
 
         for (semester in UIHelper.termIds.reversed()) {
-            val season: Season? = gradesPageViewModel.userSubjects[semester]
+            val season: Season? = gradesPageViewModel.userSubjects[semester.id]
 
             stickyHeader {
                 AnimatedVisibility(showElements && season != null, enter = enterTransition(1)) {
@@ -97,7 +97,7 @@ fun GradesPageView() {
 
             item {
                 AnimatedVisibility(
-                    visible = gradesPageViewModel.loadingMap[semester] == true && showElements
+                    visible = gradesPageViewModel.loadingMap[semester.id] == true && showElements
                 ) {
                     Box(modifier = Modifier.fillMaxSize()) {
                         CircularProgressIndicator(
@@ -110,7 +110,7 @@ fun GradesPageView() {
 
             item {
                 AnimatedVisibility(
-                    visible = gradesPageViewModel.errorMap[semester] == true && showElements
+                    visible = gradesPageViewModel.errorMap[semester.id] == true && showElements
                 ) {
                     TextAndIconCardView(
                         title = stringResource(R.string.failed_to_fetch),
@@ -118,14 +118,14 @@ fun GradesPageView() {
                         showArrow = true,
                         modifier = paddingModifier
                     ) {
-                        gradesPageViewModel.fetchSemesterGrades(semester)
+                        gradesPageViewModel.fetchSemesterGrades(semester.id)
                     }
                 }
             }
 
             item {
                 AnimatedVisibility(
-                    visible = gradesPageViewModel.loadedMap[semester] == true && showElements,
+                    visible = gradesPageViewModel.loadedMap[semester.id] == true && showElements,
                     enter = enterTransition(2)
                 ) {
                     if (season != null) {
@@ -141,10 +141,10 @@ fun GradesPageView() {
                 for (course in 0 until season.courseList.size) {
                     item {
                         val nameMap: Map<String, CourseUnitData>? =
-                            gradesPageViewModel.userSubjects[semester]?.courseUnitIds
+                            gradesPageViewModel.userSubjects[semester.id]?.courseUnitIds
 
                         AnimatedVisibility(
-                            visible = gradesPageViewModel.loadedMap[semester] == true && showElements,
+                            visible = gradesPageViewModel.loadedMap[semester.id] == true && showElements,
                             enter = enterTransition(3 + course)
                         ) {
                             if (nameMap != null) {
