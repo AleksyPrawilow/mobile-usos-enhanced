@@ -7,7 +7,7 @@ plugins {
 
 android {
     android.buildFeatures.buildConfig = true
-    namespace = "com.cdkentertainment.mobilny_usos_enhanced"
+    namespace = "com.cdkentertainment.bux"
     compileSdk = 36
 
     androidResources{
@@ -15,7 +15,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.cdkentertainment.mobilny_usos_enhanced"
+        applicationId = "com.cdkentertainment.bux"
         minSdk = 30
         targetSdk = 36
         versionCode = 1
