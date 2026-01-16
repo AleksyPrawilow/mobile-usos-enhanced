@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Mobile\nUSOS</string>
+    <string name="app_name">BUX</string>
     <string name="home_page">Home</string>
     <string name="grade_page">Grades</string>
     <string name="tests_page">Tests</string>
@@ -124,4 +124,12 @@
     <string name="sign_in">Sign in to USOS</string>
     <string name="checking_the_connection">Connecting to USOS services…</string>
     <string name="almost_there">Almost there...</string>
+    <string name="nothing_to_display">Nothing to display yet</string>
+    <string name="grader">Grader</string>
+    <string name="modification_date">Modification date</string>
+    <string name="inactive_student">Inactive student</string>
+    <string name="all_participants">All participants</string>
+    <string name="group_singular">Group</string>
+    <string name="groups_plural">Groups</string>
+    <string name="choose_your_university">Choose your university</string>
 </resources>

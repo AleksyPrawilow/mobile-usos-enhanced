@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Mobilny\nUSOS</string>
+    <string name="app_name">BUX</string>
     <string name="home_page">Home</string>
     <string name="grade_page">Oceny</string>
     <string name="tests_page">Sprawdziany</string>
@@ -125,4 +125,12 @@
     <string name="sign_in">Zaloguj się do USOS</string>
     <string name="checking_the_connection">Sprawdzam połączenie z serwisami USOS...</string>
     <string name="almost_there">Jeszcze chwilka...</string>
+    <string name="nothing_to_display">Nie ma danych do wyświetlenia</string>
+    <string name="grader">Wystawiający</string>
+    <string name="modification_date">Data modyfikacji</string>
+    <string name="inactive_student">Nieaktywny student</string>
+    <string name="all_participants">Wszyscy uczestnicy</string>
+    <string name="group_singular">Grupa</string>
+    <string name="groups_plural">Grupy</string>
+    <string name="choose_your_university">Wybierz swoją uczelnię</string>
 </resources>

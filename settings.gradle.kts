@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Mobilny USOS Enhanced"
+rootProject.name = "BUX - Better University Experience"
 include(":app")
