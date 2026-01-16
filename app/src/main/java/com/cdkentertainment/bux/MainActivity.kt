@@ -63,7 +63,7 @@ class MainActivity : AppCompatActivity() {
 
         intent.data?.let { uri ->
             if (
-                uri.scheme == "mobile-usos-enhanced" &&
+                uri.scheme == "bux-app" &&
                 uri.host == "login"
             ) {
                 loginViewModel.handleRedirect(uri)

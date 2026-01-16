@@ -13,7 +13,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 
 object BackendDataSender {
-    private val developmentUrl: String = "https://api.cdkentertainment.pl"//"http://10.0.2.2:8080"
+    private val developmentUrl: String = "https://api.cdkentertainment.pl/api"//"http://10.0.2.2:8080"
     private val client = OkHttpClient()
     private var authHeader: String? = null
     private val mediaType =  "application/json; charset=utf-8".toMediaType()
