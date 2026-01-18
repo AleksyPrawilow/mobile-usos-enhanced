@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">BUX</string>
+    <string name="app_name">mUniversity</string>
     <string name="home_page">Home</string>
     <string name="grade_page">Oceny</string>
     <string name="tests_page">Sprawdziany</string>

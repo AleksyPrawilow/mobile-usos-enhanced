@@ -12,7 +12,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.BUX">
+        android:theme="@style/Theme.mUniversity">
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -32,7 +32,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:scheme="bux-app"
+                    android:scheme="muniversity"
                     android:host="login" />
             </intent-filter>
         </activity>
